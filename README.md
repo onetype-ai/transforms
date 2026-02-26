@@ -26,6 +26,7 @@ items/
     my-transform.js    # Transform logic (required)
     my-transform.css   # Styles (optional)
     demo.html          # Demo markup (required)
+    overview.md        # Description for marketplace (required)
 ```
 
 2. Define your transform in the `.js` file:
@@ -55,7 +56,7 @@ transforms.ItemAdd({
 </div>
 ```
 
-File names for `.js` and `.css` don't matter - all files in the folder are automatically loaded. The only requirement is that `demo.html` exists.
+File names for `.js` and `.css` don't matter - all files in the folder are automatically loaded. `demo.html` and `overview.md` must be named exactly.
 
 ## Running the dev server
 
@@ -73,6 +74,7 @@ items/                  # All transform items
     typed.js
     typed.css
     demo.html
+    overview.md
 server/                 # Dev server (do not modify)
   index.js
   back/                 # Server-side (assets, routes, http)

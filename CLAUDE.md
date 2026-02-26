@@ -18,7 +18,7 @@ Before building or modifying any transform, research the external library docume
 
 - Never modify anything in `server/`
 - One transform per folder in `items/`
-- Every transform must have a `demo.html`
+- Every transform must have `demo.html` and `overview.md`
 - Keep code clean, focused, minimal comments
 - No unused variables, no dead code
 - Use `this.methodName = () => {}` to organize logic inside `code`
@@ -37,9 +37,10 @@ items/
     my-transform.js   # Transform definition (required)
     my-transform.css   # Styles (optional)
     demo.html          # Demo markup (required)
+    overview.md        # Description for marketplace (required)
 ```
 
-File names for `.js` and `.css` don't matter - all files in the folder are auto-loaded. Only `demo.html` must be named exactly.
+File names for `.js` and `.css` don't matter - all files in the folder are auto-loaded. `demo.html` and `overview.md` must be named exactly.
 
 ---
 
@@ -281,6 +282,14 @@ For multiple demos, use separate elements:
 
 ---
 
+## Overview
+
+The `overview.md` file is a free-form markdown description displayed on the marketplace page. Explain what the transform does and what configuration options are available. No fixed structure required - write what makes sense for the transform.
+
+Do not include HTML usage examples - those are handled separately by `demo.html` and the platform's usage field.
+
+---
+
 ## Runtime flow
 
 1. Page loads, `[ot]` elements have `opacity: 0` (cloak)
@@ -446,6 +455,20 @@ transforms.ItemAdd({
         <div ot="counter" value="50" min="0" max="100" step="10"></div>
     </div>
 </div>
+```
+
+**items/counter/overview.md**
+```md
+Interactive counter with increment and decrement buttons. Useful for quantity selectors, voting, or any numeric input.
+
+Supports configurable min/max range and custom step size.
+
+### Options
+
+- **value** - starting value (default: 0)
+- **min** - minimum value (default: 0)
+- **max** - maximum value (default: 100)
+- **step** - increment/decrement amount (default: 1)
 ```
 
 ---
