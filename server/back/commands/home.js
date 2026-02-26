@@ -49,7 +49,7 @@ commands.Item({
     <link rel="stylesheet" href="/assets/build.css">
     <script src="/assets/build.js" defer></script>
 </head>
-<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:30px;">
+<body>
     ${body}
 </body>
 </html>`);
