@@ -1,0 +1,19 @@
+.ot-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ot-ripple-circle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: scale(0);
+    animation: ot-ripple-spread ease-out forwards;
+}
+
+@keyframes ot-ripple-spread {
+    to {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
