@@ -14,7 +14,7 @@ npm install
 
 ## AI-assisted development
 
-This repository includes a `CLAUDE.md` file with detailed instructions for building transforms — coding rules, naming conventions, config patterns, and best practices. If you're using an AI coding assistant, point it to `CLAUDE.md` before starting.
+This repository includes a `CLAUDE.md` file with detailed instructions for building transforms - coding rules, naming conventions, config patterns, and best practices. If you're using an AI coding assistant, point it to `CLAUDE.md` before starting.
 
 ## Creating a transform
 
@@ -55,7 +55,7 @@ transforms.ItemAdd({
 </div>
 ```
 
-File names for `.js` and `.css` don't matter — all files in the folder are automatically loaded. The only requirement is that `demo.html` exists.
+File names for `.js` and `.css` don't matter - all files in the folder are automatically loaded. The only requirement is that `demo.html` exists.
 
 ## Running the dev server
 
