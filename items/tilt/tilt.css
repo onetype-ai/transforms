@@ -1,0 +1,14 @@
+.ot-tilt {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+}
+
+.ot-tilt-glare {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: inherit;
+}

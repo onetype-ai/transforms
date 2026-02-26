@@ -1,0 +1,79 @@
+<style>
+    .examples { display: flex; flex-direction: column; gap: 60px; max-width: 700px; margin: 0 auto; padding: 40px 30px; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-m); }
+    .row { display: flex; gap: 24px; flex-wrap: wrap; }
+    .card {
+        width: 200px;
+        padding: 30px;
+        border-radius: var(--ot-radius-l);
+        background: var(--ot-bg-2);
+        border: 1px solid var(--ot-bg-2-border);
+        text-align: center;
+        cursor: pointer;
+    }
+    .card .icon { font-size: 32px; margin-bottom: 12px; }
+    .card .title { color: var(--ot-text-1); font-weight: 600; font-size: 15px; }
+    .card .desc { color: var(--ot-text-2); font-size: 13px; margin-top: 6px; }
+    .image-card {
+        width: 300px;
+        border-radius: var(--ot-radius-l);
+        overflow: hidden;
+    }
+    .image-card img { width: 100%; display: block; }
+</style>
+
+<div class="examples">
+    <div>
+        <h3>Default</h3>
+        <div class="row">
+            <div ot="tilt" class="card">
+                <div class="icon">&#9889;</div>
+                <div class="title">Fast</div>
+                <div class="desc">Lightning quick</div>
+            </div>
+            <div ot="tilt" class="card">
+                <div class="icon">&#128274;</div>
+                <div class="title">Secure</div>
+                <div class="desc">Built-in safety</div>
+            </div>
+            <div ot="tilt" class="card">
+                <div class="icon">&#127912;</div>
+                <div class="title">Creative</div>
+                <div class="desc">No limits</div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3>With glare</h3>
+        <div class="row">
+            <div ot="tilt" glare="true" class="card">
+                <div class="icon">&#10024;</div>
+                <div class="title">Shiny</div>
+                <div class="desc">Glare effect</div>
+            </div>
+            <div ot="tilt" glare="true" glare-opacity="0.5" class="card">
+                <div class="icon">&#128142;</div>
+                <div class="title">Bright</div>
+                <div class="desc">Strong glare</div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3>Strong tilt</h3>
+        <div class="row">
+            <div ot="tilt" max="25" scale="1.1" class="card">
+                <div class="icon">&#127744;</div>
+                <div class="title">Extreme</div>
+                <div class="desc">25deg max tilt</div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3>Image</h3>
+        <div class="row">
+            <div ot="tilt" glare="true" class="image-card">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&h=400&fit=crop" alt="Landscape">
+            </div>
+        </div>
+    </div>
+</div>
