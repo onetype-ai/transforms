@@ -287,6 +287,25 @@ Do not include HTML usage examples - those are handled separately by `demo.html`
 
 ---
 
+## Categories
+
+Every transform belongs to one category. Use this list to determine the correct category when writing `overview.md` or registering a transform in the database.
+
+| Category | Slug | Description |
+|----------|------|-------------|
+| Animation | animation | Motion effects triggered by scroll, load, or time. |
+| Text | text | Text effects and typography animations. |
+| Interaction | interaction | Cursor-driven and hover effects. |
+| Layout | layout | Content structure and arrangement. |
+| Media | media | Image, video, and audio components. |
+| Navigation | navigation | Menus, scrolling, and page navigation. |
+| Forms | forms | Input enhancements and validation. |
+| Data | data | Charts, tables, and data display. |
+| Social | social | Testimonials, reviews, and sharing. |
+| Utility | utility | Functional helpers and toggles. |
+
+---
+
 ## Runtime flow
 
 1. Page loads, `[ot]` elements have `opacity: 0` (cloak)

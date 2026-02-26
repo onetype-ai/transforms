@@ -1,0 +1,11 @@
+.ot-spotlight {
+    position: relative;
+    overflow: hidden;
+}
+
+.ot-spotlight-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}

@@ -1,0 +1,48 @@
+<style>
+    .examples { display: flex; flex-direction: column; gap: 60px; max-width: 700px; margin: 0 auto; padding: 40px 30px; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .card {
+        padding: 40px;
+        border-radius: var(--ot-radius-l);
+        background: var(--ot-bg-2);
+        border: 1px solid var(--ot-bg-2-border);
+        color: var(--ot-text-1);
+    }
+    .card h4 { font-size: 20px; margin-bottom: 8px; }
+    .card p { color: var(--ot-text-2); line-height: 1.6; }
+    .image-card {
+        border-radius: var(--ot-radius-l);
+        overflow: hidden;
+    }
+    .image-card img { width: 100%; display: block; }
+</style>
+
+<div class="examples">
+    <div>
+        <h3>Default</h3>
+        <div ot="spotlight" class="card">
+            <h4>Hover to reveal</h4>
+            <p>Move your cursor over this card to see the spotlight effect. The area around your cursor stays bright while the rest dims.</p>
+        </div>
+    </div>
+    <div>
+        <h3>Image</h3>
+        <div ot="spotlight" size="150" border="80" class="image-card">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=700&h=467&fit=crop" alt="Landscape">
+        </div>
+    </div>
+    <div>
+        <h3>Large spotlight, soft edge</h3>
+        <div ot="spotlight" size="300" border="200" strength="0.9" class="card">
+            <h4>Big and soft</h4>
+            <p>A larger spotlight with a wide, soft gradient edge. Great for large content areas where you want a subtle reveal effect.</p>
+        </div>
+    </div>
+    <div>
+        <h3>Tight spotlight</h3>
+        <div ot="spotlight" size="60" border="40" strength="0.92" class="card">
+            <h4>Small and focused</h4>
+            <p>A tiny spotlight that forces you to explore the content piece by piece. Works well for hidden messages or easter eggs.</p>
+        </div>
+    </div>
+</div>
