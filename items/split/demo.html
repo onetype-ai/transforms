@@ -1,0 +1,33 @@
+<style>
+    .examples { display: flex; flex-direction: column; gap: 60px; max-width: 700px; margin: 0 auto; padding: 40px 30px; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-m); }
+    .heading { font-size: 36px; font-weight: 700; color: var(--ot-text-1); }
+    .subheading { font-size: 24px; font-weight: 500; color: var(--ot-text-1); }
+</style>
+
+<div class="examples">
+    <div>
+        <h3>Fade up — letters</h3>
+        <div ot="split" class="heading">Hello World</div>
+    </div>
+    <div>
+        <h3>Fade up — words</h3>
+        <div ot="split" mode="words" delay="100" class="subheading">Build something beautiful today</div>
+    </div>
+    <div>
+        <h3>Fade down</h3>
+        <div ot="split" animation="fade-down" class="heading">Dropping In</div>
+    </div>
+    <div>
+        <h3>Fade</h3>
+        <div ot="split" animation="fade" delay="80" class="subheading">Appearing one by one</div>
+    </div>
+    <div>
+        <h3>Scale</h3>
+        <div ot="split" animation="scale" delay="40" class="heading">Pop Pop Pop</div>
+    </div>
+    <div>
+        <h3>Slow reveal — words</h3>
+        <div ot="split" mode="words" animation="fade-up" delay="150" duration="800" class="subheading">Each word enters with a dramatic pause</div>
+    </div>
+</div>
