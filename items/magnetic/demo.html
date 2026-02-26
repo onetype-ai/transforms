@@ -1,0 +1,56 @@
+<style>
+    .examples { display: flex; flex-direction: column; gap: 60px; align-items: center; padding: 40px 0; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-m); text-align: center; }
+    .row { display: flex; gap: 30px; justify-content: center; }
+    .button {
+        padding: 14px 32px;
+        border-radius: var(--ot-radius-m);
+        background: var(--ot-bg-3);
+        color: var(--ot-text-1);
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid var(--ot-bg-3-border);
+    }
+    .button-brand {
+        background: var(--ot-brand);
+        border-color: var(--ot-brand-border);
+    }
+    .circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--ot-bg-3);
+        border: 1px solid var(--ot-bg-3-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="examples">
+    <div>
+        <h3>Default</h3>
+        <div class="row">
+            <div ot="magnetic" class="button">Hover me</div>
+            <div ot="magnetic" class="button button-brand">Magnetic</div>
+        </div>
+    </div>
+    <div>
+        <h3>Strong pull</h3>
+        <div class="row">
+            <div ot="magnetic" strength="0.6" distance="200" class="button">Strong</div>
+            <div ot="magnetic" strength="0.6" distance="200" class="button button-brand">Pull</div>
+        </div>
+    </div>
+    <div>
+        <h3>Circles</h3>
+        <div class="row">
+            <div ot="magnetic" class="circle">&#10024;</div>
+            <div ot="magnetic" strength="0.5" class="circle">&#9829;</div>
+            <div ot="magnetic" class="circle">&#9733;</div>
+        </div>
+    </div>
+</div>
