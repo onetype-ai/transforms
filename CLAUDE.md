@@ -253,26 +253,23 @@ Write styles in a separate `.css` file. Prefix all classes with `ot-{id}-` to av
 
 The `demo.html` file contains only the body content - no `<html>`, `<head>`, or `<body>` tags. The dev server wraps it automatically.
 
-```html
-<div ot="my-transform" color="blue" size="24">
-    <p>First item</p>
-    <p>Second item</p>
-    <p>Third item</p>
-</div>
-```
-
-For multiple demos, use separate elements:
+Use a `<style>` block at the top with classes instead of inline styles. Class names should be short and descriptive — no prefixes needed since each demo is an isolated file.
 
 ```html
-<div style="display:flex;flex-direction:column;gap:40px;">
+<style>
+    .examples { display: flex; flex-direction: column; gap: 40px; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+</style>
+
+<div class="examples">
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">Default</h3>
+        <h3>Default</h3>
         <div ot="my-transform">
             <p>Content</p>
         </div>
     </div>
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">Custom config</h3>
+        <h3>Custom config</h3>
         <div ot="my-transform" color="red" size="32">
             <p>Content</p>
         </div>
@@ -305,11 +302,15 @@ Do not include HTML usage examples - those are handled separately by `demo.html`
 ## Code style
 
 ```js
-// Allman brace style
+// Allman brace style — always with braces, never inline
 if(condition)
 {
     doSomething();
 }
+
+// WRONG — never do this
+if(condition) doSomething();
+if(!x) return;
 
 // No space before parens in control structures
 if(x)
@@ -330,6 +331,50 @@ const element = document.createElement('div');
 const container = node.querySelector('.wrapper');
 const duration = data['animation-duration'];
 ```
+
+### Method guidelines
+
+- Every `this.methodName` must be **modular** — single purpose, 10-15 lines max.
+- High **reusability** and **abstraction**: extract helpers for repeated patterns instead of duplicating code.
+- Each method should be callable independently. Build, update, events — separate concerns.
+- Precompute direction-dependent or mode-dependent values **once at the top** of `code`, not inside methods.
+
+```js
+code: function(data, node, transformer)
+{
+    const vertical = data['direction'] === 'vertical';
+    const side = vertical ? 'top' : 'left';
+
+    // Reusable helper — used by build, label, etc.
+    this.element = (tag, className, parent) =>
+    {
+        const element = document.createElement(tag);
+        element.className = className;
+        parent.appendChild(element);
+        return element;
+    };
+
+    // Single purpose — only updates positions
+    this.update = (value) =>
+    {
+        this.line.style[side] = value + '%';
+    };
+
+    // Orchestrates everything
+    this.build = () =>
+    {
+        // ...
+        this.update(data['position']);
+        this.events(input);
+    };
+
+    this.build();
+}
+```
+
+### Triggers and interactivity
+
+The framework does not provide generic trigger mechanisms (`ot-trigger`, etc.). Each transform controls its own behavior inside `code()` — scroll detection via IntersectionObserver, click handlers via addEventListener, hover via mousemove, etc. This keeps transforms independent and avoids framework complexity that doesn't fit every use case.
 
 ---
 
@@ -445,13 +490,18 @@ transforms.ItemAdd({
 
 **items/counter/demo.html**
 ```html
-<div style="display:flex;flex-direction:column;gap:40px;">
+<style>
+    .examples { display: flex; flex-direction: column; gap: 40px; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+</style>
+
+<div class="examples">
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">Default</h3>
+        <h3>Default</h3>
         <div ot="counter"></div>
     </div>
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">Custom range</h3>
+        <h3>Custom range</h3>
         <div ot="counter" value="50" min="0" max="100" step="10"></div>
     </div>
 </div>

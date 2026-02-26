@@ -1,0 +1,147 @@
+.ot-before-after {
+    position: relative;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.ot-before-after-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.ot-before-after-bottom,
+.ot-before-after-top {
+    line-height: 0;
+}
+
+.ot-before-after-bottom img,
+.ot-before-after-top img {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+}
+
+.ot-before-after-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.ot-before-after-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #fff;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
+
+.ot-before-after-handle {
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    pointer-events: none;
+    z-index: 3;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+.ot-before-after-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: col-resize;
+    z-index: 4;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.ot-before-after-input:focus-visible ~ .ot-before-after-handle {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.ot-before-after-label {
+    position: absolute;
+    bottom: 12px;
+    padding: 4px 12px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.4;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1;
+    user-select: none;
+}
+
+.ot-before-after-label-before {
+    left: 12px;
+}
+
+.ot-before-after-label-after {
+    right: 12px;
+}
+
+/* Vertical */
+
+.ot-before-after-vertical .ot-before-after-line {
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    transform: translateY(-50%);
+}
+
+.ot-before-after-vertical .ot-before-after-handle {
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ot-before-after-vertical .ot-before-after-input {
+    width: 100%;
+    height: 100%;
+    cursor: row-resize;
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    writing-mode: vertical-lr;
+}
+
+.ot-before-after-vertical .ot-before-after-label {
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.ot-before-after-vertical .ot-before-after-label-before {
+    top: 12px;
+    bottom: auto;
+    left: 50%;
+    right: auto;
+}
+
+.ot-before-after-vertical .ot-before-after-label-after {
+    bottom: 12px;
+    top: auto;
+    left: 50%;
+    right: auto;
+}

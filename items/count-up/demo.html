@@ -1,40 +1,49 @@
-<div style="height:100vh;display:flex;align-items:center;justify-content:center;color:var(--ot-text-2);font-size:24px;">Scroll down</div>
-<div style="display:flex;flex-direction:column;gap:60px;">
+<style>
+    .examples { display: flex; flex-direction: column; gap: 60px; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .number { font-size: 48px; font-weight: 700; color: var(--ot-text-1); }
+    .stats { display: flex; gap: 60px; }
+    .stat { text-align: center; }
+    .stat .number { font-size: 40px; }
+    .label { color: var(--ot-text-2); margin-top: 4px; }
+</style>
+
+<div class="examples">
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">Default</h3>
-        <div ot="count-up" end="1500" style="font-size:48px;font-weight:700;color:var(--ot-text-1);"></div>
+        <h3>Default</h3>
+        <div ot="count-up" end="1500" class="number"></div>
     </div>
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">With prefix and suffix</h3>
-        <div ot="count-up" end="25000" prefix="$" suffix="+" duration="3" style="font-size:48px;font-weight:700;color:var(--ot-text-1);"></div>
+        <h3>With prefix and suffix</h3>
+        <div ot="count-up" end="25000" prefix="$" suffix="+" duration="3" class="number"></div>
     </div>
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">Decimals</h3>
-        <div ot="count-up" end="99.99" decimals="2" suffix="%" style="font-size:48px;font-weight:700;color:var(--ot-text-1);"></div>
+        <h3>Decimals</h3>
+        <div ot="count-up" end="99.99" decimals="2" suffix="%" class="number"></div>
     </div>
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">Stats row</h3>
-        <div style="display:flex;gap:60px;">
-            <div style="text-align:center;">
-                <div ot="count-up" end="132" suffix="k" style="font-size:40px;font-weight:700;color:var(--ot-brand);"></div>
-                <div style="color:var(--ot-text-2);margin-top:4px;">Users</div>
+        <h3>Stats row</h3>
+        <div class="stats">
+            <div class="stat">
+                <div ot="count-up" end="132" suffix="k" class="number" style="color:var(--ot-brand);"></div>
+                <div class="label">Users</div>
             </div>
-            <div style="text-align:center;">
-                <div ot="count-up" end="98" suffix="%" duration="3" style="font-size:40px;font-weight:700;color:var(--ot-green);"></div>
-                <div style="color:var(--ot-text-2);margin-top:4px;">Uptime</div>
+            <div class="stat">
+                <div ot="count-up" end="98" suffix="%" duration="3" class="number" style="color:var(--ot-green);"></div>
+                <div class="label">Uptime</div>
             </div>
-            <div style="text-align:center;">
-                <div ot="count-up" end="4.9" decimals="1" duration="2.5" style="font-size:40px;font-weight:700;color:var(--ot-orange);"></div>
-                <div style="color:var(--ot-text-2);margin-top:4px;">Rating</div>
+            <div class="stat">
+                <div ot="count-up" end="4.9" decimals="1" duration="2.5" class="number" style="color:var(--ot-orange);"></div>
+                <div class="label">Rating</div>
             </div>
         </div>
     </div>
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">No easing (linear)</h3>
-        <div ot="count-up" end="10000" easing="false" duration="3" style="font-size:48px;font-weight:700;color:var(--ot-text-1);"></div>
+        <h3>No easing (linear)</h3>
+        <div ot="count-up" end="10000" easing="false" duration="3" class="number"></div>
     </div>
     <div>
-        <h3 style="color:var(--ot-text-2);margin-bottom:var(--ot-spacing-s);">Repeat on scroll (scroll away and back)</h3>
-        <div ot="count-up" end="500" once="false" suffix="+" style="font-size:48px;font-weight:700;color:var(--ot-text-1);"></div>
+        <h3>Repeat on scroll (scroll away and back)</h3>
+        <div ot="count-up" end="500" once="false" suffix="+" class="number"></div>
     </div>
 </div>

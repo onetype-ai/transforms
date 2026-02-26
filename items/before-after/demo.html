@@ -1,0 +1,42 @@
+<style>
+    .examples { display: flex; flex-direction: column; gap: 60px; max-width: 700px; margin: 0 auto; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+</style>
+
+<div class="examples">
+    <div>
+        <h3>Default</h3>
+        <div ot="before-after">
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=467&fit=crop" alt="Before">
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=467&fit=crop&sat=-100" alt="After">
+        </div>
+    </div>
+    <div>
+        <h3>With labels</h3>
+        <div ot="before-after" label-before="Original" label-after="Edited">
+            <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=700&h=467&fit=crop" alt="Before">
+            <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=700&h=467&fit=crop&sat=-100" alt="After">
+        </div>
+    </div>
+    <div>
+        <h3>Custom position (25%)</h3>
+        <div ot="before-after" position="25">
+            <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=700&h=467&fit=crop" alt="Before">
+            <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=700&h=467&fit=crop&sat=-100" alt="After">
+        </div>
+    </div>
+    <div>
+        <h3>Hover mode</h3>
+        <div ot="before-after" hover="true" label-before="Before" label-after="After">
+            <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=700&h=467&fit=crop" alt="Before">
+            <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=700&h=467&fit=crop&sat=-100" alt="After">
+        </div>
+    </div>
+    <div>
+        <h3>Vertical</h3>
+        <div ot="before-after" direction="vertical" label-before="Before" label-after="After">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=700&h=467&fit=crop" alt="Before">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=700&h=467&fit=crop&sat=-100" alt="After">
+        </div>
+    </div>
+</div>
