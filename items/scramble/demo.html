@@ -1,0 +1,28 @@
+<style>
+    .examples { display: flex; flex-direction: column; gap: 60px; max-width: 700px; margin: 0 auto; padding: 40px 30px; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .demo-text { font-size: 28px; font-weight: 600; color: var(--ot-text-1); font-family: monospace; }
+</style>
+
+<div class="examples">
+    <div>
+        <h3>Default</h3>
+        <p class="demo-text"><span ot="scramble"><span>Access Granted</span></span></p>
+    </div>
+    <div>
+        <h3>Multiple strings</h3>
+        <p class="demo-text"><span ot="scramble"><span>Decoding...</span><span>Initializing...</span><span>System Ready</span></span></p>
+    </div>
+    <div>
+        <h3>Numbers only</h3>
+        <p class="demo-text"><span ot="scramble" chars="0123456789" speed="80"><span>2025</span></span></p>
+    </div>
+    <div>
+        <h3>Slow reveal</h3>
+        <p class="demo-text"><span ot="scramble" speed="120" scramble-speed="40"><span>Top Secret Message</span></span></p>
+    </div>
+    <div>
+        <h3>Custom characters</h3>
+        <p class="demo-text"><span ot="scramble" chars="01" speed="60"><span>HACK THE PLANET</span></span></p>
+    </div>
+</div>
