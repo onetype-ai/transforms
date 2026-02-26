@@ -1,0 +1,15 @@
+{
+    "name": "onetype-transforms",
+    "version": "0.1.0",
+    "description": "OneType Transforms — source and demos for all transform items.",
+    "type": "module",
+    "license": "MIT",
+    "author": "Dejan Tomic <hi@iamdejan.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/onetype-ai/transforms.git"
+    },
+    "dependencies": {
+        "@onetype/framework": "latest"
+    }
+}
