@@ -1,0 +1,15 @@
+.ot-orbit {
+    position: relative;
+}
+
+.ot-orbit-item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    animation: ot-orbit-drift ease-in-out infinite alternate;
+}
+
+@keyframes ot-orbit-drift {
+    from { translate: var(--dx) var(--dy); }
+    to { translate: calc(var(--dx) * -1) calc(var(--dy) * -1); }
+}
