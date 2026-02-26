@@ -251,13 +251,13 @@ Write styles in a separate `.css` file. Prefix all classes with `ot-{id}-` to av
 
 ## Demo HTML
 
-The `demo.html` file contains only the body content - no `<html>`, `<head>`, or `<body>` tags. The dev server wraps it automatically.
+The `demo.html` file contains only the body content - no `<html>`, `<head>`, or `<body>` tags. The dev server wraps it in a plain `<body>` with no default styling — the demo must handle its own layout, spacing, and centering.
 
 Use a `<style>` block at the top with classes instead of inline styles. Class names should be short and descriptive — no prefixes needed since each demo is an isolated file.
 
 ```html
 <style>
-    .examples { display: flex; flex-direction: column; gap: 40px; }
+    .examples { display: flex; flex-direction: column; gap: 40px; max-width: 700px; margin: 0 auto; padding: 40px 30px; }
     .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
 </style>
 
