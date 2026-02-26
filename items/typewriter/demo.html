@@ -1,0 +1,28 @@
+<style>
+    .examples { display: flex; flex-direction: column; gap: 40px; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .examples .demo-text { font-size: 24px; color: var(--ot-text-1); }
+</style>
+
+<div class="examples">
+    <div>
+        <h3>Default</h3>
+        <p class="demo-text">I love <span ot="typewriter"><span>building websites</span><span>writing code</span><span>designing interfaces</span></span></p>
+    </div>
+    <div>
+        <h3>Custom speed</h3>
+        <p class="demo-text"><span ot="typewriter" speed="100" back-speed="50" back-delay="2000"><span>Slow and steady</span><span>Takes its time</span><span>No rush here</span></span></p>
+    </div>
+    <div>
+        <h3>Smart backspace</h3>
+        <p class="demo-text"><span ot="typewriter"><span>I love apples</span><span>I love oranges</span><span>I love bananas</span></span></p>
+    </div>
+    <div>
+        <h3>No cursor, no loop</h3>
+        <p class="demo-text"><span ot="typewriter" cursor="false" loop="false"><span>This types once and stops.</span></span></p>
+    </div>
+    <div>
+        <h3>With pause</h3>
+        <p class="demo-text"><span ot="typewriter" loop="false"><span>Loading^1000... done!</span></span></p>
+    </div>
+</div>

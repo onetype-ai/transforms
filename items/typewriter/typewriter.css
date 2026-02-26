@@ -1,0 +1,17 @@
+.ot-typewriter {
+    display: inline;
+}
+
+.ot-typewriter-text {
+    display: inline;
+}
+
+.ot-typewriter-cursor {
+    display: inline;
+    animation: ot-typewriter-blink 0.7s infinite;
+}
+
+@keyframes ot-typewriter-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
