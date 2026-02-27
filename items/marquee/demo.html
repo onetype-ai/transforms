@@ -1,0 +1,106 @@
+<style>
+    .examples { display: flex; flex-direction: column; gap: 60px; max-width: 900px; margin: 0 auto; padding: 40px 30px; }
+    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .examples p { color: var(--ot-text-2); font-size: var(--ot-size-s); margin-top: var(--ot-spacing-x); }
+    .logo { display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; background: var(--ot-bg-2); border: 1px solid var(--ot-bg-3-border); border-radius: var(--ot-radius-m); color: var(--ot-text-2); font-size: 14px; font-weight: 500; white-space: nowrap; }
+    .text-item { font-size: 28px; font-weight: 700; color: var(--ot-text-1); white-space: nowrap; }
+    .text-item span { color: var(--ot-brand); }
+    .card { padding: 20px; background: var(--ot-bg-2); border: 1px solid var(--ot-bg-3-border); border-radius: var(--ot-radius-l); min-width: 200px; }
+    .card h4 { color: var(--ot-text-1); margin-bottom: 4px; font-size: 14px; }
+    .card p { color: var(--ot-text-2); font-size: 12px; margin: 0; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--ot-brand); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+    .review { display: flex; gap: 12px; align-items: flex-start; padding: 16px; background: var(--ot-bg-2); border: 1px solid var(--ot-bg-3-border); border-radius: var(--ot-radius-l); min-width: 280px; }
+    .review-text { font-size: 13px; color: var(--ot-text-2); line-height: 1.4; }
+    .review-name { font-size: 12px; color: var(--ot-text-1); font-weight: 600; margin-top: 6px; }
+
+</style>
+
+<div class="examples">
+    <div>
+        <h3>Logo marquee</h3>
+        <p>Hover to pause</p>
+        <div ot="marquee" speed="25" gap="20">
+            <div class="logo">Stripe</div>
+            <div class="logo">Vercel</div>
+            <div class="logo">Linear</div>
+            <div class="logo">Figma</div>
+            <div class="logo">Notion</div>
+            <div class="logo">Slack</div>
+            <div class="logo">GitHub</div>
+            <div class="logo">Framer</div>
+        </div>
+    </div>
+    <div>
+        <h3>Text marquee</h3>
+        <div ot="marquee" speed="20" gap="60" pause="false" fade="false">
+            <div class="text-item">Design <span>&</span> Development</div>
+            <div class="text-item">Branding <span>&</span> Strategy</div>
+            <div class="text-item">Motion <span>&</span> Animation</div>
+            <div class="text-item">Product <span>&</span> Growth</div>
+        </div>
+    </div>
+    <div>
+        <h3>Reverse direction</h3>
+        <div ot="marquee" speed="35" gap="20" direction="right">
+            <div class="logo">React</div>
+            <div class="logo">Vue</div>
+            <div class="logo">Svelte</div>
+            <div class="logo">Angular</div>
+            <div class="logo">Next.js</div>
+            <div class="logo">Nuxt</div>
+            <div class="logo">Astro</div>
+            <div class="logo">Remix</div>
+        </div>
+    </div>
+    <div>
+        <h3>Card marquee</h3>
+        <div ot="marquee" speed="40" gap="16">
+            <div class="card"><h4>Landing Pages</h4><p>High-converting designs that drive results</p></div>
+            <div class="card"><h4>E-commerce</h4><p>Beautiful storefronts with seamless checkout</p></div>
+            <div class="card"><h4>SaaS Platforms</h4><p>Clean dashboards and intuitive interfaces</p></div>
+            <div class="card"><h4>Portfolio Sites</h4><p>Showcase your work with stunning layouts</p></div>
+            <div class="card"><h4>Blogs</h4><p>Content-first design with great typography</p></div>
+        </div>
+    </div>
+    <div>
+        <h3>Testimonial marquee</h3>
+        <div ot="marquee" speed="45" gap="16">
+            <div class="review">
+                <div class="avatar">A</div>
+                <div><div class="review-text">"Completely transformed our website. The animations are smooth and professional."</div><div class="review-name">Alex Chen</div></div>
+            </div>
+            <div class="review">
+                <div class="avatar">S</div>
+                <div><div class="review-text">"So easy to set up. Had it running in under 5 minutes. Highly recommend."</div><div class="review-name">Sarah Kim</div></div>
+            </div>
+            <div class="review">
+                <div class="avatar">M</div>
+                <div><div class="review-text">"Our clients love the marquee effect. It adds so much life to landing pages."</div><div class="review-name">Mark Davis</div></div>
+            </div>
+            <div class="review">
+                <div class="avatar">J</div>
+                <div><div class="review-text">"Finally a solution that works with Webflow without any custom code headaches."</div><div class="review-name">Julia Park</div></div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3>Vertical marquee</h3>
+        <div ot="marquee" speed="15" gap="16" direction="up" height="200">
+            <div class="logo">Feature 1</div>
+            <div class="logo">Feature 2</div>
+            <div class="logo">Feature 3</div>
+            <div class="logo">Feature 4</div>
+            <div class="logo">Feature 5</div>
+            <div class="logo">Feature 6</div>
+        </div>
+    </div>
+    <div>
+        <h3>Fast, no fade, no pause</h3>
+        <div ot="marquee" speed="10" gap="30" fade="false" pause="false">
+            <div class="text-item">SALE</div>
+            <div class="text-item">50% OFF</div>
+            <div class="text-item">LIMITED TIME</div>
+            <div class="text-item">SHOP NOW</div>
+        </div>
+    </div>
+</div>

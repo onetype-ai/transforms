@@ -1,0 +1,50 @@
+.ot-marquee {
+    position: relative;
+    overflow: hidden;
+}
+
+.ot-marquee-track {
+    display: flex;
+    gap: var(--marquee-gap, 40px);
+    width: max-content;
+    animation: ot-marquee-scroll var(--marquee-speed, 30s) linear infinite;
+    animation-direction: var(--marquee-direction, normal);
+}
+
+.ot-marquee-track.ot-marquee-vertical {
+    flex-direction: column;
+    width: auto;
+    height: max-content;
+    animation-name: ot-marquee-scroll-vertical;
+}
+
+.ot-marquee-content {
+    display: flex;
+    align-items: center;
+    gap: var(--marquee-gap, 40px);
+    flex-shrink: 0;
+}
+
+.ot-marquee-vertical .ot-marquee-content {
+    flex-direction: column;
+}
+
+.ot-marquee-pause:hover .ot-marquee-track {
+    animation-play-state: paused !important;
+}
+
+.ot-marquee-fade {
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.ot-marquee-fade-vertical {
+    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ot-marquee-track {
+        animation-play-state: paused;
+    }
+}
