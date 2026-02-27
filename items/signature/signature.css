@@ -1,0 +1,66 @@
+.ot-signature-wrapper {
+    position: relative;
+    border-radius: var(--ot-radius-m);
+    overflow: hidden;
+    cursor: crosshair;
+}
+
+.ot-signature-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.ot-signature-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--ot-text-2);
+    font-size: var(--ot-size-m);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.ot-signature-empty .ot-signature-placeholder {
+    opacity: 1;
+}
+
+.ot-signature-toolbar {
+    position: absolute;
+    bottom: var(--ot-spacing-s);
+    right: var(--ot-spacing-s);
+    display: flex;
+    gap: var(--ot-spacing-x);
+    z-index: 1;
+}
+
+.ot-signature-button {
+    padding: 0 var(--ot-spacing-s);
+    height: var(--ot-height-s);
+    border: 1px solid var(--ot-bg-3-border);
+    border-radius: var(--ot-radius-s);
+    background: var(--ot-bg-1);
+    color: var(--ot-text-2);
+    font-size: var(--ot-size-s);
+    font-family: var(--ot-font-primary);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.ot-signature-button:hover {
+    background: var(--ot-bg-2);
+    color: var(--ot-text-1);
+}
+
+.ot-signature-save {
+    background: var(--ot-brand);
+    border-color: var(--ot-brand);
+    color: white;
+}
+
+.ot-signature-save:hover {
+    background: var(--ot-brand-hover);
+    color: white;
+}
