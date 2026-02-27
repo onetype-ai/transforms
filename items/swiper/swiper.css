@@ -1,0 +1,13 @@
+.ot-swiper {
+    width: 100%;
+}
+
+.ot-swiper .swiper-slide {
+    height: auto;
+}
+
+.ot-swiper .swiper-slide img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
