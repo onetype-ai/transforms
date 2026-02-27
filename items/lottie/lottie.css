@@ -1,0 +1,14 @@
+.ot-lottie {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ot-lottie-container {
+    width: 100%;
+    height: 100%;
+}
+
+.ot-lottie-container svg {
+    display: block;
+}
