@@ -1,0 +1,27 @@
+.ot-map {
+    position: relative;
+    width: 100%;
+    border-radius: var(--ot-radius-m);
+    overflow: hidden;
+}
+
+.ot-map-container {
+    width: 100%;
+    height: 100%;
+}
+
+.ot-map-marker {
+    background: none;
+    border: none;
+}
+
+.ot-map-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: 24px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
