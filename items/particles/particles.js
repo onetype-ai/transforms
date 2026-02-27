@@ -3,7 +3,7 @@ transforms.ItemAdd({
     icon: 'blur_on',
     name: 'Particles',
     description: 'Animated particle backgrounds with presets and mouse interaction.',
-    js: ['https://cdn.jsdelivr.net/npm/tsparticles@3.9.1/tsparticles.bundle.min.js'],
+    js: ['https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js'],
     config: {
         'preset': ['string', 'stars'],
         'color': ['string', '#ffffff'],
@@ -16,108 +16,114 @@ transforms.ItemAdd({
         'click': ['string', 'none'],
         'direction': ['string', 'none'],
         'background': ['string', ''],
-        'height': ['number', 400],
-        'custom': ['string', '']
+        'height': ['number', 400]
     },
     code: function(data, node, transformer)
     {
         const prefix = 'ot-particles';
         const uid = prefix + '-' + Math.random().toString(36).substring(2, 9);
 
-        this.presets = {
-            stars: {
-                particles: {
-                    number: { value: data['count'] },
+        this.random = (min, max) =>
+        {
+            return Math.random() * (max - min) + min;
+        };
+
+        this.presets = () =>
+        {
+            const presets = {
+                stars: {
+                    number: { value: data['count'], density: { enable: true, value_area: 800 } },
                     color: { value: data['color'] },
                     shape: { type: 'circle' },
-                    opacity: { value: { min: 0.1, max: 1 }, animation: { enable: true, speed: 0.5, minimumValue: 0.1 } },
-                    size: { value: { min: 0.5, max: data['size'] } },
-                    move: { enable: true, speed: data['speed'], direction: data['direction'], outModes: 'out' }
-                }
-            },
-            snow: {
-                particles: {
-                    number: { value: data['count'] },
+                    opacity: { value: 0.8, random: true, anim: { enable: true, speed: 0.5, opacity_min: 0.1, sync: false } },
+                    size: { value: data['size'], random: true },
+                    line_linked: { enable: false },
+                    move: { enable: true, speed: data['speed'], direction: data['direction'], random: true, straight: false, out_mode: 'out' }
+                },
+                snow: {
+                    number: { value: data['count'], density: { enable: true, value_area: 600 } },
                     color: { value: data['color'] },
                     shape: { type: 'circle' },
-                    opacity: { value: { min: 0.3, max: 1 } },
-                    size: { value: { min: 1, max: data['size'] * 2 } },
-                    move: { enable: true, speed: data['speed'], direction: 'bottom', straight: false, outModes: 'out' },
-                    wobble: { enable: true, distance: 10, speed: 10 }
-                }
-            },
-            links: {
-                particles: {
-                    number: { value: data['count'] },
+                    opacity: { value: 0.7, random: true },
+                    size: { value: data['size'] * 2, random: true },
+                    line_linked: { enable: false },
+                    move: { enable: true, speed: data['speed'], direction: 'bottom', random: false, straight: false, out_mode: 'out' }
+                },
+                links: {
+                    number: { value: data['count'], density: { enable: true, value_area: 800 } },
                     color: { value: data['color'] },
                     shape: { type: 'circle' },
                     opacity: { value: 0.5 },
-                    size: { value: { min: 1, max: data['size'] } },
-                    links: { enable: true, distance: 150, color: data['links-color'], opacity: 0.4, width: 1 },
-                    move: { enable: true, speed: data['speed'] * 2, outModes: 'bounce' }
-                }
-            },
-            bubbles: {
-                particles: {
-                    number: { value: Math.max(10, Math.floor(data['count'] / 4)) },
+                    size: { value: data['size'], random: true },
+                    line_linked: { enable: true, distance: 150, color: data['links-color'], opacity: 0.4, width: 1 },
+                    move: { enable: true, speed: data['speed'] * 2, direction: 'none', random: false, straight: false, out_mode: 'bounce' }
+                },
+                bubbles: {
+                    number: { value: Math.max(10, Math.floor(data['count'] / 4)), density: { enable: true, value_area: 800 } },
                     color: { value: data['color'] },
                     shape: { type: 'circle' },
-                    opacity: { value: { min: 0.05, max: 0.3 } },
-                    size: { value: { min: 20, max: data['size'] * 30 } },
-                    move: { enable: true, speed: data['speed'] * 0.5, direction: 'top', outModes: 'out' }
-                }
-            },
-            confetti: {
-                particles: {
-                    number: { value: 0 },
-                    color: { value: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'] },
-                    shape: { type: ['circle', 'square'] },
-                    opacity: { value: { min: 0.5, max: 1 }, animation: { enable: true, speed: 1, minimumValue: 0 } },
-                    size: { value: { min: 3, max: 7 } },
-                    move: { enable: true, speed: { min: 10, max: 30 }, direction: 'bottom', gravity: { enable: true, acceleration: 5 }, outModes: { default: 'destroy', top: 'none' }, decay: 0.05 },
-                    rotate: { value: { min: 0, max: 360 }, animation: { enable: true, speed: 60 } },
-                    tilt: { enable: true, value: { min: 0, max: 360 }, animation: { enable: true, speed: 60 } },
-                    wobble: { enable: true, distance: 30, speed: 15 },
-                    life: { duration: { value: 5 }, count: 1 }
+                    opacity: { value: 0.2, random: true },
+                    size: { value: data['size'] * 30, random: true },
+                    line_linked: { enable: false },
+                    move: { enable: true, speed: data['speed'] * 0.5, direction: 'top', random: true, straight: false, out_mode: 'out' }
                 },
-                emitters: {
-                    position: { x: 50, y: 0 },
-                    rate: { quantity: 5, delay: 0.15 },
-                    size: { width: 100, height: 0 }
-                }
-            },
-            fireflies: {
-                particles: {
-                    number: { value: Math.max(15, Math.floor(data['count'] / 3)) },
+                confetti: {
+                    number: { value: data['count'], density: { enable: true, value_area: 600 } },
+                    color: { value: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'] },
+                    shape: { type: ['circle', 'edge'] },
+                    opacity: { value: 0.8, random: true },
+                    size: { value: data['size'] * 2, random: true },
+                    line_linked: { enable: false },
+                    move: { enable: true, speed: data['speed'] * 5, direction: 'bottom', random: true, straight: false, out_mode: 'out' }
+                },
+                fireflies: {
+                    number: { value: Math.max(15, Math.floor(data['count'] / 3)), density: { enable: true, value_area: 800 } },
                     color: { value: data['color'] === '#ffffff' ? '#ffcc00' : data['color'] },
                     shape: { type: 'circle' },
-                    opacity: { value: { min: 0, max: 0.8 }, animation: { enable: true, speed: 0.5, minimumValue: 0 } },
-                    size: { value: { min: 1, max: data['size'] } },
-                    move: { enable: true, speed: data['speed'] * 0.5, direction: 'none', random: true, outModes: 'bounce' }
+                    opacity: { value: 0.6, random: true, anim: { enable: true, speed: 0.5, opacity_min: 0, sync: false } },
+                    size: { value: data['size'], random: true },
+                    line_linked: { enable: false },
+                    move: { enable: true, speed: data['speed'] * 0.5, direction: 'none', random: true, straight: false, out_mode: 'bounce' }
                 }
-            }
+            };
+
+            return presets[data['preset']] || presets.stars;
         };
 
-        this.options = () =>
+        this.interaction = () =>
         {
-            if(data['custom'])
+            const events = { onclick: { enable: false }, onhover: { enable: false }, resize: true };
+
+            if(data['hover'] !== 'none')
             {
-                try
-                {
-                    return onetype.Function(data['custom']);
-                }
-                catch(e)
-                {
-                    return {};
-                }
+                events.onhover = { enable: true, mode: data['hover'] };
             }
 
-            const preset = this.presets[data['preset']] || this.presets.stars;
-            const config = JSON.parse(JSON.stringify(preset));
-
-            if(data['links'] && !config.particles.links)
+            if(data['click'] !== 'none')
             {
-                config.particles.links = {
+                events.onclick = { enable: true, mode: data['click'] };
+            }
+
+            return {
+                detect_on: 'canvas',
+                events: events,
+                modes: {
+                    grab: { distance: 200, line_linked: { opacity: 0.5 } },
+                    repulse: { distance: 150, duration: 0.4 },
+                    push: { particles_nb: 4 },
+                    remove: { particles_nb: 2 },
+                    bubble: { distance: 200, size: 20, duration: 2, opacity: 0.8, speed: 3 }
+                }
+            };
+        };
+
+        this.config = () =>
+        {
+            const particles = this.presets();
+
+            if(data['links'] && !particles.line_linked.enable)
+            {
+                particles.line_linked = {
                     enable: true,
                     distance: 150,
                     color: data['links-color'],
@@ -126,56 +132,23 @@ transforms.ItemAdd({
                 };
             }
 
-            this.interaction(config);
-            this.bg(config);
-
-            config.detectRetina = true;
-            config.fpsLimit = 60;
-
-            return config;
-        };
-
-        this.interaction = (config) =>
-        {
-            config.interactivity = { events: {} };
-
-            if(data['hover'] !== 'none')
-            {
-                config.interactivity.events.onHover = {
-                    enable: true,
-                    mode: data['hover']
-                };
-            }
-
-            if(data['click'] !== 'none')
-            {
-                config.interactivity.events.onClick = {
-                    enable: true,
-                    mode: data['click']
-                };
-            }
-
-            config.interactivity.modes = {
-                grab: { distance: 200, links: { opacity: 0.5 } },
-                repulse: { distance: 150 },
-                push: { quantity: 4 },
-                remove: { quantity: 2 },
-                bubble: { distance: 200, size: 20, duration: 2, opacity: 0.8 }
+            return {
+                particles: particles,
+                interactivity: this.interaction(),
+                retina_detect: true
             };
-        };
-
-        this.bg = (config) =>
-        {
-            if(data['background'])
-            {
-                config.background = { color: data['background'] };
-            }
         };
 
         this.build = () =>
         {
             node.classList.add(prefix);
             node.style.height = data['height'] + 'px';
+
+            if(data['background'])
+            {
+                node.style.background = data['background'];
+            }
+
             node.innerHTML = '';
 
             const container = document.createElement('div');
@@ -183,10 +156,7 @@ transforms.ItemAdd({
             container.className = prefix + '-container';
             node.appendChild(container);
 
-            tsParticles.load({
-                id: uid,
-                options: this.options()
-            });
+            particlesJS(uid, this.config());
         };
 
         this.build();
@@ -194,12 +164,13 @@ transforms.ItemAdd({
     destroy: function(data, node, transformer)
     {
         const container = node.querySelector('[id]');
-        if(container && tsParticles)
+        if(container && window.pJSDom)
         {
-            const instance = tsParticles.dom().find((c) => c.id === container.id);
-            if(instance)
+            const index = window.pJSDom.findIndex((p) => p.pJS.canvas.el.parentNode.id === container.id);
+            if(index > -1)
             {
-                instance.destroy();
+                window.pJSDom[index].pJS.fn.vendors.destroypJS();
+                window.pJSDom.splice(index, 1);
             }
         }
     }

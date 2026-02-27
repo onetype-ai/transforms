@@ -1,4 +1,4 @@
-Animated particle backgrounds powered by tsParticles. Choose from built-in presets or create custom effects with full control over particle behavior, appearance, and mouse interaction.
+Animated particle backgrounds powered by particles.js. Choose from built-in presets or create custom effects with full control over particle behavior, appearance, and mouse interaction.
 
 ### Presets
 
@@ -23,4 +23,3 @@ Animated particle backgrounds powered by tsParticles. Choose from built-in prese
 - **direction** — movement direction: "none", "top", "bottom", "left", "right" (default: "none")
 - **background** — background color as hex, empty for transparent (default: none)
 - **height** — container height in pixels (default: 400)
-- **custom** — custom tsParticles JSON config, overrides all presets
