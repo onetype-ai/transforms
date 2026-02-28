@@ -1,0 +1,307 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    2,
+    'typewriter',
+    'Typewriter',
+    'Typewriter text animation that cycles through strings with typing and deleting effects.',
+    'keyboard',
+    'free',
+    $$Typewriter text animation that cycles through multiple strings with realistic typing and deleting effects. Place strings as child elements and the transform handles the rest.
+
+### Smart backspace
+
+When consecutive strings share a common prefix, only the differing part is deleted and retyped. "I love apples" followed by "I love oranges" only retypes from "apples" onward - just like a real person would edit.
+
+### Inline pauses
+
+Add dramatic timing with `^1000` syntax inside any string. The number is the pause duration in milliseconds. "Loading^1000... done!" types "Loading", pauses for a second, then finishes. Stack multiple pauses anywhere in the text for precise control over timing.
+
+### Cursor
+
+A blinking cursor follows the text by default, completing the typewriter illusion. Customize the cursor character or hide it entirely for a cleaner look.
+
+### Looping and shuffle
+
+With looping enabled, the animation cycles through all strings continuously - great for rotating taglines, job titles, or feature highlights. Enable shuffle to randomize the order on each cycle.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-typewriter';
+
+this.element = (tag, className, parent) =>
+{
+    const element = document.createElement(tag);
+    element.className = className;
+    parent.appendChild(element);
+    return element;
+};
+
+this.parse = (text) =>
+{
+    const parts = [];
+    let remaining = text;
+
+    while(remaining.length > 0)
+    {
+        const match = remaining.match(/\^(\d+)/);
+        if(match)
+        {
+            const index = match.index;
+            if(index > 0)
+            {
+                parts.push({ text: remaining.substring(0, index) });
+            }
+            parts.push({ pause: parseInt(match[1]) });
+            remaining = remaining.substring(index + match[0].length);
+        }
+        else
+        {
+            parts.push({ text: remaining });
+            remaining = '';
+        }
+    }
+
+    return parts;
+};
+
+this.common = (a, b) =>
+{
+    let length = 0;
+    const max = Math.min(a.length, b.length);
+
+    while(length < max && a[length] === b[length])
+    {
+        length++;
+    }
+
+    return length;
+};
+
+this.type = () =>
+{
+    const parts = this.parts;
+    const part = parts[this.part];
+
+    if(!part)
+    {
+        setTimeout(() => this.back(), data['back-delay']);
+        return;
+    }
+
+    if(part.pause)
+    {
+        this.part++;
+        setTimeout(() => this.type(), part.pause);
+        return;
+    }
+
+    if(this.char < part.text.length)
+    {
+        this.display.textContent += part.text[this.char];
+        this.char++;
+        setTimeout(() => this.type(), data['speed']);
+    }
+    else
+    {
+        this.part++;
+        this.char = 0;
+        this.type();
+    }
+};
+
+this.back = () =>
+{
+    const current = this.display.textContent;
+    const target = this.stop;
+
+    if(current.length > target)
+    {
+        this.display.textContent = current.substring(0, current.length - 1);
+        setTimeout(() => this.back(), data['back-speed']);
+    }
+    else
+    {
+        this.next();
+    }
+};
+
+this.next = () =>
+{
+    this.index++;
+
+    if(this.index >= this.strings.length)
+    {
+        if(!data['loop'])
+        {
+            return;
+        }
+        this.index = 0;
+        if(data['shuffle'])
+        {
+            this.shuffle();
+        }
+    }
+
+    const current = this.display.textContent;
+    const next = this.flat[this.index];
+
+    if(data['smart-backspace'])
+    {
+        this.stop = this.common(current, next);
+    }
+    else
+    {
+        this.stop = 0;
+    }
+
+    this.parts = this.parsed[this.index];
+    this.part = 0;
+    this.char = 0;
+
+    if(this.stop > 0)
+    {
+        const first = this.parts[0];
+        if(first && first.text)
+        {
+            this.parts = [{ text: first.text.substring(this.stop) }, ...this.parts.slice(1)];
+        }
+    }
+
+    if(current.length > this.stop)
+    {
+        this.back();
+    }
+    else
+    {
+        this.type();
+    }
+};
+
+this.shuffle = () =>
+{
+    for(let i = this.strings.length - 1; i > 0; i--)
+    {
+        const j = Math.floor(Math.random() * (i + 1));
+        [this.strings[i], this.strings[j]] = [this.strings[j], this.strings[i]];
+        [this.parsed[i], this.parsed[j]] = [this.parsed[j], this.parsed[i]];
+        [this.flat[i], this.flat[j]] = [this.flat[j], this.flat[i]];
+    }
+};
+
+this.build = () =>
+{
+    const children = node.querySelectorAll(':scope > *');
+    this.strings = [];
+
+    children.forEach((child) =>
+    {
+        this.strings.push(child.textContent.trim());
+    });
+
+    if(this.strings.length === 0)
+    {
+        return;
+    }
+
+    this.parsed = this.strings.map((s) => this.parse(s));
+    this.flat = this.strings.map((s) => s.replace(/\^\d+/g, ''));
+
+    if(data['shuffle'])
+    {
+        this.shuffle();
+    }
+
+    node.innerHTML = '';
+    node.classList.add(prefix);
+
+    this.display = this.element('span', prefix + '-text', node);
+
+    if(data['cursor'])
+    {
+        const cursor = this.element('span', prefix + '-cursor', node);
+        cursor.textContent = data['cursor-char'];
+    }
+
+    this.index = 0;
+    this.parts = this.parsed[0];
+    this.part = 0;
+    this.char = 0;
+    this.stop = 0;
+
+    setTimeout(() => this.type(), data['start-delay']);
+};
+
+this.build();$$,
+    $$.ot-typewriter {
+    display: inline;
+}
+
+.ot-typewriter-text {
+    display: inline;
+}
+
+.ot-typewriter-cursor {
+    display: inline;
+    animation: ot-typewriter-blink 0.7s infinite;
+}
+
+@keyframes ot-typewriter-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}$$,
+    NULL,
+    NULL,
+    '{"speed": {"type": "number", "value": 50, "description": "Typing speed in milliseconds per character"}, "back-speed": {"type": "number", "value": 30, "description": "Deleting speed in milliseconds per character"}, "back-delay": {"type": "number", "value": 1000, "description": "Pause before deleting in milliseconds"}, "start-delay": {"type": "number", "value": 0, "description": "Delay before typing starts in milliseconds"}, "loop": {"type": "boolean", "value": true, "description": "Cycle through strings continuously"}, "cursor": {"type": "boolean", "value": true, "description": "Show blinking cursor"}, "cursor-char": {"type": "string", "value": "|", "description": "Character used for the cursor"}, "smart-backspace": {"type": "boolean", "value": true, "description": "Only delete differing suffix when strings share a prefix"}, "shuffle": {"type": "boolean", "value": false, "description": "Randomize string order on each cycle"}}'::jsonb,
+    $$<p>I love <span ot="typewriter"><span>building websites</span><span>writing code</span><span>designing interfaces</span></span></p>$$,
+    ARRAY[
+        $$// Cycle
+<style>
+    .cycle { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .cycle .heading { font-size: 36px; font-weight: 700; color: var(--ot-text-1); letter-spacing: -1px; }
+    .cycle .heading span { font-size: 36px; font-weight: 700; }
+</style>
+
+<div class="cycle">
+    <p class="heading">I love <span ot="typewriter"><span>building websites</span><span>writing code</span><span>designing interfaces</span></span></p>
+</div>$$,
+        $$// Smart Backspace
+<style>
+    .smart-backspace { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .smart-backspace .heading { font-size: 28px; font-weight: 600; color: var(--ot-text-1); letter-spacing: -0.5px; }
+    .smart-backspace .heading span { font-size: 28px; font-weight: 600; }
+</style>
+
+<div class="smart-backspace">
+    <p class="heading">We build <span ot="typewriter"><span>fast websites</span><span>fast applications</span><span>fast experiences</span></span></p>
+</div>$$,
+        $$// Pause
+<style>
+    .pause { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .pause .heading { font-size: 28px; font-weight: 600; color: var(--ot-text-1); letter-spacing: -0.5px; font-family: monospace; }
+    .pause .heading span { font-size: 28px; font-weight: 600; font-family: monospace; }
+</style>
+
+<div class="pause">
+    <p class="heading"><span ot="typewriter" ot-loop="false"><span>Initializing^800... ready^500... launching!</span></span></p>
+</div>$$,
+        $$// No Cursor
+<style>
+    .no-cursor { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .no-cursor .heading { font-size: 28px; font-weight: 600; color: var(--ot-text-1); letter-spacing: -0.5px; }
+    .no-cursor .heading span { font-size: 28px; font-weight: 600; }
+    .no-cursor .sub { font-size: 14px; color: var(--ot-text-2); margin-top: var(--ot-spacing-s); }
+</style>
+
+<div class="no-cursor">
+    <p class="heading"><span ot="typewriter" ot-cursor="false" ot-loop="false"><span>Welcome aboard.</span></span></p>
+    <p class="sub">No cursor, no loop - types once and stops.</p>
+</div>$$
+    ]
+);

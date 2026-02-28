@@ -1,0 +1,237 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    8,
+    'leaflet',
+    'Leaflet',
+    'Interactive map with markers, popups and multiple tile styles.',
+    'map',
+    'pro',
+    $$Interactive map powered by Leaflet.js. Drop it onto any page to show a fully functional map with markers, popups, and different visual styles - no API key needed.
+
+### Markers
+
+Add child elements with latitude and longitude coordinates to place markers on the map. Each marker can have a popup that opens on click - supports plain text or HTML for rich content like bold text, links, and line breaks. Put an emoji or HTML inside the child element to use it as a custom marker icon, or leave it empty for the default Leaflet pin.
+
+### Tile styles
+
+Ships with six built-in tile styles. Streets is the standard OpenStreetMap look. Light and dark are clean minimal styles from CartoDB - dark works well on dark-themed pages. Voyager is a modern colorful style, also from CartoDB. Satellite pulls aerial imagery from Esri. Topo shows topographic detail with elevation contours from OpenTopoMap.
+
+### Controls
+
+Zoom buttons, scroll wheel zoom, and map dragging are all enabled by default. Turn them off individually to create a static decorative map that users can look at but not interact with - useful for contact pages or location cards where you just want to show where something is.
+
+### Sizing
+
+The map height is set in pixels and defaults to 400. Width always fills its container. The map automatically adjusts when the container resizes, so it works well in responsive layouts.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-leaflet';
+
+this.tiles = {
+    streets: {
+        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+    },
+    light: {
+        url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 20
+    },
+    dark: {
+        url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 20
+    },
+    voyager: {
+        url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 20
+    },
+    satellite: {
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        attribution: 'Tiles &copy; Esri',
+        maxZoom: 18
+    },
+    topo: {
+        url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
+        maxZoom: 17
+    }
+};
+
+this.markers = () =>
+{
+    const children = [...node.children];
+    const items = [];
+
+    children.forEach((child) =>
+    {
+        const lat = parseFloat(child.getAttribute('lat'));
+        const lng = parseFloat(child.getAttribute('lng'));
+
+        if(isNaN(lat) || isNaN(lng))
+        {
+            return;
+        }
+
+        const popup = child.getAttribute('popup') || '';
+        const content = child.innerHTML.trim();
+
+        child.remove();
+
+        items.push({ lat, lng, popup, content });
+    });
+
+    return items;
+};
+
+this.icon = (content) =>
+{
+    if(!content)
+    {
+        return undefined;
+    }
+
+    return L.divIcon({
+        html: '<div class="' + prefix + '-icon">' + content + '</div>',
+        className: prefix + '-marker',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+    });
+};
+
+this.pin = (item) =>
+{
+    const options = {};
+    const icon = this.icon(item.content);
+
+    if(icon)
+    {
+        options.icon = icon;
+    }
+
+    const marker = L.marker([item.lat, item.lng], options).addTo(this.instance);
+
+    if(item.popup)
+    {
+        marker.bindPopup(item.popup);
+    }
+};
+
+this.build = () =>
+{
+    const items = this.markers();
+
+    node.classList.add(prefix);
+    node.style.height = data['height'] + 'px';
+    node.innerHTML = '';
+
+    const container = document.createElement('div');
+    container.className = prefix + '-container';
+    node.appendChild(container);
+
+    const tile = this.tiles[data['style']] || this.tiles.streets;
+
+    this.instance = L.map(container, {
+        center: [data['lat'], data['lng']],
+        zoom: data['zoom'],
+        zoomControl: data['zoom-control'],
+        scrollWheelZoom: data['scroll-zoom'],
+        dragging: data['dragging'],
+        maxZoom: Math.min(data['max-zoom'], tile.maxZoom),
+        minZoom: data['min-zoom']
+    });
+
+    L.tileLayer(tile.url, {
+        attribution: tile.attribution,
+        maxZoom: tile.maxZoom
+    }).addTo(this.instance);
+
+    items.forEach((item) => this.pin(item));
+
+    setTimeout(() => this.instance.invalidateSize(), 100);
+};
+
+this.build();$$,
+    $$.ot-leaflet {
+    position: relative;
+    width: 100%;
+    border-radius: var(--ot-radius-m);
+    overflow: hidden;
+}
+
+.ot-leaflet-container {
+    width: 100%;
+    height: 100%;
+}
+
+.ot-leaflet-marker {
+    background: none;
+    border: none;
+}
+
+.ot-leaflet-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: 24px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}$$,
+    ARRAY['https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'],
+    ARRAY['https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css'],
+    '{"lat": {"type": "number", "value": 48.2082, "description": "Map center latitude"}, "lng": {"type": "number", "value": 16.3738, "description": "Map center longitude"}, "zoom": {"type": "number", "value": 13, "description": "Initial zoom level"}, "style": {"type": "string", "value": "streets", "description": "Tile style - streets, light, dark, voyager, satellite, topo"}, "height": {"type": "number", "value": 400, "description": "Map height in pixels"}, "zoom-control": {"type": "boolean", "value": true, "description": "Show zoom control buttons"}, "scroll-zoom": {"type": "boolean", "value": true, "description": "Enable scroll wheel zoom"}, "dragging": {"type": "boolean", "value": true, "description": "Enable map dragging"}, "max-zoom": {"type": "number", "value": 19, "description": "Maximum zoom level"}, "min-zoom": {"type": "number", "value": 1, "description": "Minimum zoom level"}}'::jsonb,
+    $$<div ot="leaflet" ot-lat="48.2082" ot-lng="16.3738" ot-zoom="13">
+    <div lat="48.2082" lng="16.3738" popup="<b>Vienna</b><br>Capital of Austria"></div>
+</div>$$,
+    ARRAY[
+        $$// Dark
+<style>
+    .dark { border-radius: var(--ot-radius-l); overflow: hidden; }
+</style>
+
+<div ot="leaflet" ot-lat="35.6762" ot-lng="139.6503" ot-zoom="12" ot-style="dark" ot-height="350" class="dark">
+    <div lat="35.6762" lng="139.6503" popup="<b>Shibuya</b>">&#128508;</div>
+    <div lat="35.7101" lng="139.8107" popup="<b>Tokyo Skytree</b>">&#9961;&#65039;</div>
+    <div lat="35.6586" lng="139.7454" popup="<b>Tokyo Tower</b>">&#127983;</div>
+</div>$$,
+        $$// Satellite
+<style>
+    .satellite { border-radius: var(--ot-radius-l); overflow: hidden; }
+</style>
+
+<div ot="leaflet" ot-lat="36.1069" ot-lng="-112.1129" ot-zoom="11" ot-style="satellite" ot-height="350" class="satellite">
+    <div lat="36.1069" lng="-112.1129" popup="<b>Grand Canyon</b><br>South Rim">&#127964;&#65039;</div>
+</div>$$,
+        $$// Static
+<style>
+    .static { border-radius: var(--ot-radius-l); overflow: hidden; }
+</style>
+
+<div ot="leaflet" ot-lat="48.8566" ot-lng="2.3522" ot-zoom="14" ot-style="light" ot-height="300" ot-zoom-control="false" ot-scroll-zoom="false" ot-dragging="false" class="static">
+    <div lat="48.8584" lng="2.2945" popup="<b>Eiffel Tower</b>">&#128508;</div>
+</div>$$,
+        $$// Streets
+<style>
+    .streets { border-radius: var(--ot-radius-l); overflow: hidden; }
+</style>
+
+<div ot="leaflet" ot-lat="48.2082" ot-lng="16.3738" ot-zoom="13" class="streets">
+    <div lat="48.2082" lng="16.3738" popup="<b>Vienna</b><br>Capital of Austria">&#128205;</div>
+    <div lat="48.2130" lng="16.3613" popup="<b>Rathaus</b><br>Vienna City Hall">&#127963;&#65039;</div>
+    <div lat="48.2065" lng="16.3637" popup="<b>Hofburg</b><br>Imperial Palace">&#128081;</div>
+</div>$$
+    ]
+);

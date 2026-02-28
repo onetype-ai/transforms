@@ -1,0 +1,110 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    3,
+    'magnetic',
+    'Magnetic',
+    'Element follows the cursor with a magnetic pull effect.',
+    'attractions',
+    'free',
+    $$Element follows the cursor with a magnetic pull effect. Move the mouse near it and the element shifts toward the cursor. Move away and it eases back to its original position.
+
+### How it works
+
+Each magnetic element has an invisible activation zone around it. When the cursor enters that zone, the element starts following the mouse with a configurable pull strength. The closer the cursor gets, the stronger the pull feels. Once the cursor leaves the zone, the element smoothly returns to center.
+
+The effect uses CSS transforms and transitions, so it runs at 60fps with no jank. The return animation uses easing for a natural, elastic feel.
+
+### Use cases
+
+Works great on buttons - adds a subtle interactive feel that makes the page feel more alive. Also works well on circular icon buttons, social links, navigation items, and floating action buttons. Anything small and clickable benefits from the magnetic effect.
+
+### Tuning
+
+The pull strength controls how far the element moves relative to the cursor distance. A low value gives a subtle, gentle drift. A higher value makes the element snap more aggressively toward the mouse. The activation zone radius determines how close the cursor needs to be before the effect kicks in - a larger radius means the element starts reacting from further away.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-magnetic';
+
+this.center = () =>
+{
+    const rect = node.getBoundingClientRect();
+    return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+    };
+};
+
+this.move = (e) =>
+{
+    const center = this.center();
+    const deltaX = e.clientX - center.x;
+    const deltaY = e.clientY - center.y;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    if(distance < data['distance'])
+    {
+        const x = deltaX * data['strength'];
+        const y = deltaY * data['strength'];
+        node.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    }
+    else
+    {
+        this.reset();
+    }
+};
+
+this.reset = () =>
+{
+    node.style.transform = 'translate(0, 0)';
+};
+
+this.build = () =>
+{
+    node.classList.add(prefix);
+    node.style.transition = 'transform ' + data['duration'] + 's ' + data['easing'];
+    document.addEventListener('mousemove', this.move);
+};
+
+this.build();$$,
+    $$.ot-magnetic {
+    display: inline-block;
+    will-change: transform;
+}$$,
+    NULL,
+    NULL,
+    '{"strength": {"type": "number", "value": 0.3, "description": "Pull strength multiplier"}, "distance": {"type": "number", "value": 150, "description": "Activation zone radius in pixels"}, "duration": {"type": "number", "value": 0.4, "description": "Return animation duration in seconds"}, "easing": {"type": "string", "value": "ease-out", "description": "CSS easing function for return animation"}}'::jsonb,
+    $$<div ot="magnetic">Hover me</div>$$,
+    ARRAY[
+        $$// Buttons
+<style>
+    .buttons { display: flex; justify-content: center; gap: var(--ot-spacing-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .buttons .btn { padding: 14px 32px; border-radius: var(--ot-radius-m); background: var(--ot-bg-3); color: var(--ot-text-1); font-size: 15px; font-weight: 500; cursor: pointer; border: 1px solid var(--ot-bg-3-border); }
+    .buttons .btn-brand { background: var(--ot-brand); border-color: var(--ot-brand-border); }
+</style>
+
+<div class="buttons">
+    <div ot="magnetic" class="btn">Hover me</div>
+    <div ot="magnetic" class="btn btn-brand">Magnetic</div>
+</div>$$,
+        $$// Icons
+<style>
+    .icons { display: flex; justify-content: center; gap: var(--ot-spacing-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .icons .circle { width: 80px; height: 80px; border-radius: 50%; background: var(--ot-bg-3); border: 1px solid var(--ot-bg-3-border); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .icons .circle i { font-size: 24px; }
+</style>
+
+<div class="icons">
+    <div ot="magnetic" class="circle"><i>auto_awesome</i></div>
+    <div ot="magnetic" ot-strength="0.5" class="circle"><i>favorite</i></div>
+    <div ot="magnetic" class="circle"><i>star</i></div>
+</div>$$
+    ]
+);

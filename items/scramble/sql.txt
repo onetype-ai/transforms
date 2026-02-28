@@ -1,0 +1,198 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    2,
+    'scramble',
+    'Scramble',
+    'Text decode effect that reveals text through randomized characters.',
+    'password',
+    'free',
+    $$Text decode effect that reveals text through randomized characters. Letters scramble rapidly while the real text appears one character at a time from left to right - like a cipher being cracked in real time.
+
+### How it works
+
+The element starts filled with random characters that refresh constantly, creating that classic hacker-terminal look. Then the actual text gets revealed letter by letter from the start. Each revealed character locks in place while the remaining ones keep scrambling. The effect finishes when every character has been decoded.
+
+Triggered on scroll by default, so the animation plays when the element enters the viewport. Can also be set to start immediately on page load.
+
+### Multiple strings
+
+Put multiple child elements inside and the transform cycles through them, decoding each one in sequence. After revealing a string, it pauses briefly, then scrambles again into the next one. With looping enabled, it cycles continuously - great for rotating taglines, status messages, or feature highlights.
+
+### Character sets
+
+The scramble characters default to the full alphabet plus numbers. Swap in a custom set for different aesthetics - binary (01) for a matrix look, numbers only for countdowns, symbols for something more abstract. The character set completely changes the visual feel of the effect.
+
+### Timing
+
+Two independent speeds control the look. The reveal speed determines how fast real characters lock into place. The scramble speed controls how rapidly the random characters refresh. A fast scramble with a slow reveal creates dramatic tension. Equal speeds feel more mechanical and immediate.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-scramble';
+const chars = data['chars'];
+
+this.random = (length) =>
+{
+    let result = '';
+    for(let i = 0; i < length; i++)
+    {
+        result += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return result;
+};
+
+this.reveal = () =>
+{
+    const target = this.strings[this.index];
+    this.revealed = 0;
+    this.scrambleInterval = setInterval(() => this.refresh(), data['scramble-speed']);
+    this.revealInterval = setInterval(() =>
+    {
+        this.revealed++;
+        if(this.revealed >= target.length)
+        {
+            clearInterval(this.revealInterval);
+            clearInterval(this.scrambleInterval);
+            this.display.textContent = target;
+            this.next();
+        }
+    }, data['speed']);
+};
+
+this.refresh = () =>
+{
+    const target = this.strings[this.index];
+    const revealed = target.substring(0, this.revealed);
+    const remaining = target.length - this.revealed;
+    this.display.textContent = revealed + this.random(remaining);
+};
+
+this.next = () =>
+{
+    if(this.strings.length <= 1 && !data['loop'])
+    {
+        return;
+    }
+
+    this.index++;
+    if(this.index >= this.strings.length)
+    {
+        if(!data['loop'])
+        {
+            return;
+        }
+        this.index = 0;
+    }
+
+    setTimeout(() => this.reveal(), data['back-delay']);
+};
+
+this.start = () =>
+{
+    this.display.textContent = this.random(this.strings[0].length);
+    setTimeout(() => this.reveal(), data['delay']);
+};
+
+this.build = () =>
+{
+    const children = node.querySelectorAll(':scope > *');
+    this.strings = [];
+
+    children.forEach((child) =>
+    {
+        this.strings.push(child.textContent.trim());
+    });
+
+    if(this.strings.length === 0)
+    {
+        this.strings.push(node.textContent.trim());
+    }
+
+    if(this.strings.length === 0)
+    {
+        return;
+    }
+
+    node.innerHTML = '';
+    node.classList.add(prefix);
+
+    this.display = document.createElement('span');
+    this.display.className = prefix + '-text';
+    node.appendChild(this.display);
+
+    this.index = 0;
+    this.revealed = 0;
+
+    if(data['trigger'] === 'scroll')
+    {
+        this.observer = new IntersectionObserver((entries) =>
+        {
+            if(entries[0].isIntersecting)
+            {
+                this.observer.disconnect();
+                this.start();
+            }
+        }, { threshold: 0.1 });
+        this.observer.observe(node);
+    }
+    else
+    {
+        this.start();
+    }
+};
+
+this.build();$$,
+    $$.ot-scramble {
+    display: inline;
+}
+
+.ot-scramble-text {
+    display: inline;
+}$$,
+    NULL,
+    NULL,
+    '{"speed": {"type": "number", "value": 50, "description": "Reveal speed per character in milliseconds"}, "scramble-speed": {"type": "number", "value": 30, "description": "Random character refresh rate in milliseconds"}, "delay": {"type": "number", "value": 0, "description": "Initial delay before animation starts in milliseconds"}, "back-delay": {"type": "number", "value": 1500, "description": "Pause between strings in milliseconds"}, "loop": {"type": "boolean", "value": true, "description": "Whether to loop through strings"}, "chars": {"type": "string", "value": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", "description": "Character set for scrambling"}, "trigger": {"type": "string", "value": "scroll", "description": "Trigger mode - scroll or load"}}'::jsonb,
+    $$<span ot="scramble"><span>Access Granted</span></span>$$,
+    ARRAY[
+        $$// Binary
+<style>
+    .binary { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .binary .label { color: var(--ot-text-2); font-size: var(--ot-size-m); margin-bottom: var(--ot-spacing-s); display: flex; align-items: center; justify-content: center; gap: var(--ot-spacing-x); }
+    .binary .label i { font-size: 16px; }
+    .binary .heading { font-size: 32px; font-weight: 700; color: var(--ot-green); font-family: monospace; }
+</style>
+
+<div class="binary">
+    <div class="label"><i>terminal</i> Binary character set</div>
+    <p class="heading"><span ot="scramble" ot-chars="01" ot-speed="60"><span>HACK THE PLANET</span></span></p>
+</div>$$,
+        $$// Cycle
+<style>
+    .cycle { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .cycle .label { color: var(--ot-text-2); font-size: var(--ot-size-m); margin-bottom: var(--ot-spacing-s); display: flex; align-items: center; justify-content: center; gap: var(--ot-spacing-x); }
+    .cycle .label i { font-size: 16px; }
+    .cycle .heading { font-size: 32px; font-weight: 700; color: var(--ot-brand); font-family: monospace; }
+</style>
+
+<div class="cycle">
+    <div class="label"><i>sync</i> Cycling strings</div>
+    <p class="heading"><span ot="scramble"><span>Decoding...</span><span>Initializing...</span><span>System Ready</span></span></p>
+</div>$$,
+        $$// Default
+<style>
+    .default { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .default .heading { font-size: 36px; font-weight: 700; color: var(--ot-text-1); font-family: monospace; letter-spacing: -1px; }
+</style>
+
+<div class="default">
+    <p class="heading"><span ot="scramble"><span>Access Granted</span></span></p>
+</div>$$
+    ]
+);

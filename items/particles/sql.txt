@@ -1,0 +1,253 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    1,
+    'particles',
+    'Particles',
+    'Animated particle backgrounds with presets and mouse interaction.',
+    'blur_on',
+    'pro',
+    $$Animated particle backgrounds powered by particles.js. Pick a preset, set a background color, and you get a living, breathing backdrop for hero sections, headers, or any part of the page.
+
+### Presets
+
+Ships with six built-in effects. Stars gives you a twinkling night sky with softly glowing dots. Snow drops white flakes that fall gently downward. Links is the classic particles.js look - dots connected by thin lines that react to mouse movement. Bubbles creates large translucent circles floating upward like an underwater scene. Confetti rains down colorful shapes. Fireflies produces warm glowing dots that pulse and drift randomly.
+
+### Mouse interaction
+
+Particles can react to the cursor in different ways. Grab mode connects nearby particles to the mouse with lines, creating a web effect as you move. Repulse pushes particles away from the cursor. Bubble makes particles grow when hovered. Click interactions can push new particles into the scene or remove them.
+
+### Customization
+
+Every preset can be tuned further. Change the particle count for density, adjust speed for energy, set custom colors to match your brand, and control the particle size. The links option can be toggled on any preset to draw connection lines between nearby particles.
+
+### Layering
+
+The particle container works great as a background layer. Place text, buttons, or cards on top with absolute positioning and a higher z-index. The particles animate underneath while the content stays readable and interactive.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-particles';
+const uid = prefix + '-' + Math.random().toString(36).substring(2, 9);
+
+this.random = (min, max) =>
+{
+    return Math.random() * (max - min) + min;
+};
+
+this.presets = () =>
+{
+    const presets = {
+        stars: {
+            number: { value: data['count'], density: { enable: true, value_area: 800 } },
+            color: { value: data['color'] },
+            shape: { type: 'circle' },
+            opacity: { value: 0.8, random: true, anim: { enable: true, speed: 0.5, opacity_min: 0.1, sync: false } },
+            size: { value: data['size'], random: true },
+            line_linked: { enable: false },
+            move: { enable: true, speed: data['speed'], direction: data['direction'], random: true, straight: false, out_mode: 'out' }
+        },
+        snow: {
+            number: { value: data['count'], density: { enable: true, value_area: 600 } },
+            color: { value: data['color'] },
+            shape: { type: 'circle' },
+            opacity: { value: 0.7, random: true },
+            size: { value: data['size'] * 2, random: true },
+            line_linked: { enable: false },
+            move: { enable: true, speed: data['speed'], direction: 'bottom', random: false, straight: false, out_mode: 'out' }
+        },
+        links: {
+            number: { value: data['count'], density: { enable: true, value_area: 800 } },
+            color: { value: data['color'] },
+            shape: { type: 'circle' },
+            opacity: { value: 0.5 },
+            size: { value: data['size'], random: true },
+            line_linked: { enable: true, distance: 150, color: data['links-color'], opacity: 0.4, width: 1 },
+            move: { enable: true, speed: data['speed'] * 2, direction: 'none', random: false, straight: false, out_mode: 'bounce' }
+        },
+        bubbles: {
+            number: { value: Math.max(10, Math.floor(data['count'] / 4)), density: { enable: true, value_area: 800 } },
+            color: { value: data['color'] },
+            shape: { type: 'circle' },
+            opacity: { value: 0.2, random: true },
+            size: { value: data['size'] * 30, random: true },
+            line_linked: { enable: false },
+            move: { enable: true, speed: data['speed'] * 0.5, direction: 'top', random: true, straight: false, out_mode: 'out' }
+        },
+        confetti: {
+            number: { value: data['count'], density: { enable: true, value_area: 600 } },
+            color: { value: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'] },
+            shape: { type: ['circle', 'edge'] },
+            opacity: { value: 0.8, random: true },
+            size: { value: data['size'] * 2, random: true },
+            line_linked: { enable: false },
+            move: { enable: true, speed: data['speed'] * 5, direction: 'bottom', random: true, straight: false, out_mode: 'out' }
+        },
+        fireflies: {
+            number: { value: Math.max(15, Math.floor(data['count'] / 3)), density: { enable: true, value_area: 800 } },
+            color: { value: data['color'] === '#ffffff' ? '#ffcc00' : data['color'] },
+            shape: { type: 'circle' },
+            opacity: { value: 0.6, random: true, anim: { enable: true, speed: 0.5, opacity_min: 0, sync: false } },
+            size: { value: data['size'], random: true },
+            line_linked: { enable: false },
+            move: { enable: true, speed: data['speed'] * 0.5, direction: 'none', random: true, straight: false, out_mode: 'bounce' }
+        }
+    };
+
+    return presets[data['preset']] || presets.stars;
+};
+
+this.interaction = () =>
+{
+    const events = { onclick: { enable: false }, onhover: { enable: false }, resize: true };
+
+    if(data['hover'] !== 'none')
+    {
+        events.onhover = { enable: true, mode: data['hover'] };
+    }
+
+    if(data['click'] !== 'none')
+    {
+        events.onclick = { enable: true, mode: data['click'] };
+    }
+
+    return {
+        detect_on: 'canvas',
+        events: events,
+        modes: {
+            grab: { distance: 200, line_linked: { opacity: 0.5 } },
+            repulse: { distance: 150, duration: 0.4 },
+            push: { particles_nb: 4 },
+            remove: { particles_nb: 2 },
+            bubble: { distance: 200, size: 20, duration: 2, opacity: 0.8, speed: 3 }
+        }
+    };
+};
+
+this.config = () =>
+{
+    const particles = this.presets();
+
+    if(data['links'] && !particles.line_linked.enable)
+    {
+        particles.line_linked = {
+            enable: true,
+            distance: 150,
+            color: data['links-color'],
+            opacity: 0.4,
+            width: 1
+        };
+    }
+
+    return {
+        particles: particles,
+        interactivity: this.interaction(),
+        retina_detect: true
+    };
+};
+
+this.build = () =>
+{
+    node.classList.add(prefix);
+    node.style.height = data['height'] + 'px';
+
+    if(data['background'])
+    {
+        node.style.background = data['background'];
+    }
+
+    node.innerHTML = '';
+
+    const container = document.createElement('div');
+    container.id = uid;
+    container.className = prefix + '-container';
+    node.appendChild(container);
+
+    particlesJS(uid, this.config());
+};
+
+this.build();$$,
+    $$.ot-particles {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--ot-radius-m);
+}
+
+.ot-particles-container {
+    width: 100%;
+    height: 100%;
+}$$,
+    ARRAY['https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js'],
+    NULL,
+    '{"preset": {"type": "string", "value": "stars", "description": "Particle preset - stars, snow, links, bubbles, confetti, or fireflies"}, "color": {"type": "string", "value": "#ffffff", "description": "Particle color as hex"}, "count": {"type": "number", "value": 80, "description": "Number of particles"}, "speed": {"type": "number", "value": 1, "description": "Movement speed multiplier"}, "size": {"type": "number", "value": 3, "description": "Base particle size in pixels"}, "links": {"type": "boolean", "value": false, "description": "Draw connection lines between particles"}, "links-color": {"type": "string", "value": "#ffffff", "description": "Color of connection lines"}, "hover": {"type": "string", "value": "none", "description": "Hover interaction - none, grab, repulse, or bubble"}, "click": {"type": "string", "value": "none", "description": "Click interaction - none, push, or remove"}, "direction": {"type": "string", "value": "none", "description": "Movement direction"}, "background": {"type": "string", "value": "", "description": "Background color or gradient"}, "height": {"type": "number", "value": 400, "description": "Container height in pixels"}}'::jsonb,
+    $$<div ot="particles" ot-preset="stars" ot-background="#0a0a2e"></div>$$,
+    ARRAY[
+        $$// Fireflies
+<style>
+    .fireflies { position: relative; border-radius: var(--ot-radius-l); overflow: hidden; }
+    .fireflies .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; pointer-events: none; }
+    .fireflies .overlay h2 { font-size: 32px; font-weight: 800; color: rgba(255, 204, 0, 0.8); letter-spacing: -1px; margin: 0; }
+    .fireflies .overlay p { color: rgba(255, 255, 255, 0.4); font-size: var(--ot-size-m); margin-top: var(--ot-spacing-s); }
+</style>
+
+<div class="fireflies">
+    <div ot="particles" ot-preset="fireflies" ot-background="#0a1628" ot-count="40" ot-size="4" ot-speed="0.8" ot-height="300"></div>
+    <div class="overlay">
+        <h2>Fireflies</h2>
+        <p>Soft glowing dots with pulsing light</p>
+    </div>
+</div>$$,
+        $$// Links
+<style>
+    .links { position: relative; border-radius: var(--ot-radius-l); overflow: hidden; }
+    .links .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; pointer-events: none; }
+    .links .overlay h2 { font-size: 32px; font-weight: 800; color: white; letter-spacing: -1px; margin: 0; }
+    .links .overlay p { color: rgba(255, 255, 255, 0.5); font-size: var(--ot-size-m); margin-top: var(--ot-spacing-s); }
+</style>
+
+<div class="links">
+    <div ot="particles" ot-preset="links" ot-background="#0d1117" ot-count="60" ot-hover="grab" ot-click="push" ot-height="300"></div>
+    <div class="overlay">
+        <h2>Connected network</h2>
+        <p>Hover to grab, click to add</p>
+    </div>
+</div>$$,
+        $$// Snow
+<style>
+    .snow { position: relative; border-radius: var(--ot-radius-l); overflow: hidden; }
+    .snow .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; pointer-events: none; }
+    .snow .overlay i { font-size: 48px; color: rgba(255, 255, 255, 0.3); margin-bottom: var(--ot-spacing-s); }
+    .snow .overlay p { color: rgba(255, 255, 255, 0.5); font-size: var(--ot-size-m); }
+</style>
+
+<div class="snow">
+    <div ot="particles" ot-preset="snow" ot-background="#1a1a2e" ot-count="150" ot-speed="1" ot-size="3" ot-height="300"></div>
+    <div class="overlay">
+        <i>ac_unit</i>
+        <p>Snowfall effect</p>
+    </div>
+</div>$$,
+        $$// Stars
+<style>
+    .stars { position: relative; border-radius: var(--ot-radius-l); overflow: hidden; }
+    .stars .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; pointer-events: none; }
+    .stars .overlay h2 { font-size: 36px; font-weight: 800; color: white; letter-spacing: -1px; margin: 0; }
+    .stars .overlay p { color: rgba(255, 255, 255, 0.6); font-size: 15px; margin-top: var(--ot-spacing-s); }
+</style>
+
+<div class="stars">
+    <div ot="particles" ot-preset="stars" ot-background="#0a0a2e" ot-count="120" ot-speed="0.5" ot-height="300"></div>
+    <div class="overlay">
+        <h2>Into the cosmos</h2>
+        <p>Twinkling stars on a dark sky</p>
+    </div>
+</div>$$
+    ]
+);

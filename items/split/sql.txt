@@ -1,0 +1,224 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    2,
+    'split',
+    'Split',
+    'Split text into letters or words with staggered animation.',
+    'text_fields',
+    'free',
+    $$Split text into individual letters or words, then animate each piece with a staggered delay. Creates those cinematic text reveal effects you see on portfolio sites and hero sections.
+
+### How it works
+
+The transform takes the text content of the element, breaks it into pieces (letters or words), wraps each one in a span, and animates them in sequence. The original text is preserved in an `aria-label` so screen readers still read it normally.
+
+Triggered on scroll by default - the animation plays when the text enters the viewport. Can also start immediately on page load.
+
+### Animations
+
+Four built-in animation styles. Fade-up is the default and most popular - each piece fades in while sliding upward. Fade-down does the opposite, dropping letters in from above. Plain fade just animates opacity without any movement. Scale pops each letter in from zero size, which looks great on bold headings.
+
+### Split modes
+
+Letter mode breaks text into individual characters. Every letter gets its own animation, creating a fluid wave-like reveal. Works best on short headings and titles.
+
+Word mode splits on spaces instead. Each word animates as a unit, which feels more readable on longer sentences. Great for subheadings, taglines, and paragraph introductions where you want emphasis without overwhelming the reader.
+
+### Timing
+
+The delay between each piece controls how fast the wave moves through the text. Short delays create a rapid cascade, longer delays add dramatic tension. The duration controls how long each individual piece takes to finish its animation.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-split';
+const text = node.textContent.trim();
+
+this.span = (content, index) =>
+{
+    const element = document.createElement('span');
+    element.className = prefix + '-item';
+    element.style.setProperty('--index', index);
+    element.style.animationDuration = data['duration'] + 'ms';
+    element.style.animationDelay = (index * data['delay']) + 'ms';
+    element.style.animationTimingFunction = data['easing'];
+    element.textContent = content;
+    element.setAttribute('aria-hidden', 'true');
+    return element;
+};
+
+this.split = () =>
+{
+    if(data['mode'] === 'words')
+    {
+        return text.split(/\s+/);
+    }
+    return [...text];
+};
+
+this.animate = () =>
+{
+    node.classList.add(prefix + '-active');
+};
+
+this.build = () =>
+{
+    const pieces = this.split();
+
+    node.innerHTML = '';
+    node.classList.add(prefix);
+    node.classList.add(prefix + '-' + data['animation']);
+    node.setAttribute('aria-label', text);
+
+    pieces.forEach((piece, index) =>
+    {
+        node.appendChild(this.span(piece, index));
+
+        if(data['mode'] === 'words' && index < pieces.length - 1)
+        {
+            const space = document.createElement('span');
+            space.className = prefix + '-space';
+            space.textContent = ' ';
+            space.setAttribute('aria-hidden', 'true');
+            node.appendChild(space);
+        }
+    });
+
+    if(data['trigger'] === 'scroll')
+    {
+        this.observer = new IntersectionObserver((entries) =>
+        {
+            if(entries[0].isIntersecting)
+            {
+                this.observer.disconnect();
+                this.animate();
+            }
+        }, { threshold: 0.1 });
+        this.observer.observe(node);
+    }
+    else
+    {
+        this.animate();
+    }
+};
+
+this.build();$$,
+    $$.ot-split {
+    display: inline;
+}
+
+.ot-split-item {
+    display: inline-block;
+    animation-fill-mode: forwards;
+}
+
+.ot-split-space {
+    display: inline-block;
+    width: 0.3em;
+}
+
+/* fade-up */
+.ot-split-fade-up .ot-split-item {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.ot-split-fade-up.ot-split-active .ot-split-item {
+    animation-name: ot-split-fade-up;
+}
+
+@keyframes ot-split-fade-up {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* fade-down */
+.ot-split-fade-down .ot-split-item {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.ot-split-fade-down.ot-split-active .ot-split-item {
+    animation-name: ot-split-fade-down;
+}
+
+@keyframes ot-split-fade-down {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* fade */
+.ot-split-fade .ot-split-item {
+    opacity: 0;
+}
+
+.ot-split-fade.ot-split-active .ot-split-item {
+    animation-name: ot-split-fade;
+}
+
+@keyframes ot-split-fade {
+    to {
+        opacity: 1;
+    }
+}
+
+/* scale */
+.ot-split-scale .ot-split-item {
+    opacity: 0;
+    transform: scale(0);
+}
+
+.ot-split-scale.ot-split-active .ot-split-item {
+    animation-name: ot-split-scale;
+}
+
+@keyframes ot-split-scale {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}$$,
+    NULL,
+    NULL,
+    '{"mode": {"type": "string", "value": "letters", "description": "Split mode - letters or words"}, "animation": {"type": "string", "value": "fade-up", "description": "Animation style - fade-up, fade-down, fade, or scale"}, "delay": {"type": "number", "value": 50, "description": "Delay between each piece in milliseconds"}, "duration": {"type": "number", "value": 400, "description": "Animation duration per piece in milliseconds"}, "easing": {"type": "string", "value": "ease", "description": "CSS easing function"}, "trigger": {"type": "string", "value": "scroll", "description": "Trigger mode - scroll or load"}}'::jsonb,
+    $$<h2 ot="split">Hello World</h2>$$,
+    ARRAY[
+        $$// Letters
+<style>
+    .letters { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .letters .heading { font-size: 48px; font-weight: 800; color: var(--ot-text-1); letter-spacing: -2px; line-height: 1; }
+</style>
+
+<div class="letters">
+    <div ot="split" class="heading">Hello World</div>
+</div>$$,
+        $$// Scale
+<style>
+    .scale { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .scale .heading { font-size: 48px; font-weight: 800; color: var(--ot-brand); letter-spacing: -2px; line-height: 1; }
+</style>
+
+<div class="scale">
+    <div ot="split" ot-animation="scale" ot-delay="40" class="heading">Pop Pop Pop</div>
+</div>$$,
+        $$// Words
+<style>
+    .words { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .words .heading { font-size: 28px; font-weight: 600; color: var(--ot-text-1); line-height: 1.3; }
+</style>
+
+<div class="words">
+    <div ot="split" ot-mode="words" ot-delay="120" ot-duration="600" class="heading">Build something beautiful today</div>
+</div>$$
+    ]
+);

@@ -1,0 +1,309 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    1,
+    'anime',
+    'Anime',
+    'Scroll-triggered animations powered by Anime.js.',
+    'animation',
+    'pro',
+    $$Scroll-triggered animations powered by Anime.js. Add it to any element and it animates into view as the user scrolls down the page.
+
+### Built-in effects
+
+Comes with 15 animation presets out of the box:
+
+- **Fade** - fade-up, fade-down, fade-left, fade-right
+- **Zoom** - zoom-in, zoom-out
+- **Flip** - flip-up, flip-left (3D perspective)
+- **Slide** - slide-up, slide-down, slide-left, slide-right
+- **Special** - bounce, rotate-in, blur-in
+
+The default effect is fade-up, which works well for most content. Just switch the preset name to try a different animation style.
+
+### Stagger
+
+Instead of animating a whole container at once, stagger mode animates each child element one by one with a cascading delay. Great for card grids, stat rows, image galleries, navigation items - anything where you want that sequential reveal effect.
+
+### Custom animations
+
+Don't want to use a preset? Set your own translate, rotate, and scale values to build a completely custom entrance animation. Combine horizontal movement with rotation, scale something in while sliding it sideways - whatever fits the design.
+
+### How it works
+
+Uses IntersectionObserver to detect when elements enter the viewport, so animations only fire when they're actually visible. Runs at 60fps through Anime.js. Can be set to animate once or replay every time the element scrolls back into view.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-anime';
+const { animate, stagger } = anime;
+
+this.presets = {
+    'fade-up': { opacity: { from: 0, to: 1 }, y: { from: 60, to: 0 } },
+    'fade-down': { opacity: { from: 0, to: 1 }, y: { from: -60, to: 0 } },
+    'fade-left': { opacity: { from: 0, to: 1 }, x: { from: 60, to: 0 } },
+    'fade-right': { opacity: { from: 0, to: 1 }, x: { from: -60, to: 0 } },
+    'zoom-in': { opacity: { from: 0, to: 1 }, scale: { from: 0.5, to: 1 } },
+    'zoom-out': { opacity: { from: 0, to: 1 }, scale: { from: 1.5, to: 1 } },
+    'flip-up': { opacity: { from: 0, to: 1 }, rotateX: { from: 90, to: 0 } },
+    'flip-left': { opacity: { from: 0, to: 1 }, rotateY: { from: 90, to: 0 } },
+    'slide-up': { opacity: { from: 0, to: 1 }, y: { from: '100%', to: '0%' } },
+    'slide-down': { opacity: { from: 0, to: 1 }, y: { from: '-100%', to: '0%' } },
+    'slide-left': { opacity: { from: 0, to: 1 }, x: { from: '100%', to: '0%' } },
+    'slide-right': { opacity: { from: 0, to: 1 }, x: { from: '-100%', to: '0%' } },
+    'bounce': { opacity: { from: 0, to: 1 }, scale: [{ from: 0, to: 1.15, duration: 400 }, { to: 1, ease: 'outBounce', duration: 600 }] },
+    'rotate-in': { opacity: { from: 0, to: 1 }, rotate: { from: '1turn', to: 0 }, scale: { from: 0.3, to: 1 } },
+    'blur-in': { opacity: { from: 0, to: 1 }, filter: { from: 'blur(20px)', to: 'blur(0px)' } }
+};
+
+this.custom = () =>
+{
+    const properties = {};
+    let has = false;
+
+    if(data['translate-x'] !== 0)
+    {
+        properties.x = { from: data['translate-x'], to: 0 };
+        has = true;
+    }
+
+    if(data['translate-y'] !== 0)
+    {
+        properties.y = { from: data['translate-y'], to: 0 };
+        has = true;
+    }
+
+    if(data['rotate'] !== 0)
+    {
+        properties.rotate = { from: data['rotate'], to: 0 };
+        has = true;
+    }
+
+    if(data['scale'] !== 0)
+    {
+        properties.scale = { from: data['scale'], to: 1 };
+        has = true;
+    }
+
+    if(has)
+    {
+        properties.opacity = { from: 0, to: 1 };
+    }
+
+    return has ? properties : null;
+};
+
+this.properties = () =>
+{
+    const custom = this.custom();
+
+    if(custom)
+    {
+        return custom;
+    }
+
+    return this.presets[data['effect']] || this.presets['fade-up'];
+};
+
+this.targets = () =>
+{
+    if(data['stagger'] > 0 && node.children.length > 1)
+    {
+        return [...node.children];
+    }
+
+    return node;
+};
+
+this.create = () =>
+{
+    const targets = this.targets();
+    const properties = this.properties();
+    const params = Object.assign({}, properties);
+
+    params.duration = data['duration'];
+    params.ease = data['ease'];
+    params.autoplay = false;
+
+    if(data['delay'] > 0)
+    {
+        params.delay = data['delay'];
+    }
+
+    if(data['stagger'] > 0 && Array.isArray(targets))
+    {
+        params.delay = stagger(data['stagger']);
+    }
+
+    this.animation = animate(targets, params);
+};
+
+this.observe = () =>
+{
+    this.observer = new IntersectionObserver((entries) =>
+    {
+        if(entries[0].isIntersecting)
+        {
+            if(data['once'])
+            {
+                this.observer.disconnect();
+            }
+
+            this.animation.play();
+        }
+    }, { threshold: 0.1 });
+
+    this.observer.observe(node);
+};
+
+this.build = () =>
+{
+    node.classList.add(prefix);
+
+    if(data['stagger'] > 0 && node.children.length > 1)
+    {
+        node.style.overflow = 'hidden';
+    }
+
+    this.create();
+    this.observe();
+};
+
+this.build();$$,
+    $$[ot="anime"] {
+    opacity: 0;
+}
+
+.ot-anime {
+    will-change: transform, opacity;
+}$$,
+    ARRAY['https://cdn.jsdelivr.net/npm/animejs@4.3.6/dist/bundles/anime.umd.min.js'],
+    NULL,
+    '{"effect": {"type": "string", "value": "fade-up", "description": "Animation preset name"}, "duration": {"type": "number", "value": 800, "description": "Animation duration in milliseconds"}, "delay": {"type": "number", "value": 0, "description": "Delay before animation starts in milliseconds"}, "ease": {"type": "string", "value": "outExpo", "description": "Easing function name"}, "stagger": {"type": "number", "value": 0, "description": "Delay between each child animation in milliseconds"}, "translate-x": {"type": "number", "value": 0, "description": "Custom horizontal translation in pixels"}, "translate-y": {"type": "number", "value": 0, "description": "Custom vertical translation in pixels"}, "rotate": {"type": "number", "value": 0, "description": "Custom rotation in degrees"}, "scale": {"type": "number", "value": 0, "description": "Custom starting scale value"}, "once": {"type": "boolean", "value": true, "description": "Whether to animate only once or on every scroll"}}'::jsonb,
+    $$<div ot="anime">
+    <h2>Animate anything on scroll</h2>
+    <p>This content fades up when scrolled into view.</p>
+</div>$$,
+    ARRAY[
+        $$// Blur In
+<style>
+    .blur-in .quote { max-width: 640px; margin: 0 auto; text-align: center; padding: var(--ot-spacing-l) 0; }
+    .blur-in .quote blockquote { font-size: 28px; font-weight: 600; color: var(--ot-text-1); letter-spacing: -1px; line-height: 1.4; margin: 0 0 var(--ot-spacing-m); border: none; padding: 0; }
+    .blur-in .quote cite { font-size: 14px; color: var(--ot-text-2); font-style: normal; }
+</style>
+
+<div ot="anime" ot-effect="blur-in" ot-duration="1200" class="blur-in">
+    <div class="quote">
+        <blockquote>&#8220;The best animations are the ones you barely notice.&#8221;</blockquote>
+        <cite>Every designer, ever</cite>
+    </div>
+</div>$$,
+        $$// Custom
+<style>
+    .custom .panels { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ot-spacing-m); }
+    .custom .panel { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .custom .panel strong { display: block; font-size: var(--ot-size-l); color: var(--ot-text-1); margin-bottom: var(--ot-spacing-s); letter-spacing: -0.5px; }
+    .custom .panel p { font-size: 14px; color: var(--ot-text-2); line-height: 1.7; margin: 0; }
+</style>
+
+<div class="custom">
+    <div class="panels">
+        <div ot="anime" ot-translate-x="-120" ot-rotate="-10" ot-duration="1000" class="panel">
+            <strong>From the left</strong>
+            <p>Custom translate and rotation combined for a dynamic entrance.</p>
+        </div>
+        <div ot="anime" ot-translate-x="120" ot-rotate="10" ot-duration="1000" class="panel">
+            <strong>From the right</strong>
+            <p>Mirror the effect for balanced layouts and visual rhythm.</p>
+        </div>
+    </div>
+</div>$$,
+        $$// Fade Up
+<style>
+    .fade-up .hero { text-align: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .fade-up .hero h1 { font-size: 64px; font-weight: 900; color: var(--ot-text-1); letter-spacing: -3px; line-height: 1; margin: 0 0 var(--ot-spacing-m); }
+    .fade-up .hero p { font-size: 17px; color: var(--ot-text-2); max-width: 400px; margin: 0 auto; line-height: 1.6; }
+</style>
+
+<div ot="anime" class="fade-up">
+    <div class="hero">
+        <h1>Animate<br>anything</h1>
+        <p>Scroll-triggered animations with zero configuration. Just add one attribute.</p>
+    </div>
+</div>$$,
+        $$// Stagger
+<style>
+    .stagger .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-m); }
+    .stagger .card { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); text-align: center; }
+    .stagger .card i { font-size: 36px; margin-bottom: var(--ot-spacing-m); }
+    .stagger .card strong { display: block; font-size: 16px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .stagger .card span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div ot="anime" ot-stagger="100" class="stagger">
+    <div class="cards">
+        <div class="card">
+            <i>bolt</i>
+            <strong>Fast</strong>
+            <span>Lightweight engine</span>
+        </div>
+        <div class="card">
+            <i>target</i>
+            <strong>Precise</strong>
+            <span>Pixel-perfect</span>
+        </div>
+        <div class="card">
+            <i>auto_awesome</i>
+            <strong>Smooth</strong>
+            <span>60fps always</span>
+        </div>
+    </div>
+</div>$$,
+        $$// Zoom In
+<style>
+    .zoom-in .showcase { display: flex; flex-direction: column; align-items: center; gap: var(--ot-spacing-m); }
+    .zoom-in .main { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l); text-align: center; width: 100%; }
+    .zoom-in .main i { font-size: 48px; margin-bottom: var(--ot-spacing-m); }
+    .zoom-in .main h3 { font-size: 28px; font-weight: 800; color: var(--ot-text-1); letter-spacing: -1px; margin: 0 0 var(--ot-spacing-s); }
+    .zoom-in .main p { font-size: 14px; color: var(--ot-text-2); line-height: 1.6; margin: 0; max-width: 320px; margin: 0 auto; }
+    .zoom-in .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-m); width: 100%; }
+    .zoom-in .item { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-m); text-align: center; }
+    .zoom-in .item i { font-size: 24px; margin-bottom: var(--ot-spacing-s); }
+    .zoom-in .item strong { display: block; font-size: 14px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .zoom-in .item span { font-size: var(--ot-size-s); color: var(--ot-text-2); }
+</style>
+
+<div ot="anime" ot-effect="zoom-in" ot-stagger="100" ot-duration="600" class="zoom-in">
+    <div class="showcase">
+        <div class="main">
+            <i>star</i>
+            <h3>Built for scale</h3>
+            <p>Infrastructure that grows with your team, from prototype to production.</p>
+        </div>
+        <div class="row">
+            <div class="item">
+                <i>bolt</i>
+                <strong>Fast deploys</strong>
+                <span>Under 30 seconds</span>
+            </div>
+            <div class="item">
+                <i>lock</i>
+                <strong>Secure</strong>
+                <span>SOC 2 compliant</span>
+            </div>
+            <div class="item">
+                <i>public</i>
+                <strong>Global CDN</strong>
+                <span>34 edge regions</span>
+            </div>
+        </div>
+    </div>
+</div>$$
+    ]
+);

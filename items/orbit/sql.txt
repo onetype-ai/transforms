@@ -1,0 +1,199 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    1,
+    'orbit',
+    'Orbit',
+    'Child elements arranged in orbit with gentle floating motion.',
+    'motion_photos_on',
+    'free',
+    $$Arrange elements in a circular orbit with gentle floating motion. Each item drifts independently with random direction and timing, creating an organic, living layout that feels like things are gently hovering in space.
+
+### How it works
+
+Drop any child elements inside the container and they get positioned in a circle automatically. The spacing is evenly distributed with slight randomness, so it feels natural rather than rigid. Each element gets its own drift animation with random speed and direction - no two items float the same way.
+
+The container sizes itself based on the largest orbit radius, so you don't need to set dimensions manually.
+
+### Multi-ring layouts
+
+Each child element can have its own radius, which makes it possible to create multiple concentric rings. Put some items on an inner ring with a small radius and others on an outer ring with a larger one. Combined with a center label or icon, this creates a solar system-like layout that works great for tech stacks, feature overviews, or ecosystem diagrams.
+
+### Angles
+
+By default, items spread evenly around the circle with a bit of randomness. If you need precise placement, set a fixed angle on individual elements. Angles are in degrees - 0 is right, 90 is bottom, 180 is left, 270 is top.
+
+### Motion
+
+The floating drift gives each element a gentle back-and-forth movement. Increase the drift distance for a more dramatic effect, or reduce it for something barely noticeable. The speed controls how fast each drift cycle completes - slower feels calmer, faster feels more energetic.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-orbit';
+
+this.random = (min, max) =>
+{
+    return min + Math.random() * (max - min);
+};
+
+this.place = (child, angle, radius) =>
+{
+    const rad = angle * (Math.PI / 180);
+    const x = Math.cos(rad) * radius;
+    const y = Math.sin(rad) * radius;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = prefix + '-item';
+    wrapper.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+    const drift = data['drift'];
+    const dx = this.random(-drift, drift);
+    const dy = this.random(-drift, drift);
+    const duration = this.random(data['speed'] * 0.7, data['speed'] * 1.3);
+    const delay = this.random(0, duration);
+
+    wrapper.style.setProperty('--dx', dx + 'px');
+    wrapper.style.setProperty('--dy', dy + 'px');
+    wrapper.style.animationDuration = duration + 's';
+    wrapper.style.animationDelay = '-' + delay + 's';
+
+    wrapper.appendChild(child);
+    return wrapper;
+};
+
+this.build = () =>
+{
+    const children = [...node.children];
+    if(children.length === 0)
+    {
+        return;
+    }
+
+    node.classList.add(prefix);
+
+    const max = this.size(children);
+    node.style.width = (max * 2) + 'px';
+    node.style.height = (max * 2) + 'px';
+
+    const configs = children.map((child, index) =>
+    {
+        const radius = parseInt(child.getAttribute('radius')) || data['radius'];
+        const angle = parseInt(child.getAttribute('angle')) || Math.round((360 / children.length) * index + this.random(-15, 15));
+        child.removeAttribute('radius');
+        child.removeAttribute('angle');
+        return { radius, angle };
+    });
+
+    node.innerHTML = '';
+
+    configs.forEach((config, index) =>
+    {
+        node.appendChild(this.place(children[index], config.angle, config.radius));
+    });
+};
+
+this.size = (children) =>
+{
+    let max = data['radius'];
+
+    children.forEach((child) =>
+    {
+        const radius = parseInt(child.getAttribute('radius')) || data['radius'];
+        if(radius > max)
+        {
+            max = radius;
+        }
+    });
+
+    return max;
+};
+
+this.build();$$,
+    $$.ot-orbit {
+    position: relative;
+}
+
+.ot-orbit-item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    animation: ot-orbit-drift ease-in-out infinite alternate;
+}
+
+@keyframes ot-orbit-drift {
+    from { translate: var(--dx) var(--dy); }
+    to { translate: calc(var(--dx) * -1) calc(var(--dy) * -1); }
+}$$,
+    NULL,
+    NULL,
+    '{"radius": {"type": "number", "value": 150, "description": "Default orbit radius in pixels"}, "drift": {"type": "number", "value": 15, "description": "Floating drift distance in pixels"}, "speed": {"type": "number", "value": 3, "description": "Drift animation duration in seconds"}}'::jsonb,
+    $$<div ot="orbit">
+    <span>&#9889;</span>
+    <span>&#9733;</span>
+    <span>&#10024;</span>
+    <span>&#9829;</span>
+</div>$$,
+    ARRAY[
+        $$// Default
+<style>
+    .default { display: flex; justify-content: center; padding: 60px var(--ot-spacing-m); }
+    .default .orbit { position: relative; }
+    .default .node { width: 48px; height: 48px; border-radius: 50%; background: var(--ot-bg-3); border: 1px solid var(--ot-bg-3-border); display: flex; align-items: center; justify-content: center; margin: -24px 0 0 -24px; color: var(--ot-text-2); }
+    .default .node i { font-size: 22px; }
+    .default .center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; border-radius: 50%; background: var(--ot-brand-opacity); border: 1px solid var(--ot-brand-border); display: flex; align-items: center; justify-content: center; color: var(--ot-brand); }
+    .default .center i { font-size: 24px; }
+    .default .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px solid var(--ot-bg-2-border); pointer-events: none; width: 300px; height: 300px; }
+</style>
+
+<div class="default">
+    <div ot="orbit" class="orbit">
+        <span class="node"><i>bolt</i></span>
+        <span class="node"><i>lock</i></span>
+        <span class="node"><i>palette</i></span>
+        <span class="node"><i>star</i></span>
+        <span class="node"><i>auto_awesome</i></span>
+        <div class="ring"></div>
+        <div class="center"><i>rocket_launch</i></div>
+    </div>
+</div>$$,
+        $$// Multi Ring
+<style>
+    .multi-ring { display: flex; justify-content: center; padding: 60px var(--ot-spacing-m); }
+    .multi-ring .orbit { position: relative; }
+    .multi-ring .node { width: 44px; height: 44px; border-radius: 50%; background: var(--ot-bg-3); border: 1px solid var(--ot-bg-3-border); display: flex; align-items: center; justify-content: center; margin: -22px 0 0 -22px; color: var(--ot-text-2); }
+    .multi-ring .node i { font-size: 20px; }
+    .multi-ring .node-inner { background: var(--ot-brand); border-color: var(--ot-brand-border); color: white; }
+    .multi-ring .node-outer { width: 34px; height: 34px; margin: -17px 0 0 -17px; }
+    .multi-ring .node-outer i { font-size: 16px; }
+    .multi-ring .center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--ot-text-1); font-size: 15px; font-weight: 700; letter-spacing: -0.5px; }
+    .multi-ring .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px solid var(--ot-bg-2-border); pointer-events: none; }
+    .multi-ring .ring-1 { width: 160px; height: 160px; }
+    .multi-ring .ring-2 { width: 280px; height: 280px; }
+    .multi-ring .ring-3 { width: 380px; height: 380px; }
+</style>
+
+<div class="multi-ring">
+    <div ot="orbit" ot-radius="190" class="orbit">
+        <span class="node node-inner" radius="80"><i>rocket_launch</i></span>
+        <span class="node node-inner" radius="80"><i>public</i></span>
+        <span class="node" radius="140"><i>settings</i></span>
+        <span class="node" radius="140"><i>diamond</i></span>
+        <span class="node" radius="140"><i>favorite</i></span>
+        <span class="node node-outer" radius="190"><i>star</i></span>
+        <span class="node node-outer" radius="190"><i>light_mode</i></span>
+        <span class="node node-outer" radius="190"><i>auto_awesome</i></span>
+        <span class="node node-outer" radius="190"><i>bolt</i></span>
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="center">Stack</div>
+    </div>
+</div>$$
+    ]
+);

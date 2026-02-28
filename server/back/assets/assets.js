@@ -9,6 +9,7 @@ assets.Fn('import', ['framework', 'styles']);
 assets.Fn('import', ['transforms']);
 
 assets.Item({ type: 'js', order: 10, path: resolve(server, 'front') });
+assets.Item({ type: 'css', order: 10, content: '[ot] { opacity: 0 }'});
 
 if(item)
 {

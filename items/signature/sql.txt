@@ -1,0 +1,305 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    5,
+    'signature',
+    'Signature',
+    'Signature pad for capturing handwritten signatures.',
+    'draw',
+    'pro',
+    $$Signature pad for capturing handwritten signatures on any website. Powered by signature_pad - smooth, pressure-sensitive drawing with variable-width curves that look like real ink.
+
+### How it works
+
+Drop the transform onto any element and it becomes a drawing canvas. Users sign with mouse or touch, and the strokes render as smooth Bezier curves with natural width variation - thinner on fast strokes, thicker on slow ones. The canvas automatically scales for retina displays so signatures look crisp on any screen.
+
+A placeholder text shows when the pad is empty and disappears as soon as drawing starts. The whole surface is clickable with a crosshair cursor, so it's clear where to sign.
+
+### Toolbar
+
+Built-in buttons for Clear, Undo, and Download sit in the bottom-right corner. Clear wipes the whole pad. Undo removes the last stroke, so users can correct mistakes without starting over. Download exports the signature as a transparent PNG file.
+
+Each button can be toggled individually, or the entire toolbar can be hidden for a minimal look. There's also a Save button that appears when a callback function is provided - it sends the signature data URL to your own handler, useful for form submissions or API calls.
+
+### Customization
+
+The pen color and stroke width range are adjustable. A narrow width range gives clean, consistent lines. A wide range creates more expressive, calligraphy-like strokes. The background color defaults to white but can be changed to match any form design.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-signature';
+
+this.element = (tag, className, parent) =>
+{
+    const element = document.createElement(tag);
+    element.className = prefix + '-' + className;
+    parent.appendChild(element);
+    return element;
+};
+
+this.canvas = () =>
+{
+    this.wrapper = this.element('div', 'wrapper', node);
+    this.wrapper.style.height = data['height'] + 'px';
+
+    const canvas = document.createElement('canvas');
+    canvas.className = prefix + '-canvas';
+    this.wrapper.appendChild(canvas);
+
+    this.placeholder = this.element('div', 'placeholder', this.wrapper);
+    this.placeholder.textContent = data['placeholder'];
+
+    this.pad = new SignaturePad(canvas, {
+        penColor: data['color'],
+        minWidth: data['width-min'],
+        maxWidth: data['width-max'],
+        backgroundColor: data['background']
+    });
+
+    return canvas;
+};
+
+this.resize = (canvas) =>
+{
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    const saved = this.pad.toData();
+
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    canvas.getContext('2d').scale(ratio, ratio);
+
+    this.pad.clear();
+    this.pad.backgroundColor = data['background'];
+    this.pad.fromData(saved);
+};
+
+this.toolbar = () =>
+{
+    if(!data['buttons'])
+    {
+        return;
+    }
+
+    const toolbar = this.element('div', 'toolbar', this.wrapper);
+
+    const clear = this.element('button', 'button', toolbar);
+    clear.textContent = 'Clear';
+    clear.addEventListener('click', () =>
+    {
+        this.pad.clear();
+        this.state();
+    });
+
+    if(data['undo'])
+    {
+        const undo = this.element('button', 'button', toolbar);
+        undo.textContent = 'Undo';
+        undo.addEventListener('click', () =>
+        {
+            const strokes = this.pad.toData();
+            if(strokes.length)
+            {
+                strokes.pop();
+                this.pad.fromData(strokes);
+                this.state();
+            }
+        });
+    }
+
+    if(data['download'])
+    {
+        const download = this.element('button', 'button', toolbar);
+        download.textContent = 'Download';
+        download.addEventListener('click', () =>
+        {
+            if(this.pad.isEmpty())
+            {
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = 'signature.png';
+            link.href = this.pad.toDataURL('image/png');
+            link.click();
+        });
+    }
+
+    if(data['on-save'])
+    {
+        const save = this.element('button', 'button ' + prefix + '-save', toolbar);
+        save.textContent = 'Save';
+        save.addEventListener('click', () =>
+        {
+            if(this.pad.isEmpty())
+            {
+                return;
+            }
+
+            data['on-save'](this.pad.toDataURL('image/png'));
+        });
+    }
+};
+
+this.state = () =>
+{
+    if(this.pad.isEmpty())
+    {
+        node.classList.add(prefix + '-empty');
+    }
+    else
+    {
+        node.classList.remove(prefix + '-empty');
+    }
+};
+
+this.events = (canvas) =>
+{
+    this.pad.addEventListener('endStroke', () =>
+    {
+        this.state();
+    });
+
+    let timeout;
+    window.addEventListener('resize', () =>
+    {
+        clearTimeout(timeout);
+        timeout = setTimeout(() =>
+        {
+            this.resize(canvas);
+        }, 100);
+    });
+};
+
+this.build = () =>
+{
+    node.classList.add(prefix);
+    node.classList.add(prefix + '-empty');
+    node.innerHTML = '';
+
+    const canvas = this.canvas();
+    this.toolbar();
+    this.events(canvas);
+    this.resize(canvas);
+};
+
+this.build();$$,
+    $$.ot-signature-wrapper {
+    position: relative;
+    border-radius: var(--ot-radius-m);
+    overflow: hidden;
+    cursor: crosshair;
+}
+
+.ot-signature-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.ot-signature-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--ot-text-2);
+    font-size: var(--ot-size-m);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.ot-signature-empty .ot-signature-placeholder {
+    opacity: 1;
+}
+
+.ot-signature-toolbar {
+    position: absolute;
+    bottom: var(--ot-spacing-s);
+    right: var(--ot-spacing-s);
+    display: flex;
+    gap: var(--ot-spacing-x);
+    z-index: 1;
+}
+
+.ot-signature-button {
+    padding: 0 var(--ot-spacing-s);
+    height: var(--ot-height-s);
+    border: 1px solid var(--ot-bg-3-border);
+    border-radius: var(--ot-radius-s);
+    background: var(--ot-bg-1);
+    color: var(--ot-text-2);
+    font-size: var(--ot-size-s);
+    font-family: var(--ot-font-primary);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.ot-signature-button:hover {
+    background: var(--ot-bg-2);
+    color: var(--ot-text-1);
+}
+
+.ot-signature-save {
+    background: var(--ot-brand);
+    border-color: var(--ot-brand);
+    color: white;
+}
+
+.ot-signature-save:hover {
+    background: var(--ot-brand-hover);
+    color: white;
+}$$,
+    ARRAY['https://cdn.jsdelivr.net/npm/signature_pad@5.1.3/dist/signature_pad.umd.min.js'],
+    NULL,
+    '{"color": {"type": "string", "value": "#000000", "description": "Pen color"}, "width-min": {"type": "number", "value": 0.5, "description": "Minimum stroke width"}, "width-max": {"type": "number", "value": 2.5, "description": "Maximum stroke width"}, "background": {"type": "string", "value": "#ffffff", "description": "Canvas background color"}, "height": {"type": "number", "value": 200, "description": "Canvas height in pixels"}, "placeholder": {"type": "string", "value": "Sign here", "description": "Placeholder text shown when empty"}, "buttons": {"type": "boolean", "value": true, "description": "Show toolbar buttons"}, "undo": {"type": "boolean", "value": true, "description": "Show undo button"}, "download": {"type": "boolean", "value": true, "description": "Show download button"}, "on-save": {"type": "function", "value": null, "description": "Callback function for save button"}}'::jsonb,
+    $$<div ot="signature"></div>$$,
+    ARRAY[
+        $$// Default
+<style>
+    .default { max-width: 500px; margin: 0 auto; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .default .label { color: var(--ot-text-2); font-size: var(--ot-size-m); margin-bottom: var(--ot-spacing-s); display: flex; align-items: center; gap: var(--ot-spacing-x); }
+    .default .label i { font-size: 18px; }
+    .default .ot-signature-wrapper { border: 1px solid var(--ot-bg-3-border); border-radius: var(--ot-radius-l); }
+    .default .ot-signature-button { background: var(--ot-bg-3); border-color: var(--ot-bg-3-border); color: var(--ot-text-2); border-radius: var(--ot-radius-m); padding: 0 12px; height: var(--ot-height-s); font-weight: 500; }
+    .default .ot-signature-button:hover { background: var(--ot-bg-4); color: var(--ot-text-1); }
+</style>
+
+<div class="default">
+    <div class="label"><i>draw</i> Draw your signature</div>
+    <div ot="signature"></div>
+</div>$$,
+        $$// Minimal
+<style>
+    .minimal { max-width: 500px; margin: 0 auto; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .minimal .label { color: var(--ot-text-2); font-size: var(--ot-size-m); margin-bottom: var(--ot-spacing-s); display: flex; align-items: center; gap: var(--ot-spacing-x); }
+    .minimal .label i { font-size: 18px; }
+    .minimal .ot-signature-wrapper { border: 1px dashed var(--ot-bg-3-border); border-radius: var(--ot-radius-l); }
+</style>
+
+<div class="minimal">
+    <div class="label"><i>gesture</i> No toolbar</div>
+    <div ot="signature" ot-buttons="false" ot-placeholder="" ot-height="150"></div>
+</div>$$,
+        $$// Styled
+<style>
+    .styled { max-width: 500px; margin: 0 auto; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .styled .label { color: var(--ot-text-2); font-size: var(--ot-size-m); margin-bottom: var(--ot-spacing-s); display: flex; align-items: center; gap: var(--ot-spacing-x); }
+    .styled .label i { font-size: 18px; color: var(--ot-blue); }
+    .styled .ot-signature-wrapper { border: 2px solid var(--ot-blue-opacity); border-radius: var(--ot-radius-l); box-shadow: 0 0 20px var(--ot-blue-opacity); }
+    .styled .ot-signature-placeholder { color: var(--ot-blue); opacity: 0.4; }
+    .styled .ot-signature-button { background: rgba(56, 189, 248, 0.08); border-color: var(--ot-blue-opacity); color: var(--ot-blue); border-radius: var(--ot-radius-m); padding: 0 14px; height: var(--ot-height-s); font-weight: 500; }
+    .styled .ot-signature-button:hover { background: rgba(56, 189, 248, 0.15); color: var(--ot-blue); }
+</style>
+
+<div class="styled">
+    <div class="label"><i>stylus_note</i> Blue ink with glow</div>
+    <div ot="signature" ot-color="#38bdf8" ot-width-max="4" ot-placeholder="Sign here"></div>
+</div>$$
+    ]
+);

@@ -1,0 +1,759 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    4,
+    'tabs',
+    'Tabs',
+    'Accessible tabbed interface with animated indicator, transitions, and autoplay.',
+    'tab',
+    'free',
+    $$Fully accessible tabbed interface with animated indicator, smooth content transitions, and autoplay. Works in all four positions - top, bottom, left, and right.
+
+### How it works
+
+Alternate between tab labels and tab content as direct children. The first child is the label for the first tab, the second is its content, the third is the label for the second tab, and so on. The transform handles all the ARIA roles, states, and keyboard navigation automatically.
+
+### Indicator
+
+A sliding indicator follows the active tab. Two built-in styles - underline draws a colored line along the active tab edge, background highlights the active tab with a subtle filled shape. Both animate smoothly between tabs. Set to none if you want no indicator at all.
+
+### Transitions
+
+Content switches with either a slide or fade animation. Slide moves panels in the direction of navigation - left to right or up and down depending on tab position. Fade cross-dissolves between panels. Both respect the configured duration.
+
+### Autoplay
+
+Tabs can cycle automatically with a configurable interval. A progress bar shows how long until the next switch. Hovering pauses the timer so users can read without rushing. Good for testimonial carousels, feature showcases, or onboarding flows.
+
+### Unstyled mode
+
+Turn off default styling to build your own tab design from scratch. The transform still handles all the logic - switching, keyboard nav, ARIA, indicator positioning - but applies no visual CSS. Style the trigger and panel classes however you want.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-tabs';
+const position = data['position'];
+const vertical = position === 'left' || position === 'right';
+const uid = Math.random().toString(36).substring(2, 7);
+
+this.current = data['active'];
+this.triggers = [];
+this.panels = [];
+
+this.element = (tag, className, parent) =>
+{
+    const el = document.createElement(tag);
+    el.className = className;
+    parent.appendChild(el);
+    return el;
+};
+
+this.parse = () =>
+{
+    const children = [...node.children];
+    const triggers = [];
+    const panels = [];
+
+    for(let i = 0; i < children.length; i += 2)
+    {
+        triggers.push(children[i]);
+        panels.push(children[i + 1]);
+    }
+
+    return { triggers, panels };
+};
+
+this.trigger = (child, index) =>
+{
+    const button = this.element('button', prefix + '-trigger', this.triggerWrap);
+    const active = index === this.current;
+
+    button.innerHTML = child.innerHTML;
+    button.setAttribute('role', 'tab');
+    button.setAttribute('id', prefix + '-trigger-' + uid + '-' + index);
+    button.setAttribute('aria-controls', prefix + '-panel-' + uid + '-' + index);
+    button.setAttribute('aria-selected', active ? 'true' : 'false');
+    button.setAttribute('tabindex', active ? '0' : '-1');
+
+    if(active)
+    {
+        button.classList.add(prefix + '-active');
+    }
+
+    return button;
+};
+
+this.panel = (child, index) =>
+{
+    const panel = this.element('div', prefix + '-panel', this.panelWrap);
+    const active = index === this.current;
+
+    panel.innerHTML = child.innerHTML;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('id', prefix + '-panel-' + uid + '-' + index);
+    panel.setAttribute('aria-labelledby', prefix + '-trigger-' + uid + '-' + index);
+
+    if(active)
+    {
+        panel.classList.add(prefix + '-active');
+    }
+
+    return panel;
+};
+
+this.structure = () =>
+{
+    const parsed = this.parse();
+
+    node.innerHTML = '';
+    node.classList.add(prefix);
+    node.classList.add(prefix + '-' + position);
+
+    if(data['styled'])
+    {
+        node.classList.add(prefix + '-styled');
+    }
+
+    if(data['indicator'] !== 'none')
+    {
+        node.classList.add(prefix + '-' + data['indicator']);
+    }
+
+    if(data['transition'] === 'fade')
+    {
+        node.classList.add(prefix + '-fade');
+    }
+
+    this.triggerWrap = this.element('div', prefix + '-triggers', node);
+    this.triggerWrap.setAttribute('role', 'tablist');
+
+    parsed.triggers.forEach((child, index) =>
+    {
+        this.triggers.push(this.trigger(child, index));
+    });
+
+    this.indicatorEl = this.element('div', prefix + '-indicator', this.triggerWrap);
+
+    if(data['progress'] && data['autoplay'])
+    {
+        this.progressBar = this.element('div', prefix + '-progress', node);
+        this.progressBar.style.animationDuration = data['autoplay-duration'] + 'ms';
+    }
+
+    this.panelWrap = this.element('div', prefix + '-panels', node);
+    this.panelWrap.style.setProperty('--duration', data['duration'] + 'ms');
+
+    parsed.panels.forEach((child, index) =>
+    {
+        this.panels.push(this.panel(child, index));
+    });
+
+    this.count = this.triggers.length;
+};
+
+this.indicator = () =>
+{
+    const target = this.triggers[this.current];
+
+    if(vertical)
+    {
+        this.triggerWrap.style.setProperty('--indicator-top', target.offsetTop + 'px');
+        this.triggerWrap.style.setProperty('--indicator-height', target.offsetHeight + 'px');
+    }
+    else
+    {
+        this.triggerWrap.style.setProperty('--indicator-left', target.offsetLeft + 'px');
+        this.triggerWrap.style.setProperty('--indicator-width', target.offsetWidth + 'px');
+    }
+};
+
+this.activate = (index) =>
+{
+    if(index === this.current)
+    {
+        return;
+    }
+
+    const direction = index > this.current ? 1 : -1;
+    const axis = vertical ? 'Y' : 'X';
+
+    this.triggers[this.current].classList.remove(prefix + '-active');
+    this.triggers[this.current].setAttribute('aria-selected', 'false');
+    this.triggers[this.current].setAttribute('tabindex', '-1');
+
+    this.triggers[index].classList.add(prefix + '-active');
+    this.triggers[index].setAttribute('aria-selected', 'true');
+    this.triggers[index].setAttribute('tabindex', '0');
+
+    this.panels.forEach((panel) =>
+    {
+        panel.classList.remove(prefix + '-active', prefix + '-leaving');
+    });
+
+    this.panels[this.current].classList.add(prefix + '-leaving');
+    this.panels[this.current].style.setProperty('--slide', 'translate' + axis + '(' + (direction > 0 ? '-100%' : '100%') + ')');
+
+    const target = this.panels[index];
+    target.style.setProperty('--slide', 'translate' + axis + '(' + (direction > 0 ? '100%' : '-100%') + ')');
+    target.style.transition = 'none';
+    void target.offsetHeight;
+    target.style.transition = '';
+    target.classList.add(prefix + '-active');
+
+    this.current = index;
+    this.indicator();
+    this.progress();
+};
+
+this.keyboard = (e) =>
+{
+    const prev = vertical ? 'ArrowUp' : 'ArrowLeft';
+    const next = vertical ? 'ArrowDown' : 'ArrowRight';
+    let target = -1;
+
+    if(e.key === next)
+    {
+        target = (this.current + 1) % this.count;
+    }
+    else if(e.key === prev)
+    {
+        target = (this.current - 1 + this.count) % this.count;
+    }
+    else if(e.key === 'Home')
+    {
+        target = 0;
+    }
+    else if(e.key === 'End')
+    {
+        target = this.count - 1;
+    }
+
+    if(target === -1)
+    {
+        return;
+    }
+
+    e.preventDefault();
+    this.activate(target);
+    this.triggers[target].focus();
+};
+
+this.events = () =>
+{
+    this.triggers.forEach((trigger, index) =>
+    {
+        trigger.addEventListener('click', () => this.activate(index));
+    });
+
+    this.triggerWrap.addEventListener('keydown', (e) => this.keyboard(e));
+};
+
+this.progress = () =>
+{
+    if(this.progressBar)
+    {
+        this.progressBar.style.animation = 'none';
+        void this.progressBar.offsetWidth;
+        this.progressBar.style.animation = '';
+        this.progressBar.style.animationDuration = data['autoplay-duration'] + 'ms';
+    }
+};
+
+this.autoplay = () =>
+{
+    if(!data['autoplay'])
+    {
+        return;
+    }
+
+    this.timer = setInterval(() =>
+    {
+        this.activate((this.current + 1) % this.count);
+    }, data['autoplay-duration']);
+
+    if(data['autoplay-pause'])
+    {
+        node.addEventListener('mouseenter', () => this.pause());
+        node.addEventListener('mouseleave', () => this.resume());
+    }
+
+    this.progress();
+};
+
+this.pause = () =>
+{
+    clearInterval(this.timer);
+
+    if(this.progressBar)
+    {
+        this.progressBar.style.animationPlayState = 'paused';
+    }
+};
+
+this.resume = () =>
+{
+    this.timer = setInterval(() =>
+    {
+        this.activate((this.current + 1) % this.count);
+    }, data['autoplay-duration']);
+
+    if(this.progressBar)
+    {
+        this.progress();
+    }
+};
+
+this.build = () =>
+{
+    this.structure();
+    this.indicator();
+    this.events();
+    this.autoplay();
+};
+
+this.build();$$,
+    $$/* Base */
+.ot-tabs {
+    display: flex;
+    width: 100%;
+}
+
+.ot-tabs-top,
+.ot-tabs-bottom {
+    flex-direction: column;
+}
+
+.ot-tabs-bottom {
+    flex-direction: column-reverse;
+}
+
+.ot-tabs-left {
+    flex-direction: row;
+}
+
+.ot-tabs-right {
+    flex-direction: row-reverse;
+}
+
+/* Triggers */
+.ot-tabs-triggers {
+    display: flex;
+    position: relative;
+}
+
+.ot-tabs-top .ot-tabs-triggers,
+.ot-tabs-bottom .ot-tabs-triggers {
+    flex-direction: row;
+}
+
+.ot-tabs-left .ot-tabs-triggers,
+.ot-tabs-right .ot-tabs-triggers {
+    flex-direction: column;
+}
+
+.ot-tabs-trigger {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    outline: none;
+    z-index: 1;
+}
+
+.ot-tabs-trigger:focus-visible {
+    outline: 2px solid var(--ot-brand);
+    outline-offset: -2px;
+    border-radius: var(--ot-radius-s);
+}
+
+/* Styled triggers */
+.ot-tabs-styled .ot-tabs-trigger {
+    padding: var(--ot-spacing-s) var(--ot-spacing-m);
+    font-family: var(--ot-font-primary), sans-serif;
+    font-size: var(--ot-size-m);
+    color: var(--ot-text-2);
+    transition: color 0.2s ease;
+}
+
+.ot-tabs-styled .ot-tabs-trigger:hover,
+.ot-tabs-styled .ot-tabs-trigger.ot-tabs-active {
+    color: var(--ot-text-1);
+}
+
+/* Indicator */
+.ot-tabs-indicator {
+    position: absolute;
+    transition-property: left, top, width, height;
+    transition-timing-function: ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Underline — horizontal */
+.ot-tabs-underline.ot-tabs-top .ot-tabs-indicator,
+.ot-tabs-underline.ot-tabs-bottom .ot-tabs-indicator {
+    height: 2px;
+    left: var(--indicator-left);
+    width: var(--indicator-width);
+    background: var(--ot-brand);
+    border-radius: 1px;
+}
+
+.ot-tabs-underline.ot-tabs-top .ot-tabs-indicator {
+    bottom: 0;
+}
+
+.ot-tabs-underline.ot-tabs-bottom .ot-tabs-indicator {
+    top: 0;
+}
+
+/* Underline — vertical */
+.ot-tabs-underline.ot-tabs-left .ot-tabs-indicator,
+.ot-tabs-underline.ot-tabs-right .ot-tabs-indicator {
+    width: 2px;
+    top: var(--indicator-top);
+    height: var(--indicator-height);
+    background: var(--ot-brand);
+    border-radius: 1px;
+}
+
+.ot-tabs-underline.ot-tabs-left .ot-tabs-indicator {
+    right: 0;
+}
+
+.ot-tabs-underline.ot-tabs-right .ot-tabs-indicator {
+    left: 0;
+}
+
+/* Background — horizontal */
+.ot-tabs-background.ot-tabs-top .ot-tabs-indicator,
+.ot-tabs-background.ot-tabs-bottom .ot-tabs-indicator {
+    top: 0;
+    bottom: 0;
+    left: var(--indicator-left);
+    width: var(--indicator-width);
+    background: var(--ot-bg-3-opacity);
+    border-radius: var(--ot-radius-m);
+}
+
+/* Background — vertical */
+.ot-tabs-background.ot-tabs-left .ot-tabs-indicator,
+.ot-tabs-background.ot-tabs-right .ot-tabs-indicator {
+    left: 0;
+    right: 0;
+    top: var(--indicator-top);
+    height: var(--indicator-height);
+    background: var(--ot-bg-3-opacity);
+    border-radius: var(--ot-radius-m);
+}
+
+/* Styled triggers border */
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-top .ot-tabs-triggers,
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-bottom .ot-tabs-triggers {
+    border-bottom: 1px solid var(--ot-bg-3-border);
+}
+
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-bottom .ot-tabs-triggers {
+    border-bottom: none;
+    border-top: 1px solid var(--ot-bg-3-border);
+}
+
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-left .ot-tabs-triggers {
+    border-right: 1px solid var(--ot-bg-3-border);
+}
+
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-right .ot-tabs-triggers {
+    border-left: 1px solid var(--ot-bg-3-border);
+}
+
+/* Panels — grid stack: all panels share one cell, container always sized to tallest */
+.ot-tabs-panels {
+    display: grid;
+    overflow: hidden;
+    flex: 1;
+}
+
+.ot-tabs-panel {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: var(--slide, none);
+    transition: opacity var(--duration) ease, visibility var(--duration) ease, transform var(--duration) ease;
+}
+
+.ot-tabs-panel.ot-tabs-active {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+}
+
+.ot-tabs-panel.ot-tabs-leaving {
+    visibility: visible;
+    opacity: 0;
+    transform: var(--slide, none);
+}
+
+/* Fade — no transform */
+.ot-tabs-fade .ot-tabs-panel {
+    transform: none;
+}
+
+.ot-tabs-fade .ot-tabs-panel.ot-tabs-leaving {
+    transform: none;
+}
+
+/* Styled panels */
+.ot-tabs-styled.ot-tabs-top .ot-tabs-panels {
+    padding-top: var(--ot-spacing-m);
+}
+
+.ot-tabs-styled.ot-tabs-bottom .ot-tabs-panels {
+    padding-bottom: var(--ot-spacing-m);
+}
+
+.ot-tabs-styled.ot-tabs-left .ot-tabs-panels {
+    padding-left: var(--ot-spacing-l);
+}
+
+.ot-tabs-styled.ot-tabs-right .ot-tabs-panels {
+    padding-right: var(--ot-spacing-l);
+}
+
+/* Progress bar */
+.ot-tabs-progress {
+    height: 2px;
+    background: var(--ot-bg-3-border);
+    border-radius: 1px;
+    flex-shrink: 0;
+    background-image: linear-gradient(var(--ot-brand-opacity), var(--ot-brand-opacity));
+    background-repeat: no-repeat;
+    background-size: 0% 100%;
+    animation-name: ot-tabs-fill;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    margin-top: -2px;
+}
+
+.ot-tabs-styled.ot-tabs-underline .ot-tabs-triggers:has(~ .ot-tabs-progress) {
+    border: none;
+}
+
+@keyframes ot-tabs-fill {
+    from { background-size: 0% 100%; }
+    to { background-size: 100% 100%; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .ot-tabs-indicator {
+        transition: none;
+    }
+
+    .ot-tabs-panel {
+        transition: none;
+    }
+
+    .ot-tabs-progress {
+        animation: none;
+    }
+}$$,
+    NULL,
+    NULL,
+    '{"position": {"type": "string", "value": "top", "description": "Tab position - top, bottom, left, or right"}, "transition": {"type": "string", "value": "slide", "description": "Content transition - slide or fade"}, "duration": {"type": "number", "value": 300, "description": "Transition duration in milliseconds"}, "autoplay": {"type": "boolean", "value": false, "description": "Auto-cycle through tabs"}, "autoplay-duration": {"type": "number", "value": 5000, "description": "Autoplay interval in milliseconds"}, "autoplay-pause": {"type": "boolean", "value": true, "description": "Pause autoplay on hover"}, "indicator": {"type": "string", "value": "underline", "description": "Indicator style - underline, background, or none"}, "progress": {"type": "boolean", "value": false, "description": "Show progress bar during autoplay"}, "styled": {"type": "boolean", "value": true, "description": "Apply default styling"}, "active": {"type": "number", "value": 0, "description": "Initially active tab index"}}'::jsonb,
+    $$<div ot="tabs">
+    <div>First</div>
+    <div><p>Content for the first tab.</p></div>
+    <div>Second</div>
+    <div><p>Content for the second tab.</p></div>
+    <div>Third</div>
+    <div><p>Content for the third tab.</p></div>
+</div>$$,
+    ARRAY[
+        $$// Autoplay
+<style>
+    .autoplay .quote { padding: 28px; border-radius: var(--ot-radius-l); background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
+    .autoplay .quote-text { color: rgba(255, 255, 255, 0.7); font-size: 15px; line-height: 1.7; font-style: italic; margin: 0 0 20px 0; }
+    .autoplay .quote-footer { display: flex; align-items: center; gap: 12px; }
+    .autoplay .quote-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--ot-size-m); font-weight: 600; flex-shrink: 0; }
+    .autoplay .quote-name { color: var(--ot-text-1); font-size: var(--ot-size-m); font-weight: 500; }
+    .autoplay .quote-role { color: var(--ot-text-2); font-size: var(--ot-size-s); margin-top: 1px; }
+</style>
+
+<div class="autoplay">
+    <div ot="tabs" ot-autoplay="true" ot-autoplay-duration="4000" ot-progress="true">
+        <div>Sarah K.</div>
+        <div>
+            <div class="quote">
+                <p class="quote-text">"OneType Transforms saved me weeks of development time. The scroll animations are butter-smooth and the setup literally took 2 minutes."</p>
+                <div class="quote-footer">
+                    <div class="quote-avatar" style="background: rgba(96, 165, 250, 0.15); color: #60a5fa;">SK</div>
+                    <div><div class="quote-name">Sarah Kim</div><div class="quote-role">Frontend Developer at Linear</div></div>
+                </div>
+            </div>
+        </div>
+        <div>Mike R.</div>
+        <div>
+            <div class="quote">
+                <p class="quote-text">"I've tried every animation library out there. This is the first one where I don't need to write a single line of JavaScript."</p>
+                <div class="quote-footer">
+                    <div class="quote-avatar" style="background: rgba(74, 222, 128, 0.15); color: #4ade80;">MR</div>
+                    <div><div class="quote-name">Mike Rodriguez</div><div class="quote-role">Agency Owner, Studio MR</div></div>
+                </div>
+            </div>
+        </div>
+        <div>Lisa T.</div>
+        <div>
+            <div class="quote">
+                <p class="quote-text">"My clients love the interactive elements. Before-after sliders, magnetic buttons, particle effects - all without touching code."</p>
+                <div class="quote-footer">
+                    <div class="quote-avatar" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24;">LT</div>
+                    <div><div class="quote-name">Lisa Torres</div><div class="quote-role">Web Designer, Freelance</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>$$,
+        $$// Default
+<style>
+    .default .tab-label { display: flex; align-items: center; gap: var(--ot-spacing-s); }
+    .default .tab-label i { font-size: 18px; }
+    .default .card { padding: 28px; border-radius: var(--ot-radius-l); background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
+    .default .card h4 { color: var(--ot-text-1); font-size: 16px; font-weight: 600; margin: 0 0 var(--ot-spacing-s) 0; }
+    .default .card p { color: var(--ot-text-2); font-size: var(--ot-size-m); line-height: 1.6; margin: 0; }
+    .default .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: var(--ot-spacing-m); }
+    .default .card-mini { padding: var(--ot-spacing-m); border-radius: var(--ot-radius-m); background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); }
+    .default .card-mini span { color: var(--ot-text-2); font-size: var(--ot-size-s); text-transform: uppercase; letter-spacing: 1px; }
+    .default .card-mini h5 { color: var(--ot-text-1); font-size: 14px; font-weight: 500; margin: 6px 0 0 0; }
+</style>
+
+<div class="default">
+    <div ot="tabs">
+        <div><span class="tab-label"><i>dashboard</i> Overview</span></div>
+        <div>
+            <div class="card">
+                <h4>Build faster with transforms</h4>
+                <p>Drop-in UI components that work with any website. No frameworks, no build tools.</p>
+                <div class="card-grid">
+                    <div class="card-mini"><span>Components</span><h5>17 Transforms</h5></div>
+                    <div class="card-mini"><span>Setup time</span><h5>Under 2 min</h5></div>
+                    <div class="card-mini"><span>Dependencies</span><h5>Zero</h5></div>
+                    <div class="card-mini"><span>File size</span><h5>12 KB gzip</h5></div>
+                </div>
+            </div>
+        </div>
+        <div><span class="tab-label"><i>auto_awesome</i> Features</span></div>
+        <div>
+            <div class="card">
+                <h4>Everything you need</h4>
+                <p>Animations, interactions, layouts, and text effects. Fully configurable through HTML attributes.</p>
+                <div class="card-grid">
+                    <div class="card-mini"><span>Animations</span><h5>Scroll-triggered</h5></div>
+                    <div class="card-mini"><span>Text</span><h5>Typewriter, Split</h5></div>
+                    <div class="card-mini"><span>Interaction</span><h5>Tilt, Magnetic</h5></div>
+                    <div class="card-mini"><span>Layout</span><h5>Swiper, Tabs</h5></div>
+                </div>
+            </div>
+        </div>
+        <div><span class="tab-label"><i>payments</i> Pricing</span></div>
+        <div>
+            <div class="card">
+                <h4>Simple, lifetime pricing</h4>
+                <p>One-time payment. No subscriptions. All current and future transforms included.</p>
+                <div class="card-grid">
+                    <div class="card-mini"><span>Starter</span><h5>Free</h5></div>
+                    <div class="card-mini"><span>Pro</span><h5>$149</h5></div>
+                    <div class="card-mini"><span>Agency</span><h5>$499</h5></div>
+                    <div class="card-mini"><span>Access</span><h5>Lifetime</h5></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>$$,
+        $$// Unstyled
+<style>
+    .unstyled .ot-tabs-trigger { padding: 10px 20px; color: var(--ot-text-2); font-size: var(--ot-size-m); font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: var(--ot-radius-m); margin-right: 6px; transition: all 0.2s ease; }
+    .unstyled .ot-tabs-trigger:hover { background: rgba(255, 255, 255, 0.03); color: rgba(255, 255, 255, 0.7); }
+    .unstyled .ot-tabs-trigger.ot-tabs-active { background: var(--ot-brand); color: white; border-color: var(--ot-brand); }
+    .unstyled .ot-tabs-panels { padding-top: 20px; }
+    .unstyled .tab-label { display: flex; align-items: center; gap: var(--ot-spacing-s); }
+    .unstyled .tab-label i { font-size: 18px; }
+    .unstyled .card { padding: 28px; border-radius: var(--ot-radius-l); background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
+    .unstyled .card h4 { color: var(--ot-text-1); font-size: 16px; font-weight: 600; margin: 0 0 var(--ot-spacing-s) 0; }
+    .unstyled .card p { color: var(--ot-text-2); font-size: var(--ot-size-m); line-height: 1.6; margin: 0; }
+</style>
+
+<div class="unstyled">
+    <div ot="tabs" ot-styled="false" ot-indicator="none">
+        <div><span class="tab-label"><i>folder</i> Projects</span></div>
+        <div>
+            <div class="card">
+                <h4>12 active projects</h4>
+                <p>Your workspace has 12 projects across 3 teams. Last updated 2 hours ago.</p>
+            </div>
+        </div>
+        <div><span class="tab-label"><i>star</i> Starred</span></div>
+        <div>
+            <div class="card">
+                <h4>4 starred projects</h4>
+                <p>Quick access to your most important work. Pin projects here for easy navigation.</p>
+            </div>
+        </div>
+        <div><span class="tab-label"><i>archive</i> Archived</span></div>
+        <div>
+            <div class="card">
+                <h4>8 archived projects</h4>
+                <p>Completed and inactive projects stored here. Restore any project anytime.</p>
+            </div>
+        </div>
+    </div>
+</div>$$,
+        $$// Vertical
+<style>
+    .vertical .tab-label { display: flex; align-items: center; gap: var(--ot-spacing-s); }
+    .vertical .tab-label i { font-size: 18px; }
+    .vertical .setting { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+    .vertical .setting:last-child { border-bottom: none; }
+    .vertical .setting-label { color: var(--ot-text-1); font-size: var(--ot-size-m); font-weight: 500; }
+    .vertical .setting-desc { color: var(--ot-text-2); font-size: var(--ot-size-s); margin-top: 2px; }
+    .vertical .toggle { width: 36px; height: 20px; border-radius: 10px; background: rgba(255, 255, 255, 0.08); position: relative; flex-shrink: 0; }
+    .vertical .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: rgba(255, 255, 255, 0.4); }
+    .vertical .toggle-on { background: var(--ot-brand); }
+    .vertical .toggle-on::after { left: auto; right: 3px; background: white; }
+</style>
+
+<div class="vertical">
+    <div ot="tabs" ot-position="left">
+        <div><span class="tab-label"><i>tune</i> General</span></div>
+        <div>
+            <div class="setting"><div><div class="setting-label">Dark mode</div><div class="setting-desc">Use dark theme across the interface</div></div><div class="toggle toggle-on"></div></div>
+            <div class="setting"><div><div class="setting-label">Compact view</div><div class="setting-desc">Reduce spacing between elements</div></div><div class="toggle"></div></div>
+            <div class="setting"><div><div class="setting-label">Animations</div><div class="setting-desc">Enable UI transitions and effects</div></div><div class="toggle toggle-on"></div></div>
+        </div>
+        <div><span class="tab-label"><i>shield</i> Security</span></div>
+        <div>
+            <div class="setting"><div><div class="setting-label">Two-factor auth</div><div class="setting-desc">Require verification on every login</div></div><div class="toggle toggle-on"></div></div>
+            <div class="setting"><div><div class="setting-label">Session timeout</div><div class="setting-desc">Auto-logout after inactivity</div></div><div class="toggle"></div></div>
+            <div class="setting"><div><div class="setting-label">Login alerts</div><div class="setting-desc">Get notified on new device logins</div></div><div class="toggle toggle-on"></div></div>
+        </div>
+        <div><span class="tab-label"><i>notifications</i> Alerts</span></div>
+        <div>
+            <div class="setting"><div><div class="setting-label">Email digests</div><div class="setting-desc">Weekly summary of your activity</div></div><div class="toggle toggle-on"></div></div>
+            <div class="setting"><div><div class="setting-label">Push notifications</div><div class="setting-desc">Real-time browser notifications</div></div><div class="toggle"></div></div>
+            <div class="setting"><div><div class="setting-label">Marketing</div><div class="setting-desc">Product updates and announcements</div></div><div class="toggle"></div></div>
+        </div>
+    </div>
+</div>$$
+    ]
+);

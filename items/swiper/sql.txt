@@ -1,0 +1,402 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    4,
+    'swiper',
+    'Swiper',
+    'Touch-enabled slider with navigation, pagination, effects and autoplay.',
+    'swipe',
+    'pro',
+    $$Touch-enabled slider powered by Swiper.js. Put any content inside and each child becomes a slide automatically - no extra markup needed. Supports navigation arrows, pagination, autoplay, and multiple transition effects.
+
+### How it works
+
+Drop child elements inside the container and the transform wraps each one as a swiper slide. Swipe with touch, drag with mouse, or navigate with arrows and keyboard. Works with images, cards, text blocks, or any HTML content.
+
+### Effects
+
+Six transition effects built in. Slide is the standard horizontal movement. Fade cross-dissolves between slides. Coverflow creates a 3D perspective with depth and rotation - looks great for image galleries. Cards stacks slides like a deck of cards that you swipe through. Cube and flip add 3D rotation transitions.
+
+### Navigation and pagination
+
+Navigation arrows give users prev/next buttons. Pagination comes in three styles - bullets (dots), fraction (1/5), and progress bar. A draggable scrollbar is also available. All three can be combined.
+
+### Multiple slides
+
+Show more than one slide at a time by setting slides-per-view. Add spacing between them, center the active one, or enable free-mode scrolling where slides don't snap to position. Slides-per-view also accepts "auto" to size slides based on their content width.
+
+### Autoplay
+
+Slides can advance automatically with a configurable delay. Pause on hover gives users time to interact. Combined with loop mode, it creates an infinite carousel that cycles continuously - good for hero banners, testimonials, and product showcases.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-swiper';
+
+this.structure = () =>
+{
+    const slides = [...node.children];
+    if(slides.length === 0)
+    {
+        return;
+    }
+
+    node.classList.add(prefix);
+    node.classList.add('swiper');
+
+    if(data['styled'])
+    {
+        node.classList.add(prefix + '-styled');
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'swiper-wrapper';
+
+    slides.forEach((child) =>
+    {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        slide.appendChild(child);
+        wrapper.appendChild(slide);
+    });
+
+    node.innerHTML = '';
+    node.appendChild(wrapper);
+
+    if(data['pagination'])
+    {
+        const pagination = document.createElement('div');
+        pagination.className = 'swiper-pagination';
+        node.appendChild(pagination);
+    }
+
+    if(data['navigation'])
+    {
+        const prev = document.createElement('div');
+        prev.className = 'swiper-button-prev';
+        const next = document.createElement('div');
+        next.className = 'swiper-button-next';
+        node.appendChild(prev);
+        node.appendChild(next);
+    }
+
+    if(data['scrollbar'])
+    {
+        const scrollbar = document.createElement('div');
+        scrollbar.className = 'swiper-scrollbar';
+        node.appendChild(scrollbar);
+    }
+};
+
+this.options = () =>
+{
+    const config = {
+        direction: data['direction'],
+        slidesPerView: this.perView(),
+        spaceBetween: data['space-between'],
+        speed: data['speed'],
+        loop: data['loop'],
+        rewind: data['rewind'],
+        grabCursor: data['grab-cursor'],
+        autoHeight: data['autoheight'],
+        slidesPerGroup: data['slides-per-group'],
+        centeredSlides: data['centered'],
+        keyboard: data['keyboard'] ? { enabled: true } : false,
+        mousewheel: data['mousewheel'] ? { enabled: true } : false,
+        parallax: data['parallax'] ? { enabled: true } : false,
+        freeMode: data['free-mode'] ? { enabled: true } : false
+    };
+
+    this.effect(config);
+    this.autoplay(config);
+    this.pagination(config);
+    this.navigation(config);
+    this.scrollbar(config);
+
+    return config;
+};
+
+this.perView = () =>
+{
+    const value = data['slides-per-view'];
+    if(value === 'auto')
+    {
+        return 'auto';
+    }
+    return parseFloat(value) || 1;
+};
+
+this.effect = (config) =>
+{
+    const effect = data['effect'];
+    config.effect = effect;
+
+    if(effect === 'fade')
+    {
+        config.fadeEffect = { crossFade: data['crossfade'] };
+    }
+    else if(effect === 'coverflow')
+    {
+        config.coverflowEffect = {
+            depth: data['coverflow-depth'],
+            rotate: data['coverflow-rotate'],
+            stretch: data['coverflow-stretch'],
+            scale: data['coverflow-scale'],
+            slideShadows: true
+        };
+    }
+    else if(effect === 'cards')
+    {
+        config.cardsEffect = {
+            perSlideOffset: data['cards-offset'],
+            rotate: data['cards-rotate'],
+            slideShadows: true
+        };
+    }
+};
+
+this.autoplay = (config) =>
+{
+    if(!data['autoplay'])
+    {
+        return;
+    }
+    config.autoplay = {
+        delay: data['autoplay-delay'],
+        disableOnInteraction: false,
+        pauseOnMouseEnter: data['autoplay-pause']
+    };
+};
+
+this.pagination = (config) =>
+{
+    if(!data['pagination'])
+    {
+        return;
+    }
+    config.pagination = {
+        el: node.querySelector('.swiper-pagination'),
+        type: data['pagination'],
+        clickable: true
+    };
+};
+
+this.navigation = (config) =>
+{
+    if(!data['navigation'])
+    {
+        return;
+    }
+    config.navigation = {
+        prevEl: node.querySelector('.swiper-button-prev'),
+        nextEl: node.querySelector('.swiper-button-next')
+    };
+};
+
+this.scrollbar = (config) =>
+{
+    if(!data['scrollbar'])
+    {
+        return;
+    }
+    config.scrollbar = {
+        el: node.querySelector('.swiper-scrollbar'),
+        draggable: true
+    };
+};
+
+this.init = () =>
+{
+    this.structure();
+    this.instance = new Swiper(node, this.options());
+};
+
+this.init();$$,
+    $$.ot-swiper {
+    width: 100%;
+}
+
+.ot-swiper .swiper-slide {
+    height: auto;
+}
+
+.ot-swiper .swiper-slide img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Styled — navigation arrows */
+
+.ot-swiper-styled .swiper-button-prev,
+.ot-swiper-styled .swiper-button-next {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: #1a1a1a;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.ot-swiper-styled .swiper-button-prev:hover,
+.ot-swiper-styled .swiper-button-next:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.ot-swiper-styled .swiper-button-prev::after,
+.ot-swiper-styled .swiper-button-next::after {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.ot-swiper-styled .swiper-button-prev.swiper-button-disabled,
+.ot-swiper-styled .swiper-button-next.swiper-button-disabled {
+    opacity: 0.4;
+    transform: none;
+}
+
+/* Styled — bullet pagination */
+
+.ot-swiper-styled .swiper-pagination-bullet {
+    background: var(--ot-text-2);
+    opacity: 0.3;
+    width: 8px;
+    height: 8px;
+    transition: background 0.2s, opacity 0.2s, transform 0.2s;
+}
+
+.ot-swiper-styled .swiper-pagination-bullet-active {
+    background: var(--ot-brand);
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Styled — fraction pagination */
+
+.ot-swiper-styled .swiper-pagination-fraction {
+    color: var(--ot-text-2);
+    font-size: var(--ot-size-m);
+    font-weight: 500;
+}
+
+.ot-swiper-styled .swiper-pagination-current {
+    color: var(--ot-brand);
+    font-weight: 700;
+}
+
+/* Styled — progressbar pagination */
+
+.ot-swiper-styled .swiper-pagination-progressbar {
+    background: var(--ot-bg-3);
+}
+
+.ot-swiper-styled .swiper-pagination-progressbar-fill {
+    background: var(--ot-brand);
+}
+
+/* Styled — scrollbar */
+
+.ot-swiper-styled .swiper-scrollbar {
+    background: var(--ot-bg-3);
+    border-radius: var(--ot-radius-s);
+}
+
+.ot-swiper-styled .swiper-scrollbar-drag {
+    background: var(--ot-brand-opacity);
+    border-radius: var(--ot-radius-s);
+}$$,
+    ARRAY['https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js'],
+    ARRAY['https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css'],
+    '{"direction": {"type": "string", "value": "horizontal", "description": "Slide direction - horizontal or vertical"}, "slides-per-view": {"type": "string", "value": "1", "description": "Number of slides visible at once or auto"}, "space-between": {"type": "number", "value": 0, "description": "Gap between slides in pixels"}, "speed": {"type": "number", "value": 300, "description": "Transition speed in milliseconds"}, "loop": {"type": "boolean", "value": false, "description": "Enable infinite loop"}, "rewind": {"type": "boolean", "value": false, "description": "Rewind to first slide after last"}, "effect": {"type": "string", "value": "slide", "description": "Transition effect - slide, fade, coverflow, cards, cube, or flip"}, "autoplay": {"type": "boolean", "value": false, "description": "Enable autoplay"}, "autoplay-delay": {"type": "number", "value": 3000, "description": "Autoplay delay in milliseconds"}, "autoplay-pause": {"type": "boolean", "value": false, "description": "Pause autoplay on hover"}, "pagination": {"type": "string", "value": "", "description": "Pagination type - bullets, fraction, or progressbar"}, "navigation": {"type": "boolean", "value": false, "description": "Show prev/next arrows"}, "scrollbar": {"type": "boolean", "value": false, "description": "Show draggable scrollbar"}, "centered": {"type": "boolean", "value": false, "description": "Center active slide"}, "free-mode": {"type": "boolean", "value": false, "description": "Free scrolling without snapping"}, "grab-cursor": {"type": "boolean", "value": false, "description": "Show grab cursor on hover"}, "autoheight": {"type": "boolean", "value": false, "description": "Adjust height to active slide"}, "slides-per-group": {"type": "number", "value": 1, "description": "Number of slides to advance per swipe"}, "keyboard": {"type": "boolean", "value": false, "description": "Enable keyboard navigation"}, "mousewheel": {"type": "boolean", "value": false, "description": "Enable mousewheel navigation"}, "parallax": {"type": "boolean", "value": false, "description": "Enable parallax effect"}, "coverflow-depth": {"type": "number", "value": 100, "description": "Coverflow depth offset"}, "coverflow-rotate": {"type": "number", "value": 50, "description": "Coverflow rotation angle"}, "coverflow-stretch": {"type": "number", "value": 0, "description": "Coverflow stretch value"}, "coverflow-scale": {"type": "number", "value": 1, "description": "Coverflow slide scale"}, "crossfade": {"type": "boolean", "value": false, "description": "Cross-fade on fade effect"}, "cards-offset": {"type": "number", "value": 8, "description": "Cards effect offset"}, "cards-rotate": {"type": "boolean", "value": true, "description": "Cards effect rotation"}, "styled": {"type": "boolean", "value": true, "description": "Apply OneType styled controls"}}'::jsonb,
+    $$<div ot="swiper">
+    <div>Slide 1</div>
+    <div>Slide 2</div>
+    <div>Slide 3</div>
+</div>$$,
+    ARRAY[
+        $$// Cards
+<style>
+    .cards { display: flex; justify-content: center; }
+    .cards .slide { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; border-radius: var(--ot-radius-l); font-size: 18px; font-weight: 600; color: white; gap: var(--ot-spacing-s); }
+    .cards .slide i { font-size: 40px; opacity: 0.8; }
+    .cards .s1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .cards .s2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .cards .s3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .cards .s4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+</style>
+
+<div class="cards">
+    <div ot="swiper" ot-effect="cards" ot-grab-cursor="true" style="max-width: 320px;">
+        <div class="slide s1"><i>rocket_launch</i> Launch</div>
+        <div class="slide s2"><i>palette</i> Design</div>
+        <div class="slide s3"><i>code</i> Build</div>
+        <div class="slide s4"><i>deployed_code</i> Ship</div>
+    </div>
+</div>$$,
+        $$// Coverflow
+<style>
+    .coverflow .slide { display: flex; align-items: center; justify-content: center; height: 280px; border-radius: var(--ot-radius-l); font-size: 20px; font-weight: 600; color: white; }
+    .coverflow .s1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .coverflow .s2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .coverflow .s3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .coverflow .s4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .coverflow .s5 { background: linear-gradient(135deg, #fa709a, #fee140); }
+</style>
+
+<div class="coverflow">
+    <div ot="swiper" ot-effect="coverflow" ot-slides-per-view="2" ot-centered="true" ot-loop="true" ot-grab-cursor="true">
+        <div class="slide s1">Slide 1</div>
+        <div class="slide s2">Slide 2</div>
+        <div class="slide s3">Slide 3</div>
+        <div class="slide s4">Slide 4</div>
+        <div class="slide s5">Slide 5</div>
+    </div>
+</div>$$,
+        $$// Default
+<style>
+    .default .slide { display: flex; align-items: center; justify-content: center; height: 300px; border-radius: var(--ot-radius-m); font-size: 24px; font-weight: 600; color: white; }
+    .default .s1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .default .s2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .default .s3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .default .s4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+</style>
+
+<div class="default">
+    <div ot="swiper" ot-navigation="true" ot-pagination="bullets">
+        <div class="slide s1">Slide 1</div>
+        <div class="slide s2">Slide 2</div>
+        <div class="slide s3">Slide 3</div>
+        <div class="slide s4">Slide 4</div>
+    </div>
+</div>$$,
+        $$// Multiple
+<style>
+    .multiple .slide { display: flex; align-items: center; justify-content: center; height: 200px; border-radius: var(--ot-radius-m); font-size: 18px; font-weight: 600; color: white; }
+    .multiple .s1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .multiple .s2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .multiple .s3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .multiple .s4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .multiple .s5 { background: linear-gradient(135deg, #fa709a, #fee140); }
+</style>
+
+<div class="multiple">
+    <div ot="swiper" ot-slides-per-view="3" ot-space-between="20" ot-navigation="true" ot-pagination="fraction" ot-grab-cursor="true">
+        <div class="slide s1">1</div>
+        <div class="slide s2">2</div>
+        <div class="slide s3">3</div>
+        <div class="slide s4">4</div>
+        <div class="slide s5">5</div>
+    </div>
+</div>$$
+    ]
+);

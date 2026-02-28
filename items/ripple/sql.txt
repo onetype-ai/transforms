@@ -1,0 +1,132 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    3,
+    'ripple',
+    'Ripple',
+    'Material Design ripple effect on click.',
+    'water_drop',
+    'free',
+    $$Material Design ripple effect on click. A circle expands outward from where you clicked and fades away, giving instant visual feedback that something was pressed.
+
+### How it works
+
+Click anywhere on the element and a circular wave radiates from that exact point. The ripple scales up to cover the full element, then fades out. The whole animation is smooth and runs on CSS keyframes, so there's no jank even on low-end devices.
+
+The ripple spawns from the actual click position by default, which feels natural because the feedback starts right where your finger or cursor is. There's also a centered mode that always starts from the middle - useful for icon buttons or small elements where position doesn't matter as much.
+
+### Styling
+
+The ripple color defaults to `currentColor`, so it automatically matches the text color of the element. Override it with any color value for custom effects - white ripples on dark buttons, blue ripples on neutral backgrounds, whatever fits the design.
+
+### Use cases
+
+Works on buttons, cards, list items, navigation links, tabs - any element that responds to clicks. It's the same interaction pattern used in Android and Google's Material Design system, so users already understand it intuitively. Adds a polished, tactile feel to any clickable surface.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-ripple';
+
+this.spawn = (e) =>
+{
+    const rect = node.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 2;
+
+    let x, y;
+    if(data['centered'])
+    {
+        x = rect.width / 2;
+        y = rect.height / 2;
+    }
+    else
+    {
+        x = e.clientX - rect.left;
+        y = e.clientY - rect.top;
+    }
+
+    const circle = document.createElement('span');
+    circle.className = prefix + '-circle';
+    circle.style.width = size + 'px';
+    circle.style.height = size + 'px';
+    circle.style.left = (x - size / 2) + 'px';
+    circle.style.top = (y - size / 2) + 'px';
+    circle.style.background = data['color'];
+    circle.style.opacity = data['opacity'];
+    circle.style.animationDuration = data['duration'] + 'ms';
+
+    node.appendChild(circle);
+
+    circle.addEventListener('animationend', () =>
+    {
+        circle.remove();
+    });
+};
+
+this.build = () =>
+{
+    node.classList.add(prefix);
+    node.addEventListener('click', this.spawn);
+};
+
+this.build();$$,
+    $$.ot-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ot-ripple-circle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: scale(0);
+    animation: ot-ripple-spread ease-out forwards;
+}
+
+@keyframes ot-ripple-spread {
+    to {
+        transform: scale(1);
+        opacity: 0;
+    }
+}$$,
+    NULL,
+    NULL,
+    '{"color": {"type": "string", "value": "currentColor", "description": "Ripple color"}, "opacity": {"type": "number", "value": 0.2, "description": "Ripple starting opacity"}, "duration": {"type": "number", "value": 600, "description": "Animation duration in milliseconds"}, "centered": {"type": "boolean", "value": false, "description": "Always start ripple from element center"}}'::jsonb,
+    $$<div ot="ripple">Click me</div>$$,
+    ARRAY[
+        $$// Buttons
+<style>
+    .buttons { display: flex; justify-content: center; gap: var(--ot-spacing-m); padding: var(--ot-spacing-l) var(--ot-spacing-m); flex-wrap: wrap; }
+    .buttons .btn { padding: 14px 32px; border-radius: var(--ot-radius-m); background: var(--ot-bg-3); color: var(--ot-text-1); font-size: 15px; font-weight: 500; cursor: pointer; border: 1px solid var(--ot-bg-3-border); display: inline-flex; align-items: center; gap: var(--ot-spacing-s); }
+    .buttons .btn-brand { background: var(--ot-brand); border-color: var(--ot-brand-border); color: white; }
+    .buttons .btn-red { background: var(--ot-red); border-color: var(--ot-red-border); color: white; }
+    .buttons .btn i { font-size: 18px; }
+</style>
+
+<div class="buttons">
+    <div ot="ripple" class="btn"><i>touch_app</i> Click me</div>
+    <div ot="ripple" class="btn btn-brand"><i>send</i> Submit</div>
+    <div ot="ripple" class="btn btn-red"><i>delete</i> Delete</div>
+</div>$$,
+        $$// Card
+<style>
+    .card { display: flex; justify-content: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .card .item { padding: var(--ot-spacing-l); border-radius: var(--ot-radius-l); background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); cursor: pointer; max-width: 400px; width: 100%; }
+    .card .item strong { color: var(--ot-text-1); font-size: 16px; display: flex; align-items: center; gap: var(--ot-spacing-s); }
+    .card .item strong i { font-size: 20px; color: var(--ot-brand); }
+    .card .item p { color: var(--ot-text-2); font-size: var(--ot-size-m); margin-top: var(--ot-spacing-s); line-height: 1.5; }
+</style>
+
+<div class="card">
+    <div ot="ripple" ot-color="rgba(255, 255, 255, 1)" ot-opacity="0.1" class="item">
+        <strong><i>article</i> Clickable card</strong>
+        <p>Ripple works on any element, not just buttons. Click anywhere on this card to see the effect.</p>
+    </div>
+</div>$$
+    ]
+);

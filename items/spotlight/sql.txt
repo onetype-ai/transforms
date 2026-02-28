@@ -1,0 +1,121 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    3,
+    'spotlight',
+    'Spotlight',
+    'Cursor-following spotlight that reveals content through a dark overlay.',
+    'highlight',
+    'free',
+    $$Cursor-following spotlight that reveals content through a dark overlay. Move the mouse over the element and everything dims except a bright circle that tracks the cursor.
+
+### How it works
+
+When the cursor enters the element, a dark overlay fades in. A radial gradient punches a transparent hole around the cursor position, creating a flashlight effect. As the cursor moves, the spotlight follows in real time using a CSS radial gradient that repositions on every mouse move.
+
+The overlay fades out smoothly when the cursor leaves, restoring the full content. The effect is purely visual - content underneath remains fully clickable and interactive.
+
+### Spotlight shape
+
+The spotlight has two parts - a fully transparent inner circle and a soft gradient border that transitions to the dark overlay. A large inner radius with a wide border creates a soft, ambient glow. A small inner radius with a tight border creates a focused beam that forces exploration.
+
+### Use cases
+
+Works great on cards to create an interactive reveal effect. On images, it turns a photo into something you explore with your cursor - perfect for before/after reveals or hidden details. On text blocks, it creates a reading-light effect. Can also be used for easter eggs or gamified content where users have to search for something hidden under the overlay.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-spotlight';
+const inner = data['size'];
+const outer = inner + data['border'];
+
+this.build = () =>
+{
+    node.classList.add(prefix);
+
+    this.overlay = document.createElement('div');
+    this.overlay.className = prefix + '-overlay';
+    this.overlay.style.background = 'rgba(' + data['color'] + ', ' + data['strength'] + ')';
+    this.overlay.style.opacity = '0';
+    node.appendChild(this.overlay);
+};
+
+this.move = (e) =>
+{
+    const rect = node.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    this.overlay.style.background = 'radial-gradient(circle at ' + x + 'px ' + y + 'px, transparent ' + inner + 'px, rgba(' + data['color'] + ', ' + data['strength'] + ') ' + outer + 'px)';
+};
+
+this.events = () =>
+{
+    node.addEventListener('mouseenter', () =>
+    {
+        this.overlay.style.opacity = '1';
+    });
+
+    node.addEventListener('mousemove', this.move);
+
+    node.addEventListener('mouseleave', () =>
+    {
+        this.overlay.style.opacity = '0';
+    });
+};
+
+this.build();
+this.events();$$,
+    $$.ot-spotlight {
+    position: relative;
+    overflow: hidden;
+}
+
+.ot-spotlight-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}$$,
+    NULL,
+    NULL,
+    '{"size": {"type": "number", "value": 200, "description": "Inner spotlight radius in pixels"}, "border": {"type": "number", "value": 100, "description": "Gradient border width in pixels"}, "strength": {"type": "number", "value": 0.85, "description": "Overlay darkness from 0 to 1"}, "color": {"type": "string", "value": "0, 0, 0", "description": "Overlay color as RGB values"}}'::jsonb,
+    $$<div ot="spotlight">
+    <p>Hover to reveal the spotlight effect.</p>
+</div>$$,
+    ARRAY[
+        $$// Card
+<style>
+    .card { padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .card .item { padding: var(--ot-spacing-l); border-radius: var(--ot-radius-l); background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); }
+    .card .item h4 { color: var(--ot-text-1); font-size: 20px; font-weight: 600; margin: 0 0 var(--ot-spacing-s) 0; display: flex; align-items: center; gap: var(--ot-spacing-s); }
+    .card .item h4 i { font-size: 22px; color: var(--ot-brand); }
+    .card .item p { color: var(--ot-text-2); font-size: 14px; line-height: 1.6; margin: 0; }
+</style>
+
+<div class="card">
+    <div ot="spotlight" class="item">
+        <h4><i>highlight</i> Hover to reveal</h4>
+        <p>Move your cursor over this card to see the spotlight effect. The area around your cursor stays bright while the rest dims.</p>
+    </div>
+</div>$$,
+        $$// Image
+<style>
+    .image { padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .image .frame { border-radius: var(--ot-radius-l); overflow: hidden; }
+    .image .frame img { width: 100%; display: block; }
+</style>
+
+<div class="image">
+    <div ot="spotlight" ot-size="150" ot-border="80" class="frame">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=700&h=467&fit=crop" alt="Landscape">
+    </div>
+</div>$$
+    ]
+);

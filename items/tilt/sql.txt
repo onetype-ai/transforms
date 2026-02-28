@@ -1,0 +1,176 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    3,
+    'tilt',
+    'Tilt',
+    '3D tilt effect that follows the cursor on hover.',
+    'view_in_ar',
+    'free',
+    $$3D tilt effect that follows the cursor on hover. The element rotates toward the mouse position with perspective depth, creating a realistic 3D card effect. Works on any element - cards, images, buttons, entire sections.
+
+### How it works
+
+As the cursor moves over the element, it calculates the position relative to the center and applies a CSS 3D transform. The rotation angle is proportional to how far the cursor is from the center, so the effect feels natural and responsive. On mouse leave, the element smoothly transitions back to its original position.
+
+### Glare
+
+Enable the glare option to add a light reflection overlay that follows the cursor. The glare is a gradient that rotates based on cursor angle, simulating how light would reflect off a tilted surface. Control the intensity with glare opacity - subtle at 0.2, dramatic at 0.5.
+
+### Scale
+
+A slight scale increase on hover adds depth to the interaction. The default 1.05x is barely noticeable but makes the element feel like it lifts off the page. Combine with stronger tilt angles for more dramatic effects.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-tilt';
+
+this.move = (e) =>
+{
+    const rect = node.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = e.clientX - centerX;
+    const deltaY = e.clientY - centerY;
+
+    const rotateX = -(deltaY / (rect.height / 2)) * data['max'];
+    const rotateY = (deltaX / (rect.width / 2)) * data['max'];
+
+    node.style.transform = 'perspective(' + data['perspective'] + 'px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale(' + data['scale'] + ')';
+
+    if(this.glare)
+    {
+        const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 180;
+        this.glare.style.background = 'linear-gradient(' + angle + 'deg, rgba(255,255,255,' + data['glare-opacity'] + ') 0%, transparent 80%)';
+        this.glare.style.opacity = '1';
+    }
+};
+
+this.reset = () =>
+{
+    node.style.transform = 'perspective(' + data['perspective'] + 'px) rotateX(0deg) rotateY(0deg) scale(1)';
+
+    if(this.glare)
+    {
+        this.glare.style.opacity = '0';
+    }
+};
+
+this.build = () =>
+{
+    node.classList.add(prefix);
+    node.style.transition = 'transform ' + data['speed'] + 'ms ease-out';
+
+    if(data['glare'])
+    {
+        this.glare = document.createElement('div');
+        this.glare.className = prefix + '-glare';
+        this.glare.style.transition = 'opacity ' + data['speed'] + 'ms ease-out';
+        node.appendChild(this.glare);
+    }
+};
+
+this.events = () =>
+{
+    node.addEventListener('mousemove', this.move);
+    node.addEventListener('mouseleave', this.reset);
+};
+
+this.build();
+this.events();$$,
+    $$.ot-tilt {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+}
+
+.ot-tilt-glare {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: inherit;
+}$$,
+    NULL,
+    NULL,
+    '{"max": {"type": "number", "value": 15, "description": "Maximum tilt angle in degrees"}, "perspective": {"type": "number", "value": 1000, "description": "CSS perspective distance in pixels"}, "scale": {"type": "number", "value": 1.05, "description": "Scale multiplier on hover"}, "speed": {"type": "number", "value": 300, "description": "Return animation speed in milliseconds"}, "glare": {"type": "boolean", "value": false, "description": "Show light reflection overlay"}, "glare-opacity": {"type": "number", "value": 0.3, "description": "Glare intensity from 0 to 1"}}'::jsonb,
+    $$<div ot="tilt">
+    <p>Hover me</p>
+</div>$$,
+    ARRAY[
+        $$// Cards
+<style>
+    .cards .row { display: flex; gap: var(--ot-spacing-m); justify-content: center; }
+    .cards .card { width: 200px; padding: var(--ot-spacing-l) var(--ot-spacing-m); border-radius: var(--ot-radius-l); background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); text-align: center; cursor: pointer; }
+    .cards .card i { font-size: 32px; color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .cards .card strong { display: block; font-size: 15px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .cards .card span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div class="cards">
+    <div class="row">
+        <div ot="tilt" class="card">
+            <i>bolt</i>
+            <strong>Fast</strong>
+            <span>Lightning quick</span>
+        </div>
+        <div ot="tilt" class="card">
+            <i>lock</i>
+            <strong>Secure</strong>
+            <span>Built-in safety</span>
+        </div>
+        <div ot="tilt" class="card">
+            <i>palette</i>
+            <strong>Creative</strong>
+            <span>No limits</span>
+        </div>
+    </div>
+</div>$$,
+        $$// Extreme
+<style>
+    .extreme { display: flex; justify-content: center; }
+    .extreme .card { width: 240px; padding: var(--ot-spacing-l) var(--ot-spacing-m); border-radius: var(--ot-radius-l); background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); text-align: center; cursor: pointer; }
+    .extreme .card i { font-size: 36px; color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .extreme .card strong { display: block; font-size: 17px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .extreme .card span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div class="extreme">
+    <div ot="tilt" ot-max="25" ot-scale="1.1" ot-glare="true" class="card">
+        <i>cyclone</i>
+        <strong>Extreme tilt</strong>
+        <span>25deg max, 1.1x scale</span>
+    </div>
+</div>$$,
+        $$// Glare
+<style>
+    .glare .row { display: flex; gap: var(--ot-spacing-m); justify-content: center; }
+    .glare .card { width: 200px; padding: var(--ot-spacing-l) var(--ot-spacing-m); border-radius: var(--ot-radius-l); background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); text-align: center; cursor: pointer; }
+    .glare .card i { font-size: 32px; color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .glare .card strong { display: block; font-size: 15px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .glare .card span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div class="glare">
+    <div class="row">
+        <div ot="tilt" ot-glare="true" class="card">
+            <i>auto_awesome</i>
+            <strong>Subtle</strong>
+            <span>Default glare</span>
+        </div>
+        <div ot="tilt" ot-glare="true" ot-glare-opacity="0.5" class="card">
+            <i>diamond</i>
+            <strong>Bright</strong>
+            <span>Strong glare</span>
+        </div>
+    </div>
+</div>$$
+    ]
+);

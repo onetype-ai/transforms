@@ -1,0 +1,324 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    3,
+    'before-after',
+    'Before After',
+    'Image comparison slider to reveal before and after images.',
+    'compare',
+    'free',
+    $$Side-by-side image comparison with a draggable slider. Drop in two images and users can slide between them to see the difference.
+
+### How it works
+
+Put two images inside the element - the first one is "before", the second is "after". A divider line with a handle appears between them. Drag it left and right (or up and down in vertical mode) to reveal more of either image.
+
+The slider uses a native range input under the hood, so it works with keyboard navigation and screen readers out of the box. The handle snaps to where you click or drag, giving a smooth and responsive feel.
+
+### Directions
+
+Works in two directions - horizontal slides left to right, vertical slides top to bottom. Horizontal is the default and works best for most comparisons. Vertical is useful for landscape shots or long images where the change happens top-to-bottom.
+
+### Labels
+
+Optional text labels can be placed on each side of the divider to make it clear which image is which. Labels sit at the bottom corners and stay in place as the slider moves.
+
+### Hover mode
+
+Instead of dragging, hover mode moves the slider to follow the mouse cursor. This creates a more interactive feel - users just move their mouse over the image and the comparison follows naturally. Good for portfolio sites and product pages where you want instant interaction without requiring a click.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const vertical = data['direction'] === 'vertical';
+const prefix = 'ot-before-after';
+const side = vertical ? 'top' : 'left';
+const arrows = vertical ? 'M7 10l5-5 5 5M7 14l5 5 5-5' : 'M10 7l-5 5 5 5M14 7l5 5-5 5';
+const axis = vertical ? 'clientY' : 'clientX';
+const dimension = vertical ? 'height' : 'width';
+const rect = vertical ? 'top' : 'left';
+
+this.element = (tag, className, parent) =>
+{
+    const element = document.createElement(tag);
+    element.className = className;
+    parent.appendChild(element);
+    return element;
+};
+
+this.label = (text, modifier, parent) =>
+{
+    if(!text)
+    {
+        return;
+    }
+    const label = this.element('span', prefix + '-label ' + prefix + '-label-' + modifier, parent);
+    label.textContent = text;
+};
+
+this.clip = (value) =>
+{
+    const invert = (100 - value) + '%';
+    return vertical
+        ? 'inset(0 0 ' + invert + ' 0)'
+        : 'inset(0 ' + invert + ' 0 0)';
+};
+
+this.update = (value) =>
+{
+    this.top.style.clipPath = this.clip(value);
+    this.line.style[side] = value + '%';
+    this.handle.style[side] = value + '%';
+};
+
+this.build = () =>
+{
+    const images = node.querySelectorAll('img');
+    if(images.length < 2)
+    {
+        return;
+    }
+
+    const before = images[0].cloneNode(true);
+    const after = images[1].cloneNode(true);
+
+    node.innerHTML = '';
+    node.classList.add(prefix);
+    if(vertical)
+    {
+        node.classList.add(prefix + '-vertical');
+    }
+
+    const wrapper = this.element('div', prefix + '-wrapper', node);
+
+    this.element('div', prefix + '-bottom', wrapper).appendChild(after);
+    this.top = this.element('div', prefix + '-top', wrapper);
+    this.top.appendChild(before);
+
+    this.line = this.element('div', prefix + '-line', wrapper);
+    this.handle = this.element('div', prefix + '-handle', wrapper);
+    this.handle.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="' + arrows + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    const input = this.element('input', prefix + '-input', wrapper);
+    input.type = 'range';
+    input.min = 0;
+    input.max = 100;
+    input.value = data['position'];
+    input.setAttribute('aria-label', 'Image comparison slider');
+
+    this.label(data['label-before'], 'before', wrapper);
+    this.label(data['label-after'], 'after', wrapper);
+
+    this.update(data['position']);
+    this.events(input);
+};
+
+this.events = (input) =>
+{
+    input.addEventListener('input', (e) => this.update(e.target.value));
+
+    if(!data['hover'])
+    {
+        return;
+    }
+
+    node.addEventListener('mousemove', (e) =>
+    {
+        const bounds = node.getBoundingClientRect();
+        const ratio = (e[axis] - bounds[rect]) / bounds[dimension];
+        const value = Math.max(0, Math.min(100, ratio * 100));
+        input.value = value;
+        this.update(value);
+    });
+};
+
+this.build();$$,
+    $$.ot-before-after {
+    position: relative;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.ot-before-after-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.ot-before-after-bottom,
+.ot-before-after-top {
+    line-height: 0;
+}
+
+.ot-before-after-bottom img,
+.ot-before-after-top img {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+}
+
+.ot-before-after-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.ot-before-after-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #fff;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
+
+.ot-before-after-handle {
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    pointer-events: none;
+    z-index: 3;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+.ot-before-after-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: col-resize;
+    z-index: 4;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.ot-before-after-input:focus-visible ~ .ot-before-after-handle {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.ot-before-after-label {
+    position: absolute;
+    bottom: 12px;
+    padding: 4px 12px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.4;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1;
+    user-select: none;
+}
+
+.ot-before-after-label-before {
+    left: 12px;
+}
+
+.ot-before-after-label-after {
+    right: 12px;
+}
+
+/* Vertical */
+
+.ot-before-after-vertical .ot-before-after-line {
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    transform: translateY(-50%);
+}
+
+.ot-before-after-vertical .ot-before-after-handle {
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ot-before-after-vertical .ot-before-after-input {
+    width: 100%;
+    height: 100%;
+    cursor: row-resize;
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    writing-mode: vertical-lr;
+}
+
+.ot-before-after-vertical .ot-before-after-label {
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.ot-before-after-vertical .ot-before-after-label-before {
+    top: 12px;
+    bottom: auto;
+    left: 50%;
+    right: auto;
+}
+
+.ot-before-after-vertical .ot-before-after-label-after {
+    bottom: 12px;
+    top: auto;
+    left: 50%;
+    right: auto;
+}$$,
+    NULL,
+    NULL,
+    '{"position": {"type": "number", "value": 50, "description": "Initial slider position as percentage"}, "direction": {"type": "string", "value": "horizontal", "description": "Slider direction - horizontal or vertical"}, "label-before": {"type": "string", "value": "", "description": "Label text for the before image"}, "label-after": {"type": "string", "value": "", "description": "Label text for the after image"}, "hover": {"type": "boolean", "value": false, "description": "Move slider on mouse hover instead of drag"}}'::jsonb,
+    $$<div ot="before-after">
+    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=467&fit=crop" alt="Before">
+    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=467&fit=crop&sat=-100" alt="After">
+</div>$$,
+    ARRAY[
+        $$// Default
+<style>
+    .default { max-width: 600px; margin: 0 auto; border-radius: var(--ot-radius-l); overflow: hidden; }
+</style>
+
+<div ot="before-after" class="default">
+    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=467&fit=crop" alt="Before">
+    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=467&fit=crop&sat=-100" alt="After">
+</div>$$,
+        $$// Labels
+<style>
+    .labels { max-width: 600px; margin: 0 auto; border-radius: var(--ot-radius-l); overflow: hidden; }
+</style>
+
+<div ot="before-after" ot-label-before="Original" ot-label-after="Edited" class="labels">
+    <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=700&h=467&fit=crop" alt="Before">
+    <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=700&h=467&fit=crop&sat=-100" alt="After">
+</div>$$,
+        $$// Vertical
+<style>
+    .vertical { max-width: 600px; margin: 0 auto; border-radius: var(--ot-radius-l); overflow: hidden; }
+</style>
+
+<div ot="before-after" ot-direction="vertical" ot-label-before="Before" ot-label-after="After" class="vertical">
+    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=700&h=467&fit=crop" alt="Before">
+    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=700&h=467&fit=crop&sat=-100" alt="After">
+</div>$$
+    ]
+);
