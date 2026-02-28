@@ -4,7 +4,7 @@
 
 Source repository for [OneType Transforms](https://transforms.onetype.ai/) - standalone UI components delivered via CDN script tag. Part of the [OneType](https://onetype.ai) platform.
 
-Pricing: Free $0 / Pro $149 / Agency $499 (lifetime).
+Pricing: Free $0 / Pro $149 (lifetime) / Agency $99/mo.
 
 ---
 
