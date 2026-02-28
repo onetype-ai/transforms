@@ -295,6 +295,8 @@ transforms.ItemAdd({
             this.indicator();
             this.events();
             this.autoplay();
+
+            document.fonts.ready.then(() => this.indicator());
         };
 
         this.build();
