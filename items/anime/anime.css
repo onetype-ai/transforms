@@ -1,0 +1,7 @@
+[ot="anime"] {
+    opacity: 0;
+}
+
+.ot-anime {
+    will-change: transform, opacity;
+}

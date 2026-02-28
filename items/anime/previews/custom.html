@@ -1,0 +1,19 @@
+<style>
+    .custom .panels { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ot-spacing-m); }
+    .custom .panel { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .custom .panel strong { display: block; font-size: var(--ot-size-l); color: var(--ot-text-1); margin-bottom: var(--ot-spacing-s); letter-spacing: -0.5px; }
+    .custom .panel p { font-size: 14px; color: var(--ot-text-2); line-height: 1.7; margin: 0; }
+</style>
+
+<div class="custom">
+    <div class="panels">
+        <div ot="anime" ot-translate-x="-120" ot-rotate="-10" ot-duration="1000" class="panel">
+            <strong>From the left</strong>
+            <p>Custom translate and rotation combined for a dynamic entrance.</p>
+        </div>
+        <div ot="anime" ot-translate-x="120" ot-rotate="10" ot-duration="1000" class="panel">
+            <strong>From the right</strong>
+            <p>Mirror the effect for balanced layouts and visual rhythm.</p>
+        </div>
+    </div>
+</div>

@@ -1,7 +1,7 @@
 transforms.ItemAdd({
-    id: 'map',
+    id: 'leaflet',
     icon: 'map',
-    name: 'Map',
+    name: 'Leaflet',
     description: 'Interactive map with markers, popups and multiple tile styles.',
     js: ['https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'],
     css: ['https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css'],
@@ -19,7 +19,7 @@ transforms.ItemAdd({
     },
     code: function(data, node, transformer)
     {
-        const prefix = 'ot-map';
+        const prefix = 'ot-leaflet';
 
         this.tiles = {
             streets: {

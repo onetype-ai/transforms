@@ -1,46 +1,84 @@
 # CLAUDE.md - OneType Transforms
 
-## What this is
+## Status: LAUNCHED
 
-Source repository for all [OneType Transforms](https://transforms.onetype.ai/) items. Each transform is a standalone UI component that runs on any website via CDN script tag.
+Source repository for [OneType Transforms](https://transforms.onetype.ai/) - standalone UI components delivered via CDN script tag. Part of the [OneType](https://onetype.ai) platform.
 
-Transforms are activated with the `ot` attribute: `<div ot="my-transform">`. The runtime scans the DOM, matches elements, parses config from attributes, and executes the transform code.
+Pricing: Free $0 / Pro $149 / Agency $499 (lifetime).
 
 ---
 
-## Before you start
+## Repository structure
 
-Before building or modifying any transform, research the external library documentation first. If the transform uses a third-party library (Swiper, Typed.js, Chart.js, etc.), read the official docs to understand the full API, available options, and best practices. Suggest this to the user before writing any code. This prevents mistakes, missed features, and incorrect configurations.
+```
+items/              # Transform source code (one folder per transform)
+server/             # Dev server
+publish.md          # Publishing workflow for database inserts
+```
+
+## Published transforms (17)
+
+| Transform | Category | Tier | External deps |
+|-----------|----------|------|---------------|
+| anime | animation | Pro | anime.js |
+| before-after | interaction | Free | - |
+| count-up | animation | Pro | countup.js |
+| lottie | media | Pro | lottie-web |
+| magnetic | interaction | Free | - |
+| leaflet | data | Pro | leaflet |
+| marquee | animation | Free | - |
+| orbit | animation | Free | - |
+| particles | animation | Pro | particles.js |
+| ripple | interaction | Free | - |
+| scramble | text | Free | - |
+| signature | media | Pro | signature_pad |
+| split | text | Free | - |
+| spotlight | interaction | Free | - |
+| swiper | layout | Pro | swiper |
+| tilt | interaction | Free | - |
+| typewriter | text | Free | - |
+
+## Transform file structure
+
+```
+items/{name}/
+  {name}.js        # Transform definition (required)
+  {name}.css       # Styles (optional)
+  usage.html       # Clean copy-paste example (required)
+  overview.md      # Marketplace description (required)
+  previews/        # Visual examples (required, 1-5 files)
+    effect-a.html
+    effect-b.html
+```
+
+## Dev server
+
+```bash
+npm install
+node server {name}
+# Opens http://localhost:3000
+```
+
+Reads `usage.html` and all files from `previews/`, renders them as labeled sections with Copy buttons. File name becomes the label (e.g. `fade-up.html` -> "Fade Up").
 
 ---
 
 ## Rules
 
-- Never modify anything in `server/`
 - One transform per folder in `items/`
-- Every transform must have `demo.html` and `overview.md`
-- Keep code clean, focused, minimal comments
-- No unused variables, no dead code
-- Use `this.methodName = () => {}` to organize logic inside `code`
-- Prefer short, descriptive names
-- CSS is optional but encouraged for visual transforms
-- External libraries via CDN URLs in `js` and `css` arrays
-- Always test with `node server {name}` before committing
+- Every transform needs `usage.html`, `overview.md`, and at least one preview in `previews/`
+- Test with `node server {name}` before committing
+- When using external libraries, do a full research of the library docs first - read the API, understand the options, check examples. Don't guess, don't assume. You must fully understand the library before writing any code.
+- Always use CSS variables (`var(--ot-*)`) - never hardcode colors, spacing, sizes, etc.
+- Never overcomplicate - keep transforms simple and focused. Use the minimum code needed to get the job done.
+- Use `-` in text, never the em dash
 
 ---
 
-## File structure
+## Tier
 
-```
-items/
-  my-transform/
-    my-transform.js   # Transform definition (required)
-    my-transform.css   # Styles (optional)
-    demo.html          # Demo markup (required)
-    overview.md        # Description for marketplace (required)
-```
-
-File names for `.js` and `.css` don't matter - all files in the folder are auto-loaded. `demo.html` and `overview.md` must be named exactly.
+- **Free** - simple transforms, no external libraries (tilt, ripple, magnetic, scramble, etc.)
+- **Pro** - advanced transforms, external libraries, complex functionality (anime, swiper, leaflet, lottie, etc.)
 
 ---
 
@@ -51,7 +89,7 @@ transforms.ItemAdd({
     id: 'my-transform',
     icon: 'star',
     name: 'My Transform',
-    description: 'Short description of what it does.',
+    description: 'Short description.',
     js: [],
     css: [],
     config: {},
@@ -63,16 +101,16 @@ transforms.ItemAdd({
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| id | string | yes | Unique identifier, matches `ot="id"` |
-| icon | string | no | Material Design icon name (default: 'sync_alt') |
+| id | string | yes | Matches `ot="id"` in HTML |
+| icon | string | no | Material Design icon (default: 'sync_alt') |
 | name | string | yes | Display name |
 | description | string | yes | One-line description |
-| js | array | no | External JS CDN URLs to load before code runs |
-| css | array | no | External CSS CDN URLs to load before code runs |
-| config | object | no | Configuration schema (see below) |
-| code | function | yes | Main function: `function(data, node, transformer)` |
+| js | array | no | External JS CDN URLs |
+| css | array | no | External CSS CDN URLs |
+| config | object | no | Configuration schema |
+| code | function | yes | `function(data, node, transformer)` |
 | destroy | function | no | Cleanup function |
-| structure | function | no | Structure definition function |
+| structure | function | no | Structure definition |
 
 ### Code function
 
@@ -85,224 +123,188 @@ code: function(data, node, transformer)
 }
 ```
 
-Organize with `this`:
-
-```js
-code: function(data, node, transformer)
-{
-    this.setup = () =>
-    {
-        node.classList.add('my-transform');
-    };
-
-    this.render = () =>
-    {
-        const el = document.createElement('div');
-        el.textContent = data['label'];
-        node.appendChild(el);
-    };
-
-    this.events = () =>
-    {
-        node.addEventListener('click', () =>
-        {
-            node.classList.toggle('active');
-        });
-    };
-
-    this.setup();
-    this.render();
-    this.events();
-}
-```
-
 ---
 
 ## Config
 
-Config defines what attributes the user can set on the HTML element. Values are automatically parsed from DOM attributes and validated.
-
-### Array format (short)
+### Array format
 
 ```js
 config: {
     'color': ['string', 'red'],
     'size': ['number', 16],
-    'loop': ['boolean', false],
-    'items': ['array', []],
-    'options': ['object', {}]
+    'loop': ['boolean', false]
 }
 ```
 
-Format: `[type, default]`
-
-### Object format (detailed)
+### Object format
 
 ```js
 config: {
-    'variant': {
-        type: 'string',
-        value: 'default',
-        options: ['default', 'outline', 'ghost']
-    },
-    'count': {
-        type: 'number',
-        value: 3
-    }
+    'variant': { type: 'string', value: 'default', options: ['default', 'outline'] },
+    'count': { type: 'number', value: 3 }
 }
 ```
 
-Format: `{ type, value, options }`
+### Types
 
-### Supported types
+| Type | Example | Parsed |
+|------|---------|--------|
+| string | `ot-color="red"` | `'red'` |
+| number | `ot-size="16"` | `16` |
+| boolean | `ot-loop="true"` | `true` |
+| array | `ot-items="[1,2,3]"` | `[1,2,3]` |
+| object | `ot-config="{ key: 'val' }"` | `{ key: 'val' }` |
 
-| Type | Attribute example | Parsed value |
-|------|-------------------|--------------|
-| string | `color="red"` | `'red'` |
-| number | `size="16"` | `16` |
-| boolean | `loop="true"` | `true` |
-| array | `items="[1, 2, 3]"` | `[1, 2, 3]` |
-| object | `config="{ key: 'val' }"` | `{ key: 'val' }` |
-
-### How parsing works
-
-1. Raw string is read from HTML attribute
-2. `onetype.Function()` evaluates it as a safe JS expression
-3. `DataDefineOne()` validates against config type
-4. If type matches, value is used
-5. If type doesn't match, default value is used
-6. Attribute is removed from the DOM node
-
-Examples:
-- `"42"` with config `['number', 0]` -> `42`
-- `"true"` with config `['boolean', false]` -> `true`
-- `"[1,2,3]"` with config `['array', []]` -> `[1, 2, 3]`
-- `"hello"` with config `['number', 10]` -> `10` (fallback to default)
-
-### Config naming
-
-- Use lowercase kebab-case: `'slide-speed'`, `'auto-play'`, `'show-dots'`
-- Match the HTML attribute exactly: `<div ot="x" slide-speed="500">`
-- Keep names short and descriptive
-
----
-
-## External dependencies
-
-Load third-party libraries via CDN:
-
-```js
-transforms.ItemAdd({
-    id: 'swiper',
-    js: ['https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js'],
-    css: ['https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'],
-    code: function(data, node, transformer)
-    {
-        // Swiper is now available globally
-        new Swiper(node, { ... });
-    }
-});
-```
-
-Dependencies are loaded once and cached. Multiple transforms sharing the same URL won't load it twice.
+Use lowercase kebab-case for config names: `'slide-speed'`, `'auto-play'`.
 
 ---
 
 ## CSS
 
-Write styles in a separate `.css` file. Prefix all classes with `ot-{id}-` to avoid conflicts:
+Prefix classes with `ot-{id}-` to avoid conflicts. Always use CSS variables.
+
+### Variables
 
 ```css
-.ot-counter {
-    display: flex;
-    gap: var(--ot-spacing-m);
-}
+/* Spacing */
+--ot-spacing-x: 4px;
+--ot-spacing-s: 8px;
+--ot-spacing-m: 16px;
+--ot-spacing-l: 34px;
 
-.ot-counter-item {
-    padding: var(--ot-spacing-s);
-    border-radius: var(--ot-radius-m);
-    background: var(--ot-bg-2);
-}
+/* Radius */
+--ot-radius-s: 4px;
+--ot-radius-m: 8px;
+--ot-radius-l: 12px;
 
-.ot-counter-item.active {
-    border: 1px solid var(--ot-brand);
-}
+/* Heights */
+--ot-height-x: 18px;
+--ot-height-s: 28px;
+--ot-height-m: 34px;
+--ot-height-l: 44px;
+
+/* Font sizes */
+--ot-size-s: 11px;
+--ot-size-m: 13px;
+--ot-size-l: 22px;
+
+/* Fonts */
+--ot-font-primary: Inter;
+--ot-font-secondary: Inter;
+
+/* Backgrounds (1 through 4, each with -border, -opacity, -hover) */
+--ot-bg-1: rgba(29, 29, 31, 1);
+--ot-bg-1-border: rgba(43, 43, 45, 1);
+--ot-bg-1-opacity: rgba(29, 29, 31, 0.85);
+--ot-bg-1-hover: rgba(33, 33, 35, 1);
+
+--ot-bg-2: rgba(34, 34, 36, 1);
+--ot-bg-2-border: rgba(48, 48, 50, 1);
+--ot-bg-2-opacity: rgba(34, 34, 36, 0.85);
+--ot-bg-2-hover: rgba(38, 38, 40, 1);
+
+--ot-bg-3: rgba(39, 39, 41, 1);
+--ot-bg-3-border: rgba(53, 53, 55, 1);
+--ot-bg-3-opacity: rgba(39, 39, 41, 0.85);
+--ot-bg-3-hover: rgba(43, 43, 45, 1);
+
+--ot-bg-4: rgba(44, 44, 46, 1);
+--ot-bg-4-border: rgba(58, 58, 60, 1);
+--ot-bg-4-opacity: rgba(44, 44, 46, 0.85);
+--ot-bg-4-hover: rgba(48, 48, 50, 1);
+
+/* Text */
+--ot-text-1: rgba(225, 228, 232, 1);   /* primary */
+--ot-text-2: rgba(156, 156, 156, 1);   /* secondary */
+
+/* Colors (each with -border, -opacity, -hover) */
+--ot-brand: rgba(226, 112, 85, 1);
+--ot-blue: rgba(56, 189, 248, 1);
+--ot-red: rgba(244, 63, 94, 1);
+--ot-orange: rgba(251, 146, 60, 1);
+--ot-green: rgba(52, 211, 153, 1);
 ```
-
-### Available CSS variables
-
-**Spacing:** `--ot-spacing-x` (4px), `--ot-spacing-s` (8px), `--ot-spacing-m` (16px), `--ot-spacing-l` (34px)
-
-**Radius:** `--ot-radius-s` (4px), `--ot-radius-m` (8px), `--ot-radius-l` (12px)
-
-**Heights:** `--ot-height-x` (18px), `--ot-height-s` (28px), `--ot-height-m` (34px), `--ot-height-l` (44px)
-
-**Font sizes:** `--ot-size-s` (11px), `--ot-size-m` (13px), `--ot-size-l` (22px)
-
-**Fonts:** `--ot-font-primary`, `--ot-font-secondary` (Inter)
-
-**Backgrounds:** `--ot-bg-1` through `--ot-bg-4` (each with `-border`, `-opacity`, `-hover` variants)
-
-**Text:** `--ot-text-1` (primary), `--ot-text-2` (secondary)
-
-**Colors:** `--ot-brand`, `--ot-blue`, `--ot-red`, `--ot-orange`, `--ot-green` (each with `-border`, `-opacity`, `-hover` variants)
 
 ---
 
-## Demo HTML
+## Usage
 
-The `demo.html` file contains only the body content - no `<html>`, `<head>`, or `<body>` tags. The dev server wraps it in a plain `<body>` with no default styling — the demo must handle its own layout, spacing, and centering.
-
-Use a `<style>` block at the top with classes instead of inline styles. Class names should be short and descriptive — no prefixes needed since each demo is an isolated file.
+`usage.html` - clean HTML that works out of the box with default config. No `<style>` block, no inline styles. Copy-paste ready.
 
 ```html
-<style>
-    .examples { display: flex; flex-direction: column; gap: 40px; max-width: 700px; margin: 0 auto; padding: 40px 30px; }
-    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
-</style>
-
-<div class="examples">
-    <div>
-        <h3>Default</h3>
-        <div ot="my-transform">
-            <p>Content</p>
-        </div>
-    </div>
-    <div>
-        <h3>Custom config</h3>
-        <div ot="my-transform" color="red" size="32">
-            <p>Content</p>
-        </div>
-    </div>
+<div ot="my-transform">
+    <p>Content here</p>
 </div>
 ```
 
 ---
 
+## Previews
+
+Each file in `previews/` is a self-contained visual example. `<style>` block at top, HTML below.
+
+### Class naming
+
+Prefix all classes with the preview file name:
+
+```html
+<!-- previews/stagger.html -->
+<style>
+    .stagger .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-m); }
+    .stagger .card { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); text-align: center; }
+    .stagger .card strong { color: var(--ot-text-1); font-size: 16px; }
+    .stagger .card span { color: var(--ot-text-2); font-size: var(--ot-size-m); }
+</style>
+
+<div ot="anime" ot-stagger="100" class="stagger">
+    <div class="cards">
+        <div class="card">
+            <strong>Fast</strong>
+            <span>Lightweight engine</span>
+        </div>
+    </div>
+</div>
+```
+
+### Design rules
+
+- Dark background - light text on dark
+- Realistic content - cards, stats, quotes, galleries. No placeholder text.
+- CSS variables for everything - spacing, colors, borders, radius, font sizes
+- HTML entities for icons (`&#9889;`, `&#10024;`, `&#9733;`) instead of emoji
+- Each preview shows a different config or use case
+- 1-5 previews per transform depending on complexity
+
+---
+
 ## Overview
 
-The `overview.md` file is a free-form markdown description displayed on the marketplace page. Explain what the transform does and what configuration options are available. No fixed structure required - write what makes sense for the transform.
+`overview.md` - free-form markdown for the marketplace page.
 
-Do not include HTML usage examples - those are handled separately by `demo.html` and the platform's usage field.
+- Describes what the transform does and its general functionality
+- 150-400 words
+- Use markdown headers and lists to organize
+- No config option listings (config belongs to the version, not the transform)
+- Use `-` for lists
+- Write naturally, like explaining to a developer
 
 ---
 
 ## Categories
 
-Every transform belongs to one category. Use this list to determine the correct category when writing `overview.md` or registering a transform in the database.
-
-| Category | Slug | Description |
-|----------|------|-------------|
-| Animation | animation | Motion effects triggered by scroll, load, or time. |
-| Text | text | Text effects and typography animations. |
-| Interaction | interaction | Cursor-driven and hover effects. |
-| Layout | layout | Content structure and arrangement. |
-| Media | media | Image, video, and audio components. |
-| Navigation | navigation | Menus, scrolling, and page navigation. |
-| Forms | forms | Input enhancements and validation. |
-| Data | data | Charts, tables, and data display. |
-| Social | social | Testimonials, reviews, and sharing. |
-| Utility | utility | Functional helpers and toggles. |
+| Category | ID | Slug |
+|----------|----|------|
+| Animations | 1 | animations |
+| Text | 2 | text |
+| Interaction | 3 | interaction |
+| Layout | 4 | layout |
+| Media | 5 | media |
+| Navigation | 6 | navigation |
+| Forms | 7 | forms |
+| Data | 8 | data |
+| Social | 9 | social |
+| Utility | 10 | utility |
 
 ---
 
@@ -310,242 +312,32 @@ Every transform belongs to one category. Use this list to determine the correct 
 
 1. Page loads, `[ot]` elements have `opacity: 0` (cloak)
 2. Framework scans DOM for `[ot]` elements
-3. For each element, reads `ot` attribute value (transform ID)
-4. Loads external JS/CSS dependencies if any
-5. Parses config from element attributes
-6. Calls `code(data, node, transformer)`
-7. MutationObserver watches for dynamically added `[ot]` elements
+3. Loads external JS/CSS dependencies
+4. Parses config from `ot-` prefixed attributes (e.g. `ot-speed="50"`)
+5. Calls `code(data, node, transformer)`
+6. MutationObserver watches for dynamically added `[ot]` elements
 
 ---
 
 ## Code style
 
-```js
-// Allman brace style — always with braces, never inline
-if(condition)
-{
-    doSomething();
-}
-
-// WRONG — never do this
-if(condition) doSomething();
-if(!x) return;
-
-// No space before parens in control structures
-if(x)
-for(let i = 0; i < n; i++)
-while(running)
-
-// Space after comma
-const config = { key: 'value', other: true };
-
-// Single quotes for strings
-const name = 'accordion';
-
-// No semicolons after function declarations in transforms.ItemAdd
-// (the code runs in a specific context)
-
-// Clean variable names, no abbreviations
-const element = document.createElement('div');
-const container = node.querySelector('.wrapper');
-const duration = data['animation-duration'];
-```
-
-### Method guidelines
-
-- Every `this.methodName` must be **modular** — single purpose, 10-15 lines max.
-- High **reusability** and **abstraction**: extract helpers for repeated patterns instead of duplicating code.
-- Each method should be callable independently. Build, update, events — separate concerns.
-- Precompute direction-dependent or mode-dependent values **once at the top** of `code`, not inside methods.
-
-```js
-code: function(data, node, transformer)
-{
-    const vertical = data['direction'] === 'vertical';
-    const side = vertical ? 'top' : 'left';
-
-    // Reusable helper — used by build, label, etc.
-    this.element = (tag, className, parent) =>
-    {
-        const element = document.createElement(tag);
-        element.className = className;
-        parent.appendChild(element);
-        return element;
-    };
-
-    // Single purpose — only updates positions
-    this.update = (value) =>
-    {
-        this.line.style[side] = value + '%';
-    };
-
-    // Orchestrates everything
-    this.build = () =>
-    {
-        // ...
-        this.update(data['position']);
-        this.events(input);
-    };
-
-    this.build();
-}
-```
-
-### Triggers and interactivity
-
-The framework does not provide generic trigger mechanisms (`ot-trigger`, etc.). Each transform controls its own behavior inside `code()` — scroll detection via IntersectionObserver, click handlers via addEventListener, hover via mousemove, etc. This keeps transforms independent and avoids framework complexity that doesn't fit every use case.
+- Allman brace style, always with braces
+- No space before parens: `if(x)`, `for(...)`, `while(...)`
+- Single quotes, space after comma
+- `this.methodName = () => {}` pattern - modular, single-purpose, 10-15 lines max
+- Precompute direction/mode values once at top of `code`
+- No inline control flow: never `if(x) return;`
+- Clean variable names, no abbreviations
 
 ---
 
-## Complete example
+## Publishing
 
-**items/counter/counter.js**
-```js
-transforms.ItemAdd({
-    id: 'counter',
-    icon: 'add_circle',
-    name: 'Counter',
-    description: 'Interactive counter with increment and decrement buttons.',
-    config: {
-        'value': ['number', 0],
-        'min': ['number', 0],
-        'max': ['number', 100],
-        'step': ['number', 1]
-    },
-    code: function(data, node, transformer)
-    {
-        let count = data['value'];
-
-        this.render = () =>
-        {
-            node.classList.add('ot-counter');
-            node.innerHTML = '';
-
-            const minus = document.createElement('button');
-            minus.className = 'counter-button';
-            minus.textContent = '-';
-
-            const display = document.createElement('span');
-            display.className = 'counter-display';
-            display.textContent = count;
-
-            const plus = document.createElement('button');
-            plus.className = 'counter-button';
-            plus.textContent = '+';
-
-            node.appendChild(minus);
-            node.appendChild(display);
-            node.appendChild(plus);
-
-            this.display = display;
-            this.minus = minus;
-            this.plus = plus;
-        };
-
-        this.update = () =>
-        {
-            this.display.textContent = count;
-            this.minus.disabled = count <= data['min'];
-            this.plus.disabled = count >= data['max'];
-        };
-
-        this.events = () =>
-        {
-            this.minus.addEventListener('click', () =>
-            {
-                count = Math.max(data['min'], count - data['step']);
-                this.update();
-            });
-
-            this.plus.addEventListener('click', () =>
-            {
-                count = Math.min(data['max'], count + data['step']);
-                this.update();
-            });
-        };
-
-        this.render();
-        this.update();
-        this.events();
-    }
-});
-```
-
-**items/counter/counter.css**
-```css
-.ot-counter {
-    display: flex;
-    align-items: center;
-    gap: var(--ot-spacing-s);
-}
-
-.ot-counter-button {
-    width: var(--ot-height-m);
-    height: var(--ot-height-m);
-    border: 1px solid var(--ot-bg-3-border);
-    border-radius: var(--ot-radius-s);
-    background: var(--ot-bg-2);
-    color: var(--ot-text-1);
-    font-size: var(--ot-size-m);
-    cursor: pointer;
-}
-
-.ot-counter-button:hover {
-    background: var(--ot-bg-2-hover);
-}
-
-.ot-counter-button:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.ot-counter-display {
-    min-width: 40px;
-    text-align: center;
-    font-size: var(--ot-size-l);
-    color: var(--ot-text-1);
-}
-```
-
-**items/counter/demo.html**
-```html
-<style>
-    .examples { display: flex; flex-direction: column; gap: 40px; }
-    .examples h3 { color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
-</style>
-
-<div class="examples">
-    <div>
-        <h3>Default</h3>
-        <div ot="counter"></div>
-    </div>
-    <div>
-        <h3>Custom range</h3>
-        <div ot="counter" value="50" min="0" max="100" step="10"></div>
-    </div>
-</div>
-```
-
-**items/counter/overview.md**
-```md
-Interactive counter with increment and decrement buttons. Useful for quantity selectors, voting, or any numeric input.
-
-Supports configurable min/max range and custom step size.
-
-### Options
-
-- **value** - starting value (default: 0)
-- **min** - minimum value (default: 0)
-- **max** - maximum value (default: 100)
-- **step** - increment/decrement amount (default: 1)
-```
+See `publish.md` for the database publishing workflow.
 
 ---
 
-## Dev server
+## Git
 
-```bash
-node server counter
-```
-
-Opens on `http://localhost:3000`. Loads framework styles, transform runtime, and your transform's JS/CSS automatically.
+- SSH remote with `github-onetype` host
+- No Co-Authored-By lines

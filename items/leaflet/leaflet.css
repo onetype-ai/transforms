@@ -1,21 +1,21 @@
-.ot-map {
+.ot-leaflet {
     position: relative;
     width: 100%;
     border-radius: var(--ot-radius-m);
     overflow: hidden;
 }
 
-.ot-map-container {
+.ot-leaflet-container {
     width: 100%;
     height: 100%;
 }
 
-.ot-map-marker {
+.ot-leaflet-marker {
     background: none;
     border: none;
 }
 
-.ot-map-icon {
+.ot-leaflet-icon {
     display: flex;
     align-items: center;
     justify-content: center;

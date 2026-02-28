@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="icon" href="https://cdn.onetype.ai/brand/logo/icon-orange.svg">
+    <link rel="stylesheet" defer="true" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded">
+    <link rel="stylesheet" href="/assets/build.css">
+    <script src="/assets/build.js" defer></script>
+    <style>
+        .onetype-page { max-width: 900px; margin: 0 auto; padding: 60px 30px; display: flex; flex-direction: column; gap: 48px; }
+        .onetype-section { display: flex; flex-direction: column; gap: 0; }
+        .onetype-label { display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--ot-text-2); text-transform: uppercase; letter-spacing: 3px; padding: 12px 20px; background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-bottom: none; border-radius: var(--ot-radius-l) var(--ot-radius-l) 0 0; }
+        .onetype-copy { font-size: var(--ot-size-s); font-weight: 500; color: var(--ot-text-2); background: var(--ot-bg-3); border: 1px solid var(--ot-bg-3-border); border-radius: var(--ot-radius-s); padding: 4px 12px; cursor: pointer; text-transform: none; letter-spacing: 0; transition: color 0.15s; }
+        .onetype-copy:hover { color: var(--ot-text-1); }
+        .onetype-preview { padding: 40px 32px; border: 1px solid var(--ot-bg-2-border); border-radius: 0 0 var(--ot-radius-l) var(--ot-radius-l); background: var(--ot-bg-1); }
+        .onetype-empty { text-align: center; padding: 80px 40px; }
+        .onetype-empty h2 { color: var(--ot-text-1); margin-bottom: var(--ot-spacing-s); }
+        .onetype-empty p { color: var(--ot-text-2); }
+        .onetype-empty code { background: var(--ot-bg-3); color: var(--ot-brand); padding: var(--ot-spacing-x) var(--ot-spacing-s); border-radius: var(--ot-radius-s); font-size: var(--ot-size-s); }
+    </style>
+</head>
+<body>
+    {{body}}
+    <script>
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.onetype-copy');
+            if(!button) return;
+            const section = button.closest('.onetype-section');
+            navigator.clipboard.writeText(section.dataset.source);
+            button.textContent = 'Copied';
+            setTimeout(function() { button.textContent = 'Copy'; }, 1500);
+        });
+    </script>
+</body>
+</html>

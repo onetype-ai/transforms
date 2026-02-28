@@ -1,0 +1,251 @@
+/* Base */
+.ot-tabs {
+    display: flex;
+    width: 100%;
+}
+
+.ot-tabs-top,
+.ot-tabs-bottom {
+    flex-direction: column;
+}
+
+.ot-tabs-bottom {
+    flex-direction: column-reverse;
+}
+
+.ot-tabs-left {
+    flex-direction: row;
+}
+
+.ot-tabs-right {
+    flex-direction: row-reverse;
+}
+
+/* Triggers */
+.ot-tabs-triggers {
+    display: flex;
+    position: relative;
+}
+
+.ot-tabs-top .ot-tabs-triggers,
+.ot-tabs-bottom .ot-tabs-triggers {
+    flex-direction: row;
+}
+
+.ot-tabs-left .ot-tabs-triggers,
+.ot-tabs-right .ot-tabs-triggers {
+    flex-direction: column;
+}
+
+.ot-tabs-trigger {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    outline: none;
+    z-index: 1;
+}
+
+.ot-tabs-trigger:focus-visible {
+    outline: 2px solid var(--ot-brand);
+    outline-offset: -2px;
+    border-radius: var(--ot-radius-s);
+}
+
+/* Styled triggers */
+.ot-tabs-styled .ot-tabs-trigger {
+    padding: var(--ot-spacing-s) var(--ot-spacing-m);
+    font-family: var(--ot-font-primary), sans-serif;
+    font-size: var(--ot-size-m);
+    color: var(--ot-text-2);
+    transition: color 0.2s ease;
+}
+
+.ot-tabs-styled .ot-tabs-trigger:hover,
+.ot-tabs-styled .ot-tabs-trigger.ot-tabs-active {
+    color: var(--ot-text-1);
+}
+
+/* Indicator */
+.ot-tabs-indicator {
+    position: absolute;
+    transition-property: left, top, width, height;
+    transition-timing-function: ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Underline — horizontal */
+.ot-tabs-underline.ot-tabs-top .ot-tabs-indicator,
+.ot-tabs-underline.ot-tabs-bottom .ot-tabs-indicator {
+    height: 2px;
+    left: var(--indicator-left);
+    width: var(--indicator-width);
+    background: var(--ot-brand);
+    border-radius: 1px;
+}
+
+.ot-tabs-underline.ot-tabs-top .ot-tabs-indicator {
+    bottom: 0;
+}
+
+.ot-tabs-underline.ot-tabs-bottom .ot-tabs-indicator {
+    top: 0;
+}
+
+/* Underline — vertical */
+.ot-tabs-underline.ot-tabs-left .ot-tabs-indicator,
+.ot-tabs-underline.ot-tabs-right .ot-tabs-indicator {
+    width: 2px;
+    top: var(--indicator-top);
+    height: var(--indicator-height);
+    background: var(--ot-brand);
+    border-radius: 1px;
+}
+
+.ot-tabs-underline.ot-tabs-left .ot-tabs-indicator {
+    right: 0;
+}
+
+.ot-tabs-underline.ot-tabs-right .ot-tabs-indicator {
+    left: 0;
+}
+
+/* Background — horizontal */
+.ot-tabs-background.ot-tabs-top .ot-tabs-indicator,
+.ot-tabs-background.ot-tabs-bottom .ot-tabs-indicator {
+    top: 0;
+    bottom: 0;
+    left: var(--indicator-left);
+    width: var(--indicator-width);
+    background: var(--ot-bg-3-opacity);
+    border-radius: var(--ot-radius-m);
+}
+
+/* Background — vertical */
+.ot-tabs-background.ot-tabs-left .ot-tabs-indicator,
+.ot-tabs-background.ot-tabs-right .ot-tabs-indicator {
+    left: 0;
+    right: 0;
+    top: var(--indicator-top);
+    height: var(--indicator-height);
+    background: var(--ot-bg-3-opacity);
+    border-radius: var(--ot-radius-m);
+}
+
+/* Styled triggers border */
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-top .ot-tabs-triggers,
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-bottom .ot-tabs-triggers {
+    border-bottom: 1px solid var(--ot-bg-3-border);
+}
+
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-bottom .ot-tabs-triggers {
+    border-bottom: none;
+    border-top: 1px solid var(--ot-bg-3-border);
+}
+
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-left .ot-tabs-triggers {
+    border-right: 1px solid var(--ot-bg-3-border);
+}
+
+.ot-tabs-styled.ot-tabs-underline.ot-tabs-right .ot-tabs-triggers {
+    border-left: 1px solid var(--ot-bg-3-border);
+}
+
+/* Panels — grid stack: all panels share one cell, container always sized to tallest */
+.ot-tabs-panels {
+    display: grid;
+    overflow: hidden;
+    flex: 1;
+}
+
+.ot-tabs-panel {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: var(--slide, none);
+    transition: opacity var(--duration) ease, visibility var(--duration) ease, transform var(--duration) ease;
+}
+
+.ot-tabs-panel.ot-tabs-active {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+}
+
+.ot-tabs-panel.ot-tabs-leaving {
+    visibility: visible;
+    opacity: 0;
+    transform: var(--slide, none);
+}
+
+/* Fade — no transform */
+.ot-tabs-fade .ot-tabs-panel {
+    transform: none;
+}
+
+.ot-tabs-fade .ot-tabs-panel.ot-tabs-leaving {
+    transform: none;
+}
+
+/* Styled panels */
+.ot-tabs-styled.ot-tabs-top .ot-tabs-panels {
+    padding-top: var(--ot-spacing-m);
+}
+
+.ot-tabs-styled.ot-tabs-bottom .ot-tabs-panels {
+    padding-bottom: var(--ot-spacing-m);
+}
+
+.ot-tabs-styled.ot-tabs-left .ot-tabs-panels {
+    padding-left: var(--ot-spacing-l);
+}
+
+.ot-tabs-styled.ot-tabs-right .ot-tabs-panels {
+    padding-right: var(--ot-spacing-l);
+}
+
+/* Progress bar */
+.ot-tabs-progress {
+    height: 2px;
+    background: var(--ot-bg-3-border);
+    border-radius: 1px;
+    flex-shrink: 0;
+    background-image: linear-gradient(var(--ot-brand-opacity), var(--ot-brand-opacity));
+    background-repeat: no-repeat;
+    background-size: 0% 100%;
+    animation-name: ot-tabs-fill;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    margin-top: -2px;
+}
+
+.ot-tabs-styled.ot-tabs-underline .ot-tabs-triggers:has(~ .ot-tabs-progress) {
+    border: none;
+}
+
+@keyframes ot-tabs-fill {
+    from { background-size: 0% 100%; }
+    to { background-size: 100% 100%; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .ot-tabs-indicator {
+        transition: none;
+    }
+
+    .ot-tabs-panel {
+        transition: none;
+    }
+
+    .ot-tabs-progress {
+        animation: none;
+    }
+}

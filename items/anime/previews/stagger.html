@@ -1,0 +1,27 @@
+<style>
+    .stagger .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-m); }
+    .stagger .card { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); text-align: center; }
+    .stagger .card .icon { font-size: 36px; margin-bottom: var(--ot-spacing-m); }
+    .stagger .card strong { display: block; font-size: 16px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .stagger .card span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div ot="anime" ot-stagger="100" class="stagger">
+    <div class="cards">
+        <div class="card">
+            <div class="icon">&#9889;</div>
+            <strong>Fast</strong>
+            <span>Lightweight engine</span>
+        </div>
+        <div class="card">
+            <div class="icon">&#127919;</div>
+            <strong>Precise</strong>
+            <span>Pixel-perfect</span>
+        </div>
+        <div class="card">
+            <div class="icon">&#10024;</div>
+            <strong>Smooth</strong>
+            <span>60fps always</span>
+        </div>
+    </div>
+</div>

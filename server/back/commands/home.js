@@ -1,10 +1,12 @@
 import commands from '@onetype/framework/commands';
-import { readFileSync, existsSync } from 'fs';
-import { resolve } from 'path';
+import { readFileSync, existsSync, readdirSync } from 'fs';
+import { resolve, basename } from 'path';
 
 const root = resolve(import.meta.dirname, '..', '..', '..');
+const server = resolve(import.meta.dirname, '..', '..');
 const item = process.argv[2];
-const file = item ? resolve(root, 'items', item, 'demo.html') : null;
+const folder = item ? resolve(root, 'items', item) : null;
+const template = readFileSync(resolve(server, 'front', 'index.html'), 'utf-8');
 
 commands.Item({
     id: 'home',
@@ -12,46 +14,90 @@ commands.Item({
     method: 'GET',
     endpoint: '/',
     type: 'HTML',
-    callback: async function(properties, resolve)
+    callback: async function(properties, response)
     {
-        let body = '';
+        this.label = (filename) =>
+        {
+            return basename(filename, '.html').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        };
 
-        if(!item)
+        this.encode = (html) =>
         {
-            body = `<div style="text-align:center;">
-                <h2 style="color:var(--ot-text-1);margin-bottom:var(--ot-spacing-s);">No transform specified</h2>
-                <p style="color:var(--ot-text-2);">Run with: <code style="background:var(--ot-bg-3);color:var(--ot-brand);padding:var(--ot-spacing-x) var(--ot-spacing-s);border-radius:var(--ot-radius-s);font-size:var(--ot-size-s);">node server {name}</code></p>
-                <p style="color:var(--ot-text-2);margin-top:var(--ot-spacing-x);">Example: <code style="background:var(--ot-bg-3);color:var(--ot-brand);padding:var(--ot-spacing-x) var(--ot-spacing-s);border-radius:var(--ot-radius-s);font-size:var(--ot-size-s);">node server test</code></p>
+            return html.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+        };
+
+        this.section = (name, content) =>
+        {
+            return `<div class="onetype-section" data-source="${this.encode(content.trim())}">
+                <div class="onetype-label">
+                    <span>${name}</span>
+                    <button class="onetype-copy">Copy</button>
+                </div>
+                <div class="onetype-preview">${content}</div>
             </div>`;
-        }
-        else
+        };
+
+        this.usage = () =>
         {
-            if(existsSync(file))
+            const file = resolve(folder, 'usage.html');
+
+            if(!existsSync(file))
             {
-                body = readFileSync(file, 'utf-8');
+                return '';
             }
-            else
+
+            return this.section('Usage', readFileSync(file, 'utf-8'));
+        };
+
+        this.previews = () =>
+        {
+            const dir = resolve(folder, 'previews');
+
+            if(!existsSync(dir))
             {
-                body = `<div style="text-align:center;">
-                    <h2 style="color:var(--ot-text-1);margin-bottom:var(--ot-spacing-s);">Transform not found: <span style="color:var(--ot-red);">${item}</span></h2>
-                    <p style="color:var(--ot-text-2);">Expected file: <code style="background:var(--ot-bg-3);color:var(--ot-brand);padding:var(--ot-spacing-x) var(--ot-spacing-s);border-radius:var(--ot-radius-s);font-size:var(--ot-size-s);">items/${item}/demo.html</code></p>
+                return '';
+            }
+
+            const files = readdirSync(dir).filter(f => f.endsWith('.html')).sort();
+            let html = '';
+
+            for(const file of files)
+            {
+                const content = readFileSync(resolve(dir, file), 'utf-8');
+                html += this.section(this.label(file), content);
+            }
+
+            return html;
+        };
+
+        this.render = () =>
+        {
+            if(!item)
+            {
+                return `<div class="onetype-empty">
+                    <h2>No transform specified</h2>
+                    <p>Run with: <code>node server {name}</code></p>
+                    <p style="margin-top:var(--ot-spacing-x);">Example: <code>node server anime</code></p>
                 </div>`;
             }
-        }
 
-        resolve(`<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OneType Transforms${item ? ' — ' + item : ''}</title>
-    <link rel="icon" href="https://cdn.onetype.ai/brand/logo/icon-orange.svg">
-    <link rel="stylesheet" href="/assets/build.css">
-    <script src="/assets/build.js" defer></script>
-</head>
-<body>
-    ${body}
-</body>
-</html>`);
+            if(!existsSync(folder))
+            {
+                return `<div class="onetype-empty">
+                    <h2>Transform not found: <span style="color:var(--ot-red);">${item}</span></h2>
+                    <p>Expected folder: <code>items/${item}/</code></p>
+                </div>`;
+            }
+
+            return `<div class="onetype-page">
+                ${this.usage()}
+                ${this.previews()}
+            </div>`;
+        };
+
+        const title = 'OneType Transforms' + (item ? ' — ' + item : '');
+        const body = this.render();
+
+        response(template.replace('{{title}}', title).replace('{{body}}', body));
     }
 });
