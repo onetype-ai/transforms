@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OneType Transforms — Demo</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+    <script src="https://cdn.transforms.onetype.ai/script.js?token=78e1bf73-fe2e-4a74-82b1-8806b410d6d0&v=8"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0a0a0a;
+            color: #e5e5e5;
+            font-family: 'Inter', -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img { max-width: 100%; height: auto; display: block; }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(226, 112, 85, 0.1);
+            border: 1px solid rgba(226, 112, 85, 0.2);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #e27055;
+            margin-bottom: 32px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -3px;
+            color: #fff;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 span { color: #e27055; }
+
+        .hero p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.4);
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        /* Sections */
+        .section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 100px 40px;
+        }
+
+        .section-header {
+            margin-bottom: 48px;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #e27055;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .section-desc {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.35);
+            margin-top: 12px;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Grid layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+        /* Cards */
+        .demo-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .demo-card-padded {
+            padding: 40px;
+        }
+
+        .demo-card-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.25);
+            margin-bottom: 20px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-brand {
+            background: #e27055;
+            color: #fff;
+        }
+
+        .btn-brand:hover { background: #d4604a; }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-ghost:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+        .btn-dark {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-dark:hover { background: rgba(255, 255, 255, 0.1); }
+
+        /* Marquee items */
+        .marquee-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+        }
+
+        .marquee-tag-brand {
+            background: rgba(226, 112, 85, 0.1);
+            border-color: rgba(226, 112, 85, 0.2);
+            color: #e27055;
+        }
+
+        .marquee-card {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            white-space: nowrap;
+            min-width: 200px;
+        }
+
+        .marquee-card strong {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .marquee-card span {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Swiper slides */
+        .slide {
+            padding: 80px 40px;
+            text-align: center;
+            border-radius: 16px;
+            color: #fff;
+        }
+
+        .slide h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .slide p {
+            font-size: 15px;
+            opacity: 0.7;
+        }
+
+        /* Map */
+        .map-wrap {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Scramble */
+        .scramble-line {
+            font-size: 48px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -2px;
+            line-height: 1.2;
+        }
+
+        .scramble-line-sub {
+            font-size: 24px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: -0.5px;
+        }
+
+        /* Signature */
+        .signature-wrap {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        /* Spotlight cards */
+        .spotlight-card {
+            padding: 60px 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .spotlight-card:hover { border-color: rgba(255, 255, 255, 0.12); }
+
+        .spotlight-card strong {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .spotlight-card p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.3);
+            line-height: 1.6;
+        }
+
+        /* Full-width dark sections */
+        .section-dark {
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* Magnetic */
+        .magnetic-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* CTA */
+        .cta {
+            text-align: center;
+            padding: 120px 40px;
+        }
+
+        .cta h2 {
+            font-size: 48px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: -2px;
+            margin-bottom: 16px;
+        }
+
+        .cta p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.35);
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 40px; letter-spacing: -1.5px; }
+            .hero p { font-size: 16px; }
+            .section { padding: 60px 20px; }
+            .section-title { font-size: 28px; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .stat-number { font-size: 36px; }
+            .scramble-line { font-size: 32px; }
+            .cta h2 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="hero-particles">
+            <div ot="particles" preset="stars" count="60" height="100%" background="transparent"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">OneType Transforms</div>
+            <h1>Add <span>magic</span><br>to any website</h1>
+            <p>Drop-in interactive components. No frameworks, no dependencies. Just one script tag.</p>
+        </div>
+    </div>
+
+    <!-- Before After -->
+    <hr class="divider">
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Before After</div>
+            <div class="section-title">Image comparison slider</div>
+            <div class="section-desc">Drag to compare two images. Works with any content, any size.</div>
+        </div>
+        <div class="grid-2">
+            <div class="demo-card">
+                <div ot="before-after" label-before="Original" label-after="Edited">
+                    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=467&fit=crop" alt="Before">
+                    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=467&fit=crop&sat=-100" alt="After">
+                </div>
+            </div>
+            <div class="demo-card">
+                <div ot="before-after" position="30" label-before="Summer" label-after="Winter">
+                    <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=700&h=467&fit=crop" alt="Before">
+                    <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=700&h=467&fit=crop&sat=-100" alt="After">
+                </div>
+            </div>
+        </div>
+        <div class="demo-card" style="margin-top: 20px;">
+            <div ot="before-after" hover="true" label-before="Hover me" label-after="Move mouse">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=500&fit=crop" alt="Before">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=500&fit=crop&sat=-100" alt="After">
+            </div>
+        </div>
+    </div>
+
+    <!-- Count Up -->
+    <hr class="divider">
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Count Up</div>
+            <div class="section-title">Animated numbers</div>
+            <div class="section-desc">Numbers that count up when they enter the viewport. Supports prefixes, suffixes, and decimals.</div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div ot="count-up" end="132" suffix="k" class="stat-number" style="color: #e27055;"></div>
+                <div class="stat-label">Users</div>
+            </div>
+            <div class="stat-card">
+                <div ot="count-up" end="98" suffix="%" duration="3" class="stat-number" style="color: #34d399;"></div>
+                <div class="stat-label">Uptime</div>
+            </div>
+            <div class="stat-card">
+                <div ot="count-up" end="4.9" decimals="1" duration="2.5" class="stat-number" style="color: #fb923c;"></div>
+                <div class="stat-label">Rating</div>
+            </div>
+            <div class="stat-card">
+                <div ot="count-up" end="25000" prefix="$" duration="3" class="stat-number"></div>
+                <div class="stat-label">Revenue</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Marquee -->
+    <div class="section-dark">
+        <div class="section" style="padding-top: 60px; padding-bottom: 60px;">
+            <div class="section-header">
+                <div class="section-label">Marquee</div>
+                <div class="section-title">Infinite scroll</div>
+                <div class="section-desc">Continuous scrolling content in any direction. Pause on hover, fade edges, vertical mode.</div>
+            </div>
+        </div>
+        <div ot="marquee" speed="25" gap="16" fade="true" pause="true" style="margin-bottom: 16px;">
+            <span class="marquee-tag">No-code</span>
+            <span class="marquee-tag marquee-tag-brand">Transforms</span>
+            <span class="marquee-tag">Lightweight</span>
+            <span class="marquee-tag">Zero dependencies</span>
+            <span class="marquee-tag marquee-tag-brand">One script tag</span>
+            <span class="marquee-tag">Any website</span>
+            <span class="marquee-tag">MutationObserver</span>
+            <span class="marquee-tag marquee-tag-brand">Instant setup</span>
+        </div>
+        <div ot="marquee" speed="30" gap="16" direction="right" fade="true" pause="true" style="margin-bottom: 16px;">
+            <span class="marquee-card"><strong>Before After</strong><span>Image comparison</span></span>
+            <span class="marquee-card"><strong>Count Up</strong><span>Animated numbers</span></span>
+            <span class="marquee-card"><strong>Ripple</strong><span>Click effects</span></span>
+            <span class="marquee-card"><strong>Marquee</strong><span>Infinite scroll</span></span>
+            <span class="marquee-card"><strong>Particles</strong><span>Animated backgrounds</span></span>
+            <span class="marquee-card"><strong>Spotlight</strong><span>Cursor follow</span></span>
+            <span class="marquee-card"><strong>Magnetic</strong><span>Hover attraction</span></span>
+            <span class="marquee-card"><strong>Scramble</strong><span>Text animation</span></span>
+        </div>
+        <div ot="marquee" speed="20" gap="16" fade="true" style="padding-bottom: 60px;">
+            <span class="marquee-tag">Webflow</span>
+            <span class="marquee-tag">Framer</span>
+            <span class="marquee-tag">WordPress</span>
+            <span class="marquee-tag">Shopify</span>
+            <span class="marquee-tag">Squarespace</span>
+            <span class="marquee-tag">Wix</span>
+            <span class="marquee-tag">HTML</span>
+            <span class="marquee-tag">Any platform</span>
+        </div>
+    </div>
+
+    <!-- Ripple -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Ripple</div>
+            <div class="section-title">Click feedback</div>
+            <div class="section-desc">Material-style ripple effect. Works on any clickable element.</div>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+            <div ot="ripple" class="btn btn-brand">Primary action</div>
+            <div ot="ripple" class="btn btn-ghost">Secondary</div>
+            <div ot="ripple" class="btn btn-dark">Dark button</div>
+            <div ot="ripple" color="rgba(255,255,255,1)" opacity="0.2" class="btn btn-brand">White ripple</div>
+            <div ot="ripple" centered="true" class="btn btn-ghost">Centered</div>
+        </div>
+        <div class="grid-2">
+            <div ot="ripple" class="spotlight-card">
+                <strong>Interactive card</strong>
+                <p>Click anywhere on this card to see the ripple effect propagate from the click position.</p>
+            </div>
+            <div ot="ripple" color="rgba(226,112,85,0.4)" class="spotlight-card" style="background: rgba(226, 112, 85, 0.04); border-color: rgba(226, 112, 85, 0.1);">
+                <strong>Branded ripple</strong>
+                <p>Custom color ripple matching the brand palette. Works on any background.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spotlight -->
+    <hr class="divider">
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Spotlight</div>
+            <div class="section-title">Cursor spotlight</div>
+            <div class="section-desc">Everything dims except the area around your cursor. Creates focus and drama.</div>
+        </div>
+        <div ot="spotlight" size="200" border="120" class="spotlight-card" style="padding: 80px 40px; text-align: center; margin-bottom: 20px;">
+            <strong style="font-size: 24px;">Hover to reveal</strong>
+            <p style="max-width: 400px; margin: 12px auto 0;">Move your cursor over this area. The spotlight follows you, dimming everything else.</p>
+        </div>
+        <div class="grid-2">
+            <div ot="spotlight" size="150" border="80" class="demo-card">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=700&h=467&fit=crop" alt="Landscape">
+            </div>
+            <div ot="spotlight" size="80" border="50" strength="0.92" class="spotlight-card">
+                <strong>Tight focus</strong>
+                <p>Small spotlight radius forces exploration. Great for revealing details.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scramble -->
+    <hr class="divider">
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Scramble</div>
+            <div class="section-title">Text scramble</div>
+            <div class="section-desc">Characters shuffle into place like a cipher decoding. Loop through multiple phrases.</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="scramble-line">
+                <span ot="scramble"><span>Access Granted</span></span>
+            </div>
+            <div class="scramble-line" style="color: #e27055;">
+                <span ot="scramble" loop="true" back-delay="2000"><span>Build faster</span><span>Ship sooner</span><span>No frameworks</span></span>
+            </div>
+            <div class="scramble-line-sub">
+                <span ot="scramble" chars="01" speed="30" scramble-speed="20"><span>01001111 01101110 01100101 01010100 01111001 01110000 01100101</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swiper -->
+    <hr class="divider">
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Swiper</div>
+            <div class="section-title">Carousels and sliders</div>
+            <div class="section-desc">Touch-friendly sliders with navigation, pagination, and multiple effects.</div>
+        </div>
+        <div ot="swiper" navigation="true" pagination="bullets" style="border-radius: 16px; overflow: hidden; margin-bottom: 24px;">
+            <div class="slide" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <h3>Beautiful gradients</h3>
+                <p>Full-width slides with navigation</p>
+            </div>
+            <div class="slide" style="background: linear-gradient(135deg, #e27055, #fb923c);">
+                <h3>Brand colors</h3>
+                <p>Customize everything</p>
+            </div>
+            <div class="slide" style="background: linear-gradient(135deg, #34d399, #38bdf8);">
+                <h3>Any content</h3>
+                <p>Images, text, cards, anything</p>
+            </div>
+        </div>
+        <div ot="swiper" effect="cards" grab-cursor="true" style="max-width: 320px; margin: 0 auto 24px;">
+            <div class="slide" style="background: #e27055; border-radius: 16px;">
+                <h3>Card 1</h3>
+            </div>
+            <div class="slide" style="background: #38bdf8; border-radius: 16px;">
+                <h3>Card 2</h3>
+            </div>
+            <div class="slide" style="background: #34d399; border-radius: 16px;">
+                <h3>Card 3</h3>
+            </div>
+        </div>
+        <div ot="swiper" slides-per-view="3" space-between="16" loop="true" autoplay="true" autoplay-delay="2500" pagination="progressbar" style="margin-top: 24px;">
+            <div style="padding: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); text-align: center; border-radius: 12px; font-weight: 500;">Slide 1</div>
+            <div style="padding: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); text-align: center; border-radius: 12px; font-weight: 500;">Slide 2</div>
+            <div style="padding: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); text-align: center; border-radius: 12px; font-weight: 500;">Slide 3</div>
+            <div style="padding: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); text-align: center; border-radius: 12px; font-weight: 500;">Slide 4</div>
+            <div style="padding: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); text-align: center; border-radius: 12px; font-weight: 500;">Slide 5</div>
+        </div>
+    </div>
+
+    <!-- Map -->
+    <hr class="divider">
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Map</div>
+            <div class="section-title">Interactive maps</div>
+            <div class="section-desc">Leaflet-powered maps with markers, popups, and multiple styles.</div>
+        </div>
+        <div class="map-wrap" style="margin-bottom: 20px;">
+            <div ot="map" lat="48.2082" lng="16.3738" zoom="13" style="dark" height="400">
+                <div lat="48.2082" lng="16.3738" popup="<b>Vienna</b><br>Capital of Austria">📍</div>
+                <div lat="48.2130" lng="16.3613" popup="<b>Rathaus</b><br>Vienna City Hall">🏛️</div>
+                <div lat="48.2065" lng="16.3637" popup="<b>Hofburg</b><br>Imperial Palace">👑</div>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="map-wrap">
+                <div ot="map" lat="35.6762" lng="139.6503" zoom="12" style="dark" height="300">
+                    <div lat="35.6762" lng="139.6503" popup="<b>Shibuya</b>">🗼</div>
+                    <div lat="35.7101" lng="139.8107" popup="<b>Tokyo Skytree</b>">⛩️</div>
+                </div>
+            </div>
+            <div class="map-wrap">
+                <div ot="map" lat="36.1069" lng="-112.1129" zoom="11" style="satellite" height="300">
+                    <div lat="36.1069" lng="-112.1129" popup="<b>Grand Canyon</b><br>South Rim">🏜️</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Particles -->
+    <hr class="divider">
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Particles</div>
+            <div class="section-title">Animated backgrounds</div>
+            <div class="section-desc">Interactive particle systems. Stars, snow, links, bubbles, fireflies, confetti.</div>
+        </div>
+        <div class="grid-2" style="margin-bottom: 20px;">
+            <div class="demo-card">
+                <div class="demo-card-padded" style="padding-bottom: 0;">
+                    <div class="demo-card-label">Stars</div>
+                </div>
+                <div ot="particles" preset="stars" count="50" height="250"></div>
+            </div>
+            <div class="demo-card">
+                <div class="demo-card-padded" style="padding-bottom: 0;">
+                    <div class="demo-card-label">Snow</div>
+                </div>
+                <div ot="particles" preset="snow" count="80" height="250" background="#0f172a"></div>
+            </div>
+        </div>
+        <div class="grid-3">
+            <div class="demo-card">
+                <div class="demo-card-padded" style="padding-bottom: 0;">
+                    <div class="demo-card-label">Links</div>
+                </div>
+                <div ot="particles" preset="links" count="40" color="#e27055" links-color="#e27055" height="200"></div>
+            </div>
+            <div class="demo-card">
+                <div class="demo-card-padded" style="padding-bottom: 0;">
+                    <div class="demo-card-label">Fireflies</div>
+                </div>
+                <div ot="particles" preset="fireflies" count="30" height="200" background="#0a0a0a"></div>
+            </div>
+            <div class="demo-card">
+                <div class="demo-card-padded" style="padding-bottom: 0;">
+                    <div class="demo-card-label">Confetti</div>
+                </div>
+                <div ot="particles" preset="confetti" count="80" height="200" speed="3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Magnetic -->
+    <hr class="divider">
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Magnetic</div>
+            <div class="section-title">Magnetic hover</div>
+            <div class="section-desc">Elements pull toward the cursor when nearby. Configurable strength and distance.</div>
+        </div>
+        <div style="display: flex; gap: 32px; flex-wrap: wrap; align-items: center; justify-content: center; padding: 40px 0;">
+            <div ot="magnetic" class="magnetic-btn" style="background: #e27055; color: #fff;">Hover</div>
+            <div ot="magnetic" strength="0.8" distance="200" class="magnetic-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff;">Strong</div>
+            <div ot="magnetic" strength="0.2" duration="0.8" class="magnetic-btn" style="background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); color: #38bdf8;">Soft</div>
+            <div ot="magnetic" strength="0.5" class="magnetic-btn" style="background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: #34d399;">Pull</div>
+        </div>
+    </div>
+
+    <!-- Signature -->
+    <hr class="divider">
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label">Signature</div>
+            <div class="section-title">Signature pad</div>
+            <div class="section-desc">Draw signatures with pressure sensitivity. Export, undo, customize colors.</div>
+        </div>
+        <div class="signature-wrap" style="margin-bottom: 20px;">
+            <div ot="signature" height="200" color="#e27055" background="transparent" placeholder="Sign here..." buttons="true" undo="true" download="true"></div>
+        </div>
+        <div class="grid-2">
+            <div class="signature-wrap">
+                <div class="demo-card-label">Default</div>
+                <div ot="signature" height="150" background="transparent"></div>
+            </div>
+            <div class="signature-wrap">
+                <div class="demo-card-label">Fine tip</div>
+                <div ot="signature" height="150" color="#38bdf8" background="transparent" width-min="1" width-max="2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <hr class="divider">
+    <div class="cta">
+        <div style="font-size: 48px; font-weight: 800; color: #fff; letter-spacing: -2px; margin-bottom: 16px;">
+            <span ot="scramble" loop="true" back-delay="3000"><span>Ready to transform?</span><span>One script tag.</span><span>Any website.</span></span>
+        </div>
+        <p>Add interactive components to any website in seconds.</p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <a ot="ripple" ot="magnetic" href="https://transforms.onetype.ai/get-started" class="btn btn-brand" style="text-decoration: none;">Get started</a>
+            <a ot="ripple" href="https://transforms.onetype.ai" class="btn btn-ghost" style="text-decoration: none;">Browse transforms</a>
+        </div>
+    </div>
+
+</body>
+</html>
