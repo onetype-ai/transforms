@@ -33,7 +33,8 @@ transforms.ItemAdd({
         'coverflow-scale': ['number', 1],
         'crossfade': ['boolean', false],
         'cards-offset': ['number', 8],
-        'cards-rotate': ['boolean', true]
+        'cards-rotate': ['boolean', true],
+        'styled': ['boolean', true]
     },
     code: function(data, node, transformer)
     {
@@ -49,6 +50,11 @@ transforms.ItemAdd({
 
             node.classList.add(prefix);
             node.classList.add('swiper');
+
+            if(data['styled'])
+            {
+                node.classList.add(prefix + '-styled');
+            }
 
             const wrapper = document.createElement('div');
             wrapper.className = 'swiper-wrapper';

@@ -1,0 +1,14 @@
+<style>
+    .card { display: flex; justify-content: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .card .item { padding: var(--ot-spacing-l); border-radius: var(--ot-radius-l); background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); cursor: pointer; max-width: 400px; width: 100%; }
+    .card .item strong { color: var(--ot-text-1); font-size: 16px; display: flex; align-items: center; gap: var(--ot-spacing-s); }
+    .card .item strong i { font-size: 20px; color: var(--ot-brand); }
+    .card .item p { color: var(--ot-text-2); font-size: var(--ot-size-m); margin-top: var(--ot-spacing-s); line-height: 1.5; }
+</style>
+
+<div class="card">
+    <div ot="ripple" ot-color="rgba(255, 255, 255, 1)" ot-opacity="0.1" class="item">
+        <strong><i>article</i> Clickable card</strong>
+        <p>Ripple works on any element, not just buttons. Click anywhere on this card to see the effect.</p>
+    </div>
+</div>

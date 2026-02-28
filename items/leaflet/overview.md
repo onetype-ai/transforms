@@ -1,25 +1,17 @@
-Interactive map powered by Leaflet.js. Supports multiple tile styles, custom markers with emoji icons, and HTML popups. No API key required.
+Interactive map powered by Leaflet.js. Drop it onto any page to show a fully functional map with markers, popups, and different visual styles - no API key needed.
 
-Add markers as child elements with `lat` and `lng` attributes. Use the `popup` attribute for click-to-open info bubbles. Emoji or HTML content inside the child becomes the marker icon — leave empty for the default pin.
+### Markers
+
+Add child elements with latitude and longitude coordinates to place markers on the map. Each marker can have a popup that opens on click - supports plain text or HTML for rich content like bold text, links, and line breaks. Put an emoji or HTML inside the child element to use it as a custom marker icon, or leave it empty for the default Leaflet pin.
 
 ### Tile styles
 
-- **streets** — OpenStreetMap standard
-- **light** — CartoDB Positron, clean minimalist
-- **dark** — CartoDB DarkMatter, dark mode
-- **voyager** — CartoDB Voyager, modern with colors
-- **satellite** — Esri WorldImagery, aerial photography
-- **topo** — OpenTopoMap, topographic with elevation
+Ships with six built-in tile styles. Streets is the standard OpenStreetMap look. Light and dark are clean minimal styles from CartoDB - dark works well on dark-themed pages. Voyager is a modern colorful style, also from CartoDB. Satellite pulls aerial imagery from Esri. Topo shows topographic detail with elevation contours from OpenTopoMap.
 
-### Options
+### Controls
 
-- **lat** — center latitude (default: 48.2082)
-- **lng** — center longitude (default: 16.3738)
-- **zoom** — initial zoom level 1-19 (default: 13)
-- **style** — tile style name (default: "streets")
-- **height** — map height in pixels (default: 400)
-- **zoom-control** — show zoom buttons (default: true)
-- **scroll-zoom** — enable scroll wheel zoom (default: true)
-- **dragging** — enable map panning (default: true)
-- **max-zoom** — maximum zoom level (default: 19)
-- **min-zoom** — minimum zoom level (default: 1)
+Zoom buttons, scroll wheel zoom, and map dragging are all enabled by default. Turn them off individually to create a static decorative map that users can look at but not interact with - useful for contact pages or location cards where you just want to show where something is.
+
+### Sizing
+
+The map height is set in pixels and defaults to 400. Width always fills its container. The map automatically adjusts when the container resizes, so it works well in responsive layouts.

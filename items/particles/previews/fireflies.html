@@ -1,0 +1,14 @@
+<style>
+    .fireflies { position: relative; border-radius: var(--ot-radius-l); overflow: hidden; }
+    .fireflies .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; pointer-events: none; }
+    .fireflies .overlay h2 { font-size: 32px; font-weight: 800; color: rgba(255, 204, 0, 0.8); letter-spacing: -1px; margin: 0; }
+    .fireflies .overlay p { color: rgba(255, 255, 255, 0.4); font-size: var(--ot-size-m); margin-top: var(--ot-spacing-s); }
+</style>
+
+<div class="fireflies">
+    <div ot="particles" ot-preset="fireflies" ot-background="#0a1628" ot-count="40" ot-size="4" ot-speed="0.8" ot-height="300"></div>
+    <div class="overlay">
+        <h2>Fireflies</h2>
+        <p>Soft glowing dots with pulsing light</p>
+    </div>
+</div>

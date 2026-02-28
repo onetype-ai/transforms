@@ -1,0 +1,14 @@
+<style>
+    .snow { position: relative; border-radius: var(--ot-radius-l); overflow: hidden; }
+    .snow .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; pointer-events: none; }
+    .snow .overlay i { font-size: 48px; color: rgba(255, 255, 255, 0.3); margin-bottom: var(--ot-spacing-s); }
+    .snow .overlay p { color: rgba(255, 255, 255, 0.5); font-size: var(--ot-size-m); }
+</style>
+
+<div class="snow">
+    <div ot="particles" ot-preset="snow" ot-background="#1a1a2e" ot-count="150" ot-speed="1" ot-size="3" ot-height="300"></div>
+    <div class="overlay">
+        <i>ac_unit</i>
+        <p>Snowfall effect</p>
+    </div>
+</div>

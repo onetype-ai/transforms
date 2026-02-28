@@ -1,0 +1,32 @@
+<style>
+    .multi-ring { display: flex; justify-content: center; padding: 60px var(--ot-spacing-m); }
+    .multi-ring .orbit { position: relative; }
+    .multi-ring .node { width: 44px; height: 44px; border-radius: 50%; background: var(--ot-bg-3); border: 1px solid var(--ot-bg-3-border); display: flex; align-items: center; justify-content: center; margin: -22px 0 0 -22px; color: var(--ot-text-2); }
+    .multi-ring .node i { font-size: 20px; }
+    .multi-ring .node-inner { background: var(--ot-brand); border-color: var(--ot-brand-border); color: white; }
+    .multi-ring .node-outer { width: 34px; height: 34px; margin: -17px 0 0 -17px; }
+    .multi-ring .node-outer i { font-size: 16px; }
+    .multi-ring .center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--ot-text-1); font-size: 15px; font-weight: 700; letter-spacing: -0.5px; }
+    .multi-ring .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px solid var(--ot-bg-2-border); pointer-events: none; }
+    .multi-ring .ring-1 { width: 160px; height: 160px; }
+    .multi-ring .ring-2 { width: 280px; height: 280px; }
+    .multi-ring .ring-3 { width: 380px; height: 380px; }
+</style>
+
+<div class="multi-ring">
+    <div ot="orbit" ot-radius="190" class="orbit">
+        <span class="node node-inner" radius="80"><i>rocket_launch</i></span>
+        <span class="node node-inner" radius="80"><i>public</i></span>
+        <span class="node" radius="140"><i>settings</i></span>
+        <span class="node" radius="140"><i>diamond</i></span>
+        <span class="node" radius="140"><i>favorite</i></span>
+        <span class="node node-outer" radius="190"><i>star</i></span>
+        <span class="node node-outer" radius="190"><i>light_mode</i></span>
+        <span class="node node-outer" radius="190"><i>auto_awesome</i></span>
+        <span class="node node-outer" radius="190"><i>bolt</i></span>
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="center">Stack</div>
+    </div>
+</div>

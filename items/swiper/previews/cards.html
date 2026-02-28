@@ -1,0 +1,18 @@
+<style>
+    .cards { display: flex; justify-content: center; }
+    .cards .slide { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; border-radius: var(--ot-radius-l); font-size: 18px; font-weight: 600; color: white; gap: var(--ot-spacing-s); }
+    .cards .slide i { font-size: 40px; opacity: 0.8; }
+    .cards .s1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .cards .s2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .cards .s3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .cards .s4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+</style>
+
+<div class="cards">
+    <div ot="swiper" ot-effect="cards" ot-grab-cursor="true" style="max-width: 320px;">
+        <div class="slide s1"><i>rocket_launch</i> Launch</div>
+        <div class="slide s2"><i>palette</i> Design</div>
+        <div class="slide s3"><i>code</i> Build</div>
+        <div class="slide s4"><i>deployed_code</i> Ship</div>
+    </div>
+</div>

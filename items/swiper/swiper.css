@@ -11,3 +11,87 @@
     width: 100%;
     height: auto;
 }
+
+/* Styled — navigation arrows */
+
+.ot-swiper-styled .swiper-button-prev,
+.ot-swiper-styled .swiper-button-next {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: #1a1a1a;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.ot-swiper-styled .swiper-button-prev:hover,
+.ot-swiper-styled .swiper-button-next:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.ot-swiper-styled .swiper-button-prev::after,
+.ot-swiper-styled .swiper-button-next::after {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.ot-swiper-styled .swiper-button-prev.swiper-button-disabled,
+.ot-swiper-styled .swiper-button-next.swiper-button-disabled {
+    opacity: 0.4;
+    transform: none;
+}
+
+/* Styled — bullet pagination */
+
+.ot-swiper-styled .swiper-pagination-bullet {
+    background: var(--ot-text-2);
+    opacity: 0.3;
+    width: 8px;
+    height: 8px;
+    transition: background 0.2s, opacity 0.2s, transform 0.2s;
+}
+
+.ot-swiper-styled .swiper-pagination-bullet-active {
+    background: var(--ot-brand);
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Styled — fraction pagination */
+
+.ot-swiper-styled .swiper-pagination-fraction {
+    color: var(--ot-text-2);
+    font-size: var(--ot-size-m);
+    font-weight: 500;
+}
+
+.ot-swiper-styled .swiper-pagination-current {
+    color: var(--ot-brand);
+    font-weight: 700;
+}
+
+/* Styled — progressbar pagination */
+
+.ot-swiper-styled .swiper-pagination-progressbar {
+    background: var(--ot-bg-3);
+}
+
+.ot-swiper-styled .swiper-pagination-progressbar-fill {
+    background: var(--ot-brand);
+}
+
+/* Styled — scrollbar */
+
+.ot-swiper-styled .swiper-scrollbar {
+    background: var(--ot-bg-3);
+    border-radius: var(--ot-radius-s);
+}
+
+.ot-swiper-styled .swiper-scrollbar-drag {
+    background: var(--ot-brand-opacity);
+    border-radius: var(--ot-radius-s);
+}

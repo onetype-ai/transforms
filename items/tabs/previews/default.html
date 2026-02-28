@@ -1,0 +1,55 @@
+<style>
+    .default .tab-label { display: flex; align-items: center; gap: var(--ot-spacing-s); }
+    .default .tab-label i { font-size: 18px; }
+    .default .card { padding: 28px; border-radius: var(--ot-radius-l); background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
+    .default .card h4 { color: var(--ot-text-1); font-size: 16px; font-weight: 600; margin: 0 0 var(--ot-spacing-s) 0; }
+    .default .card p { color: var(--ot-text-2); font-size: var(--ot-size-m); line-height: 1.6; margin: 0; }
+    .default .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: var(--ot-spacing-m); }
+    .default .card-mini { padding: var(--ot-spacing-m); border-radius: var(--ot-radius-m); background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); }
+    .default .card-mini span { color: var(--ot-text-2); font-size: var(--ot-size-s); text-transform: uppercase; letter-spacing: 1px; }
+    .default .card-mini h5 { color: var(--ot-text-1); font-size: 14px; font-weight: 500; margin: 6px 0 0 0; }
+</style>
+
+<div class="default">
+    <div ot="tabs">
+        <div><span class="tab-label"><i>dashboard</i> Overview</span></div>
+        <div>
+            <div class="card">
+                <h4>Build faster with transforms</h4>
+                <p>Drop-in UI components that work with any website. No frameworks, no build tools.</p>
+                <div class="card-grid">
+                    <div class="card-mini"><span>Components</span><h5>17 Transforms</h5></div>
+                    <div class="card-mini"><span>Setup time</span><h5>Under 2 min</h5></div>
+                    <div class="card-mini"><span>Dependencies</span><h5>Zero</h5></div>
+                    <div class="card-mini"><span>File size</span><h5>12 KB gzip</h5></div>
+                </div>
+            </div>
+        </div>
+        <div><span class="tab-label"><i>auto_awesome</i> Features</span></div>
+        <div>
+            <div class="card">
+                <h4>Everything you need</h4>
+                <p>Animations, interactions, layouts, and text effects. Fully configurable through HTML attributes.</p>
+                <div class="card-grid">
+                    <div class="card-mini"><span>Animations</span><h5>Scroll-triggered</h5></div>
+                    <div class="card-mini"><span>Text</span><h5>Typewriter, Split</h5></div>
+                    <div class="card-mini"><span>Interaction</span><h5>Tilt, Magnetic</h5></div>
+                    <div class="card-mini"><span>Layout</span><h5>Swiper, Tabs</h5></div>
+                </div>
+            </div>
+        </div>
+        <div><span class="tab-label"><i>payments</i> Pricing</span></div>
+        <div>
+            <div class="card">
+                <h4>Simple, lifetime pricing</h4>
+                <p>One-time payment. No subscriptions. All current and future transforms included.</p>
+                <div class="card-grid">
+                    <div class="card-mini"><span>Starter</span><h5>Free</h5></div>
+                    <div class="card-mini"><span>Pro</span><h5>$149</h5></div>
+                    <div class="card-mini"><span>Agency</span><h5>$499</h5></div>
+                    <div class="card-mini"><span>Access</span><h5>Lifetime</h5></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

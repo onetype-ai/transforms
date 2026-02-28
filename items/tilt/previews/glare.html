@@ -1,0 +1,22 @@
+<style>
+    .glare .row { display: flex; gap: var(--ot-spacing-m); justify-content: center; }
+    .glare .card { width: 200px; padding: var(--ot-spacing-l) var(--ot-spacing-m); border-radius: var(--ot-radius-l); background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); text-align: center; cursor: pointer; }
+    .glare .card i { font-size: 32px; color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .glare .card strong { display: block; font-size: 15px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .glare .card span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div class="glare">
+    <div class="row">
+        <div ot="tilt" ot-glare="true" class="card">
+            <i>auto_awesome</i>
+            <strong>Subtle</strong>
+            <span>Default glare</span>
+        </div>
+        <div ot="tilt" ot-glare="true" ot-glare-opacity="0.5" class="card">
+            <i>diamond</i>
+            <strong>Bright</strong>
+            <span>Strong glare</span>
+        </div>
+    </div>
+</div>

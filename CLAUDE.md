@@ -102,7 +102,7 @@ transforms.ItemAdd({
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | id | string | yes | Matches `ot="id"` in HTML |
-| icon | string | no | Material Design icon (default: 'sync_alt') |
+| icon | string | no | [Material Symbols Rounded](https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded) name (default: 'sync_alt') |
 | name | string | yes | Display name |
 | description | string | yes | One-line description |
 | js | array | no | External JS CDN URLs |
@@ -272,7 +272,7 @@ Prefix all classes with the preview file name:
 - Dark background - light text on dark
 - Realistic content - cards, stats, quotes, galleries. No placeholder text.
 - CSS variables for everything - spacing, colors, borders, radius, font sizes
-- HTML entities for icons (`&#9889;`, `&#10024;`, `&#9733;`) instead of emoji
+- Material Symbols icons via `<i>icon_name</i>` (e.g. `<i>bolt</i>`, `<i>star</i>`) - never HTML entities or emoji
 - Each preview shows a different config or use case
 - 1-5 previews per transform depending on complexity
 

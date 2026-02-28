@@ -1,25 +1,17 @@
-Animated particle backgrounds powered by particles.js. Choose from built-in presets or create custom effects with full control over particle behavior, appearance, and mouse interaction.
+Animated particle backgrounds powered by particles.js. Pick a preset, set a background color, and you get a living, breathing backdrop for hero sections, headers, or any part of the page.
 
 ### Presets
 
-- **stars** — twinkling stars on a dark sky
-- **snow** — falling snowflakes with wobble
-- **links** — connected particles, classic particles.js look
-- **bubbles** — large translucent circles floating upward
-- **confetti** — colorful confetti raining down
-- **fireflies** — glowing dots with soft pulsing
+Ships with six built-in effects. Stars gives you a twinkling night sky with softly glowing dots. Snow drops white flakes that fall gently downward. Links is the classic particles.js look - dots connected by thin lines that react to mouse movement. Bubbles creates large translucent circles floating upward like an underwater scene. Confetti rains down colorful shapes. Fireflies produces warm glowing dots that pulse and drift randomly.
 
-### Options
+### Mouse interaction
 
-- **preset** — effect preset name (default: "stars")
-- **color** — particle color as hex (default: "#ffffff")
-- **count** — number of particles (default: 80)
-- **speed** — movement speed multiplier (default: 1)
-- **size** — base particle size in pixels (default: 3)
-- **links** — draw lines between nearby particles (default: false)
-- **links-color** — line color as hex (default: "#ffffff")
-- **hover** — mouse hover mode: "none", "grab", "repulse", "bubble" (default: "none")
-- **click** — mouse click mode: "none", "push", "remove", "repulse" (default: "none")
-- **direction** — movement direction: "none", "top", "bottom", "left", "right" (default: "none")
-- **background** — background color as hex, empty for transparent (default: none)
-- **height** — container height in pixels (default: 400)
+Particles can react to the cursor in different ways. Grab mode connects nearby particles to the mouse with lines, creating a web effect as you move. Repulse pushes particles away from the cursor. Bubble makes particles grow when hovered. Click interactions can push new particles into the scene or remove them.
+
+### Customization
+
+Every preset can be tuned further. Change the particle count for density, adjust speed for energy, set custom colors to match your brand, and control the particle size. The links option can be toggled on any preset to draw connection lines between nearby particles.
+
+### Layering
+
+The particle container works great as a background layer. Place text, buttons, or cards on top with absolute positioning and a higher z-index. The particles animate underneath while the content stays readable and interactive.

@@ -1,27 +1,39 @@
 <style>
-    .zoom-in .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ot-spacing-m); }
-    .zoom-in .metric { background: var(--ot-blue-opacity); border: 1px solid var(--ot-blue-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); text-align: center; }
-    .zoom-in .metric .number { font-size: 52px; font-weight: 800; color: var(--ot-text-1); letter-spacing: -3px; line-height: 1; }
-    .zoom-in .metric .label { font-size: var(--ot-size-s); color: var(--ot-text-2); margin-top: var(--ot-spacing-s); text-transform: uppercase; letter-spacing: 1px; }
+    .zoom-in .showcase { display: flex; flex-direction: column; align-items: center; gap: var(--ot-spacing-m); }
+    .zoom-in .main { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l); text-align: center; width: 100%; }
+    .zoom-in .main i { font-size: 48px; margin-bottom: var(--ot-spacing-m); }
+    .zoom-in .main h3 { font-size: 28px; font-weight: 800; color: var(--ot-text-1); letter-spacing: -1px; margin: 0 0 var(--ot-spacing-s); }
+    .zoom-in .main p { font-size: 14px; color: var(--ot-text-2); line-height: 1.6; margin: 0; max-width: 320px; margin: 0 auto; }
+    .zoom-in .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-m); width: 100%; }
+    .zoom-in .item { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-m); text-align: center; }
+    .zoom-in .item i { font-size: 24px; margin-bottom: var(--ot-spacing-s); }
+    .zoom-in .item strong { display: block; font-size: 14px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .zoom-in .item span { font-size: var(--ot-size-s); color: var(--ot-text-2); }
 </style>
 
-<div ot="anime" ot-effect="zoom-in" ot-stagger="80" ot-duration="600" class="zoom-in">
-    <div class="metrics">
-        <div class="metric">
-            <div class="number">24K</div>
-            <div class="label">Users</div>
+<div ot="anime" ot-effect="zoom-in" ot-stagger="100" ot-duration="600" class="zoom-in">
+    <div class="showcase">
+        <div class="main">
+            <i>star</i>
+            <h3>Built for scale</h3>
+            <p>Infrastructure that grows with your team, from prototype to production.</p>
         </div>
-        <div class="metric">
-            <div class="number">99%</div>
-            <div class="label">Uptime</div>
-        </div>
-        <div class="metric">
-            <div class="number">4.9</div>
-            <div class="label">Rating</div>
-        </div>
-        <div class="metric">
-            <div class="number">50+</div>
-            <div class="label">Countries</div>
+        <div class="row">
+            <div class="item">
+                <i>bolt</i>
+                <strong>Fast deploys</strong>
+                <span>Under 30 seconds</span>
+            </div>
+            <div class="item">
+                <i>lock</i>
+                <strong>Secure</strong>
+                <span>SOC 2 compliant</span>
+            </div>
+            <div class="item">
+                <i>public</i>
+                <strong>Global CDN</strong>
+                <span>34 edge regions</span>
+            </div>
         </div>
     </div>
 </div>

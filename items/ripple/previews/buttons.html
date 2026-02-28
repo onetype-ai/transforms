@@ -1,0 +1,13 @@
+<style>
+    .buttons { display: flex; justify-content: center; gap: var(--ot-spacing-m); padding: var(--ot-spacing-l) var(--ot-spacing-m); flex-wrap: wrap; }
+    .buttons .btn { padding: 14px 32px; border-radius: var(--ot-radius-m); background: var(--ot-bg-3); color: var(--ot-text-1); font-size: 15px; font-weight: 500; cursor: pointer; border: 1px solid var(--ot-bg-3-border); display: inline-flex; align-items: center; gap: var(--ot-spacing-s); }
+    .buttons .btn-brand { background: var(--ot-brand); border-color: var(--ot-brand-border); color: white; }
+    .buttons .btn-red { background: var(--ot-red); border-color: var(--ot-red-border); color: white; }
+    .buttons .btn i { font-size: 18px; }
+</style>
+
+<div class="buttons">
+    <div ot="ripple" class="btn"><i>touch_app</i> Click me</div>
+    <div ot="ripple" class="btn btn-brand"><i>send</i> Submit</div>
+    <div ot="ripple" class="btn btn-red"><i>delete</i> Delete</div>
+</div>

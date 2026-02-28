@@ -1,32 +1,21 @@
-A fully accessible tabbed interface with animated indicator, smooth content transitions, and autoplay support. Works in all four positions — top, bottom, left, and right.
+Fully accessible tabbed interface with animated indicator, smooth content transitions, and autoplay. Works in all four positions - top, bottom, left, and right.
 
-## Features
+### How it works
 
-- **Sliding indicator** that smoothly transitions between tabs (underline or background style)
-- **Content transitions** with slide or fade animations
-- **Autoplay** with configurable duration, pause on hover, and optional progress bar
-- **Four positions** — top, bottom, left, right
-- **Keyboard navigation** — arrow keys, Home, End
-- **Full ARIA support** — roles, states, and focus management
-- **Unstyled mode** — disable default styling and bring your own CSS
+Alternate between tab labels and tab content as direct children. The first child is the label for the first tab, the second is its content, the third is the label for the second tab, and so on. The transform handles all the ARIA roles, states, and keyboard navigation automatically.
 
-## Configuration
+### Indicator
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| position | string | top | Tab placement: top, bottom, left, right |
-| transition | string | slide | Panel transition: slide, fade |
-| duration | number | 300 | Transition duration in milliseconds |
-| indicator | string | underline | Indicator style: underline, background, none |
-| autoplay | boolean | false | Auto-advance through tabs |
-| autoplay-duration | number | 5000 | Time between auto-switches in ms |
-| autoplay-pause | boolean | true | Pause autoplay on hover |
-| progress | boolean | false | Show progress bar during autoplay |
-| styled | boolean | true | Apply default visual styling |
-| active | number | 0 | Initially active tab (0-based index) |
+A sliding indicator follows the active tab. Two built-in styles - underline draws a colored line along the active tab edge, background highlights the active tab with a subtle filled shape. Both animate smoothly between tabs. Set to none if you want no indicator at all.
 
-## Structure
+### Transitions
 
-Alternate between tab labels and tab content as direct children:
+Content switches with either a slide or fade animation. Slide moves panels in the direction of navigation - left to right or up and down depending on tab position. Fade cross-dissolves between panels. Both respect the configured duration.
 
-The first child is the label for the first tab, the second child is the content for the first tab, the third child is the label for the second tab, and so on.
+### Autoplay
+
+Tabs can cycle automatically with a configurable interval. A progress bar shows how long until the next switch. Hovering pauses the timer so users can read without rushing. Good for testimonial carousels, feature showcases, or onboarding flows.
+
+### Unstyled mode
+
+Turn off default styling to build your own tab design from scratch. The transform still handles all the logic - switching, keyboard nav, ARIA, indicator positioning - but applies no visual CSS. Style the trigger and panel classes however you want.

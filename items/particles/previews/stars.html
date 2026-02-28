@@ -1,0 +1,14 @@
+<style>
+    .stars { position: relative; border-radius: var(--ot-radius-l); overflow: hidden; }
+    .stars .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; pointer-events: none; }
+    .stars .overlay h2 { font-size: 36px; font-weight: 800; color: white; letter-spacing: -1px; margin: 0; }
+    .stars .overlay p { color: rgba(255, 255, 255, 0.6); font-size: 15px; margin-top: var(--ot-spacing-s); }
+</style>
+
+<div class="stars">
+    <div ot="particles" ot-preset="stars" ot-background="#0a0a2e" ot-count="120" ot-speed="0.5" ot-height="300"></div>
+    <div class="overlay">
+        <h2>Into the cosmos</h2>
+        <p>Twinkling stars on a dark sky</p>
+    </div>
+</div>

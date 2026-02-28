@@ -1,0 +1,18 @@
+<style>
+    .coverflow .slide { display: flex; align-items: center; justify-content: center; height: 280px; border-radius: var(--ot-radius-l); font-size: 20px; font-weight: 600; color: white; }
+    .coverflow .s1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .coverflow .s2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .coverflow .s3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .coverflow .s4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .coverflow .s5 { background: linear-gradient(135deg, #fa709a, #fee140); }
+</style>
+
+<div class="coverflow">
+    <div ot="swiper" ot-effect="coverflow" ot-slides-per-view="2" ot-centered="true" ot-loop="true" ot-grab-cursor="true">
+        <div class="slide s1">Slide 1</div>
+        <div class="slide s2">Slide 2</div>
+        <div class="slide s3">Slide 3</div>
+        <div class="slide s4">Slide 4</div>
+        <div class="slide s5">Slide 5</div>
+    </div>
+</div>

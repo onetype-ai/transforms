@@ -1,0 +1,21 @@
+<style>
+    .default { display: flex; justify-content: center; padding: 60px var(--ot-spacing-m); }
+    .default .orbit { position: relative; }
+    .default .node { width: 48px; height: 48px; border-radius: 50%; background: var(--ot-bg-3); border: 1px solid var(--ot-bg-3-border); display: flex; align-items: center; justify-content: center; margin: -24px 0 0 -24px; color: var(--ot-text-2); }
+    .default .node i { font-size: 22px; }
+    .default .center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; border-radius: 50%; background: var(--ot-brand-opacity); border: 1px solid var(--ot-brand-border); display: flex; align-items: center; justify-content: center; color: var(--ot-brand); }
+    .default .center i { font-size: 24px; }
+    .default .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px solid var(--ot-bg-2-border); pointer-events: none; width: 300px; height: 300px; }
+</style>
+
+<div class="default">
+    <div ot="orbit" class="orbit">
+        <span class="node"><i>bolt</i></span>
+        <span class="node"><i>lock</i></span>
+        <span class="node"><i>palette</i></span>
+        <span class="node"><i>star</i></span>
+        <span class="node"><i>auto_awesome</i></span>
+        <div class="ring"></div>
+        <div class="center"><i>rocket_launch</i></div>
+    </div>
+</div>

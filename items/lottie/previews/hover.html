@@ -1,0 +1,16 @@
+<style>
+    .hover { display: flex; justify-content: center; gap: var(--ot-spacing-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .hover .animation { width: 200px; height: 200px; cursor: pointer; }
+    .hover .label { text-align: center; color: var(--ot-text-2); font-size: var(--ot-size-s); margin-top: var(--ot-spacing-s); }
+</style>
+
+<div class="hover">
+    <div>
+        <div ot="lottie" ot-path="https://assets2.lottiefiles.com/packages/lf20_UJNc2t.json" ot-trigger="hover" ot-hover-action="play" class="animation"></div>
+        <div class="label">Hover to play</div>
+    </div>
+    <div>
+        <div ot="lottie" ot-path="https://assets9.lottiefiles.com/packages/lf20_jcikwtux.json" ot-trigger="hover" ot-hover-action="reverse" class="animation"></div>
+        <div class="label">Hover to reverse</div>
+    </div>
+</div>

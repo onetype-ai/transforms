@@ -46,7 +46,7 @@ commands.Item({
                 return '';
             }
 
-            return this.section('Usage', readFileSync(file, 'utf-8'));
+            return this.section('Basic Usage', readFileSync(file, 'utf-8'));
         };
 
         this.previews = () =>

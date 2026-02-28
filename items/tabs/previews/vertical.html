@@ -1,0 +1,35 @@
+<style>
+    .vertical .tab-label { display: flex; align-items: center; gap: var(--ot-spacing-s); }
+    .vertical .tab-label i { font-size: 18px; }
+    .vertical .setting { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+    .vertical .setting:last-child { border-bottom: none; }
+    .vertical .setting-label { color: var(--ot-text-1); font-size: var(--ot-size-m); font-weight: 500; }
+    .vertical .setting-desc { color: var(--ot-text-2); font-size: var(--ot-size-s); margin-top: 2px; }
+    .vertical .toggle { width: 36px; height: 20px; border-radius: 10px; background: rgba(255, 255, 255, 0.08); position: relative; flex-shrink: 0; }
+    .vertical .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: rgba(255, 255, 255, 0.4); }
+    .vertical .toggle-on { background: var(--ot-brand); }
+    .vertical .toggle-on::after { left: auto; right: 3px; background: white; }
+</style>
+
+<div class="vertical">
+    <div ot="tabs" ot-position="left">
+        <div><span class="tab-label"><i>tune</i> General</span></div>
+        <div>
+            <div class="setting"><div><div class="setting-label">Dark mode</div><div class="setting-desc">Use dark theme across the interface</div></div><div class="toggle toggle-on"></div></div>
+            <div class="setting"><div><div class="setting-label">Compact view</div><div class="setting-desc">Reduce spacing between elements</div></div><div class="toggle"></div></div>
+            <div class="setting"><div><div class="setting-label">Animations</div><div class="setting-desc">Enable UI transitions and effects</div></div><div class="toggle toggle-on"></div></div>
+        </div>
+        <div><span class="tab-label"><i>shield</i> Security</span></div>
+        <div>
+            <div class="setting"><div><div class="setting-label">Two-factor auth</div><div class="setting-desc">Require verification on every login</div></div><div class="toggle toggle-on"></div></div>
+            <div class="setting"><div><div class="setting-label">Session timeout</div><div class="setting-desc">Auto-logout after inactivity</div></div><div class="toggle"></div></div>
+            <div class="setting"><div><div class="setting-label">Login alerts</div><div class="setting-desc">Get notified on new device logins</div></div><div class="toggle toggle-on"></div></div>
+        </div>
+        <div><span class="tab-label"><i>notifications</i> Alerts</span></div>
+        <div>
+            <div class="setting"><div><div class="setting-label">Email digests</div><div class="setting-desc">Weekly summary of your activity</div></div><div class="toggle toggle-on"></div></div>
+            <div class="setting"><div><div class="setting-label">Push notifications</div><div class="setting-desc">Real-time browser notifications</div></div><div class="toggle"></div></div>
+            <div class="setting"><div><div class="setting-label">Marketing</div><div class="setting-desc">Product updates and announcements</div></div><div class="toggle"></div></div>
+        </div>
+    </div>
+</div>

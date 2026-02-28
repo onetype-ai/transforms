@@ -1,15 +1,19 @@
-Render Lottie animations from JSON files. Powered by lottie-web, the official Airbnb library for After Effects animations on the web.
+Play Lottie animations from JSON files. Powered by lottie-web, the official Airbnb library for rendering After Effects animations on the web.
 
-Point to any Lottie JSON URL and get a smooth, scalable, lightweight animation. Supports SVG, Canvas, and HTML renderers. Control playback with scroll, hover, or click triggers.
+### How it works
 
-### Options
+Point to any Lottie JSON URL and get a smooth, scalable animation that renders as SVG by default. Lottie files are tiny compared to video or GIF - a complex animation might be just 20-50KB. They scale to any size without losing quality, which makes them perfect for icons, illustrations, loading states, and hero sections.
 
-- **path** — URL to the Lottie JSON file (required)
-- **loop** — loop the animation (default: true)
-- **autoplay** — start playing on load (default: true)
-- **speed** — playback speed, 1 is normal (default: 1)
-- **direction** — 1 for forward, -1 for reverse (default: 1)
-- **renderer** — rendering engine: "svg", "canvas", or "html" (default: "svg")
-- **trigger** — playback trigger: "none", "scroll", "hover", or "click" (default: "none")
-- **hover-action** — what happens on hover: "play" or "reverse" (default: "play")
-- **click-action** — what happens on click: "toggle" or "restart" (default: "toggle")
+### Triggers
+
+By default, animations autoplay and loop continuously. But you can control when they start with three different trigger modes.
+
+Scroll trigger plays the animation when it enters the viewport - good for illustrations that should animate as the user scrolls down. Hover trigger starts the animation when the mouse enters the element, with two modes: play (starts on enter, pauses on leave) and reverse (plays forward on enter, plays backward on leave). Click trigger lets users tap to toggle playback or restart the animation from the beginning.
+
+### Playback
+
+Speed and direction can be adjusted independently. Slow an animation down to half speed for a more relaxed feel, or double it for energy. Reverse direction plays the whole animation backward, which works surprisingly well for some transitions.
+
+### Renderers
+
+SVG is the default and best for most cases - sharp at any size, accessible, and lightweight. Canvas is available for performance-heavy animations with lots of layers. HTML renderer is an option but rarely needed.

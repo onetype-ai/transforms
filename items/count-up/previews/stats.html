@@ -1,0 +1,21 @@
+<style>
+    .stats { display: flex; justify-content: center; gap: 60px; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .stats .stat { text-align: center; }
+    .stats .stat .number { font-size: 40px; font-weight: 700; letter-spacing: -1px; }
+    .stats .stat .label { color: var(--ot-text-2); font-size: var(--ot-size-m); margin-top: var(--ot-spacing-x); }
+</style>
+
+<div class="stats">
+    <div class="stat">
+        <div ot="count-up" ot-end="132" ot-suffix="k" class="number" style="color: var(--ot-brand);"></div>
+        <div class="label">Users</div>
+    </div>
+    <div class="stat">
+        <div ot="count-up" ot-end="98" ot-suffix="%" ot-duration="3" class="number" style="color: var(--ot-green);"></div>
+        <div class="label">Uptime</div>
+    </div>
+    <div class="stat">
+        <div ot="count-up" ot-end="4.9" ot-decimals="1" ot-duration="2.5" class="number" style="color: var(--ot-orange);"></div>
+        <div class="label">Rating</div>
+    </div>
+</div>

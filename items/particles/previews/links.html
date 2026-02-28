@@ -1,0 +1,14 @@
+<style>
+    .links { position: relative; border-radius: var(--ot-radius-l); overflow: hidden; }
+    .links .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; pointer-events: none; }
+    .links .overlay h2 { font-size: 32px; font-weight: 800; color: white; letter-spacing: -1px; margin: 0; }
+    .links .overlay p { color: rgba(255, 255, 255, 0.5); font-size: var(--ot-size-m); margin-top: var(--ot-spacing-s); }
+</style>
+
+<div class="links">
+    <div ot="particles" ot-preset="links" ot-background="#0d1117" ot-count="60" ot-hover="grab" ot-click="push" ot-height="300"></div>
+    <div class="overlay">
+        <h2>Connected network</h2>
+        <p>Hover to grab, click to add</p>
+    </div>
+</div>
