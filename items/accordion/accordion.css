@@ -1,0 +1,121 @@
+/* Base */
+.ot-accordion {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Header */
+.ot-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    text-align: left;
+    outline: none;
+    gap: var(--ot-spacing-s);
+}
+
+.ot-accordion-header:focus-visible {
+    outline: 2px solid var(--ot-brand);
+    outline-offset: -2px;
+    border-radius: var(--ot-radius-s);
+}
+
+/* Icon */
+.ot-accordion-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    position: relative;
+    transition: transform var(--duration, 300ms) ease;
+}
+
+.ot-accordion-icon::before,
+.ot-accordion-icon::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+    border-radius: 1px;
+}
+
+.ot-accordion-icon::before {
+    width: 12px;
+    height: 2px;
+}
+
+.ot-accordion-icon::after {
+    width: 2px;
+    height: 12px;
+    transition: transform var(--duration, 300ms) ease;
+}
+
+.ot-accordion-open .ot-accordion-icon::after {
+    transform: rotate(90deg);
+}
+
+/* Region — grid height animation */
+.ot-accordion-region {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration, 300ms) ease;
+}
+
+.ot-accordion-open .ot-accordion-region {
+    grid-template-rows: 1fr;
+}
+
+/* Panel */
+.ot-accordion-panel {
+    overflow: hidden;
+}
+
+/* Styled */
+.ot-accordion-styled .ot-accordion-item {
+    border-bottom: 1px solid var(--ot-bg-2-border);
+}
+
+.ot-accordion-styled .ot-accordion-header {
+    padding: var(--ot-spacing-m) 0;
+    font-family: var(--ot-font-primary), sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ot-text-2);
+    transition: color 0.2s ease;
+}
+
+.ot-accordion-styled .ot-accordion-header:hover,
+.ot-accordion-styled .ot-accordion-open .ot-accordion-header {
+    color: var(--ot-text-1);
+}
+
+.ot-accordion-styled .ot-accordion-panel {
+    font-family: var(--ot-font-primary), sans-serif;
+    font-size: var(--ot-size-m);
+    color: var(--ot-text-2);
+    line-height: 1.6;
+}
+
+.ot-accordion-styled .ot-accordion-content {
+    padding-bottom: var(--ot-spacing-m);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .ot-accordion-region {
+        transition: none;
+    }
+
+    .ot-accordion-icon::after {
+        transition: none;
+    }
+}

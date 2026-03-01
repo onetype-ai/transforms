@@ -1,0 +1,42 @@
+<style>
+    .captions .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ot-spacing-m); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .captions .card { border-radius: var(--ot-radius-l); overflow: hidden; background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); }
+    .captions .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; cursor: pointer; transition: opacity 0.2s ease; display: block; }
+    .captions .card img:hover { opacity: 0.85; }
+    .captions .card .info { padding: var(--ot-spacing-s) var(--ot-spacing-m); }
+    .captions .card .info strong { font-size: 14px; color: var(--ot-text-1); }
+    .captions .card .info span { font-size: var(--ot-size-s); color: var(--ot-text-2); display: block; margin-top: 2px; }
+</style>
+
+<div ot="lightbox" class="captions">
+    <div class="grid">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=500" data-full="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600" alt="Starry night above snowy mountains" />
+            <div class="info">
+                <strong>Starry Peaks</strong>
+                <span>Swiss Alps, 3200m elevation</span>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?w=500" data-full="https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?w=1600" alt="Autumn forest reflected in still lake" />
+            <div class="info">
+                <strong>Mirror Lake</strong>
+                <span>Vermont, New England</span>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500" data-full="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600" alt="Tropical beach with turquoise water" />
+            <div class="info">
+                <strong>Crystal Shore</strong>
+                <span>Maldives, Indian Ocean</span>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=500" data-full="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600" alt="Aerial view of winding river through mountains" />
+            <div class="info">
+                <strong>River Canyon</strong>
+                <span>Patagonia, Argentina</span>
+            </div>
+        </div>
+    </div>
+</div>

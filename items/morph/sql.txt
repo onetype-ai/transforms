@@ -1,0 +1,434 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    1,
+    'morph',
+    'Morph',
+    'Smooth SVG shape morphing between multiple paths.',
+    'motion_photos_auto',
+    'Pro',
+    $$Smooth SVG shape morphing powered by Flubber. Drop in your SVG paths and watch them fluidly transform from one shape to another.
+
+### How it works
+
+Place multiple `<path>` elements inside an SVG. Morph reads all the path data, replaces them with a single display path, and animates between each shape in sequence. Flubber handles the hard part - matching points between completely different shapes so the transitions always look smooth, even when morphing a star into a circle or a triangle into a hexagon.
+
+### Triggers
+
+Four ways to trigger the morph animation:
+
+- **Auto** - cycles through all shapes automatically with a configurable pause between each transition
+- **Hover** - morphs to the second shape on mouse enter, reverts on mouse leave
+- **Click** - advances to the next shape on each click
+- **Scroll** - morphs when the element enters the viewport
+
+### Styling
+
+Control the appearance through configuration. Set fill color, stroke color, and stroke width to match your design. Works with CSS variables for easy theming. Leave fill empty and add a stroke for outlined shapes, or combine both for a bordered fill look.
+
+### Use cases
+
+Icon transitions - morph a play icon into pause, a hamburger into a close X, or a heart into a star. Abstract background shapes that shift on scroll. Interactive illustrations that respond to user actions. Loading states that cycle through geometric forms.
+
+### Technical details
+
+Uses Flubber for path interpolation, which automatically handles mismatched path commands and point counts. Animations run on requestAnimationFrame for smooth 60fps performance. Built-in easing functions give natural-feeling motion without external animation libraries.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-morph';
+
+this.paths = () =>
+{
+    const elements = node.querySelectorAll('path');
+    const result = [];
+
+    for(let i = 0; i < elements.length; i++)
+    {
+        result.push(elements[i].getAttribute('d'));
+    }
+
+    return result;
+};
+
+this.easing = (t) =>
+{
+    const map = {
+        'linear': t,
+        'ease-in': t * t,
+        'ease-out': t * (2 - t),
+        'ease-in-out': t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
+    };
+
+    return map[data['ease']] !== undefined ? map[data['ease']] : map['ease-in-out'];
+};
+
+this.animate = (from, to, callback) =>
+{
+    const interpolator = flubber.interpolate(from, to, { maxSegmentLength: 8 });
+    const start = performance.now();
+    const duration = data['duration'];
+
+    const frame = (now) =>
+    {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = this.easing(progress);
+
+        this.display.setAttribute('d', interpolator(eased));
+
+        if(progress < 1)
+        {
+            this.raf = requestAnimationFrame(frame);
+        }
+        else if(callback)
+        {
+            callback();
+        }
+    };
+
+    this.raf = requestAnimationFrame(frame);
+};
+
+this.next = () =>
+{
+    const from = this.index;
+    this.index = (this.index + 1) % this.shapes.length;
+
+    this.animate(this.shapes[from], this.shapes[this.index], () =>
+    {
+        if(data['trigger'] === 'auto' && data['loop'])
+        {
+            this.timeout = setTimeout(() => this.next(), data['pause']);
+        }
+        else if(data['trigger'] === 'auto' && !data['loop'] && this.index !== 0)
+        {
+            this.timeout = setTimeout(() => this.next(), data['pause']);
+        }
+    });
+};
+
+this.auto = () =>
+{
+    this.timeout = setTimeout(() => this.next(), data['pause']);
+};
+
+this.hover = () =>
+{
+    node.addEventListener('mouseenter', this.onenter = () =>
+    {
+        if(this.raf)
+        {
+            cancelAnimationFrame(this.raf);
+        }
+
+        this.animate(this.shapes[0], this.shapes[1]);
+    });
+
+    node.addEventListener('mouseleave', this.onleave = () =>
+    {
+        if(this.raf)
+        {
+            cancelAnimationFrame(this.raf);
+        }
+
+        this.animate(this.shapes[1], this.shapes[0]);
+    });
+};
+
+this.click = () =>
+{
+    node.addEventListener('click', this.onclick = () =>
+    {
+        if(this.raf)
+        {
+            cancelAnimationFrame(this.raf);
+        }
+
+        this.next();
+    });
+};
+
+this.scroll = () =>
+{
+    this.observer = new IntersectionObserver((entries) =>
+    {
+        if(entries[0].isIntersecting)
+        {
+            this.next();
+
+            if(!data['loop'])
+            {
+                this.observer.disconnect();
+            }
+        }
+    }, { threshold: 0.3 });
+
+    this.observer.observe(node);
+};
+
+this.build = () =>
+{
+    this.shapes = this.paths();
+
+    if(this.shapes.length < 2)
+    {
+        return;
+    }
+
+    node.classList.add(prefix);
+    this.index = 0;
+
+    const svg = node.querySelector('svg');
+    const first = svg.querySelector('path');
+    const fill = data['fill'] || first.getAttribute('fill') || 'currentColor';
+    const stroke = data['stroke'] || first.getAttribute('stroke') || '';
+    const strokeWidth = data['stroke-width'] || parseFloat(first.getAttribute('stroke-width')) || 0;
+
+    svg.innerHTML = '';
+
+    this.display = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    this.display.setAttribute('d', this.shapes[0]);
+    this.display.setAttribute('fill', fill);
+
+    if(stroke)
+    {
+        this.display.setAttribute('stroke', stroke);
+    }
+
+    if(strokeWidth > 0)
+    {
+        this.display.setAttribute('stroke-width', strokeWidth);
+    }
+
+    svg.appendChild(this.display);
+
+    const trigger = data['trigger'];
+
+    if(trigger === 'auto')
+    {
+        this.auto();
+    }
+    else if(trigger === 'hover')
+    {
+        this.hover();
+    }
+    else if(trigger === 'click')
+    {
+        this.click();
+    }
+    else if(trigger === 'scroll')
+    {
+        this.scroll();
+    }
+};
+
+this.build();$$,
+    NULL,
+    ARRAY['https://cdn.jsdelivr.net/npm/flubber@0.4.2/build/flubber.min.js'],
+    NULL,
+    '{"trigger": {"type": "string", "value": "auto", "description": "How to start the morph - auto, hover, click, or scroll"}, "duration": {"type": "number", "value": 800, "description": "Animation duration in milliseconds"}, "pause": {"type": "number", "value": 1500, "description": "Pause between auto transitions in milliseconds"}, "ease": {"type": "string", "value": "ease-in-out", "description": "Easing function - linear, ease-in, ease-out, or ease-in-out"}, "loop": {"type": "boolean", "value": true, "description": "Loop through all shapes continuously"}, "fill": {"type": "string", "value": "", "description": "Override fill color for the morph path"}, "stroke": {"type": "string", "value": "", "description": "Stroke color for the morph path"}, "stroke-width": {"type": "number", "value": 0, "description": "Stroke width in pixels"}}'::jsonb,
+    $$<div ot="morph">
+    <svg viewBox="0 0 200 200" width="200" height="200">
+        <path d="M100,10 L130,90 L200,90 L145,130 L165,200 L100,160 L35,200 L55,130 L0,90 L70,90 Z" fill="currentColor" />
+        <path d="M100,0 A100,100 0 1,1 99.99,0 Z" fill="currentColor" />
+    </svg>
+</div>$$,
+    ARRAY[
+        $$// Auto
+<style>
+    .auto { display: flex; justify-content: center; gap: 48px; padding: var(--ot-spacing-l) var(--ot-spacing-m); align-items: center; }
+    .auto .column { display: flex; flex-direction: column; align-items: center; gap: var(--ot-spacing-s); }
+    .auto svg { width: 140px; height: 140px; }
+    .auto .label { color: var(--ot-text-2); font-size: var(--ot-size-s); letter-spacing: 1px; text-transform: uppercase; }
+</style>
+
+<div class="auto">
+    <div class="column">
+        <div ot="morph" ot-duration="900" ot-pause="1000">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,10 L130,90 L200,90 L145,130 L165,200 L100,160 L35,200 L55,130 L0,90 L70,90 Z" fill="var(--ot-brand)" />
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" fill="var(--ot-brand)" />
+                <path d="M10,10 L190,10 L190,190 L10,190 Z" fill="var(--ot-brand)" />
+                <path d="M100,0 L190,70 L165,185 L35,185 L10,70 Z" fill="var(--ot-brand)" />
+            </svg>
+        </div>
+        <span class="label">Warm</span>
+    </div>
+    <div class="column">
+        <div ot="morph" ot-duration="1200" ot-pause="800">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" fill="var(--ot-blue)" />
+                <path d="M50,0 L150,0 L200,100 L150,200 L50,200 L0,100 Z" fill="var(--ot-blue)" />
+                <path d="M100,0 L200,200 L0,200 Z" fill="var(--ot-blue)" />
+            </svg>
+        </div>
+        <span class="label">Cool</span>
+    </div>
+    <div class="column">
+        <div ot="morph" ot-duration="700" ot-pause="1400">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,0 L200,200 L0,200 Z" fill="var(--ot-green)" />
+                <path d="M100,10 L130,90 L200,90 L145,130 L165,200 L100,160 L35,200 L55,130 L0,90 L70,90 Z" fill="var(--ot-green)" />
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" fill="var(--ot-green)" />
+            </svg>
+        </div>
+        <span class="label">Fresh</span>
+    </div>
+</div>$$,
+        $$// Hover
+<style>
+    .hover { display: flex; justify-content: center; gap: var(--ot-spacing-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .hover .card { display: flex; flex-direction: column; align-items: center; gap: var(--ot-spacing-m); padding: var(--ot-spacing-l) var(--ot-spacing-l); background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); cursor: pointer; transition: border-color 0.2s; }
+    .hover .card:hover { border-color: var(--ot-bg-3-border); }
+    .hover svg { width: 80px; height: 80px; }
+    .hover .card strong { font-size: 14px; color: var(--ot-text-1); }
+    .hover .card span { font-size: var(--ot-size-s); color: var(--ot-text-2); }
+</style>
+
+<div class="hover">
+    <div class="card">
+        <div ot="morph" ot-trigger="hover" ot-duration="400">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" fill="var(--ot-brand)" />
+                <path d="M100,10 L130,90 L200,90 L145,130 L165,200 L100,160 L35,200 L55,130 L0,90 L70,90 Z" fill="var(--ot-brand)" />
+            </svg>
+        </div>
+        <strong>Design</strong>
+        <span>Creative tools</span>
+    </div>
+    <div class="card">
+        <div ot="morph" ot-trigger="hover" ot-duration="400">
+            <svg viewBox="0 0 200 200">
+                <path d="M10,10 L190,10 L190,190 L10,190 Z" fill="var(--ot-blue)" />
+                <path d="M50,0 L150,0 L200,100 L150,200 L50,200 L0,100 Z" fill="var(--ot-blue)" />
+            </svg>
+        </div>
+        <strong>Code</strong>
+        <span>Build anything</span>
+    </div>
+    <div class="card">
+        <div ot="morph" ot-trigger="hover" ot-duration="400">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,0 L200,200 L0,200 Z" fill="var(--ot-green)" />
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" fill="var(--ot-green)" />
+            </svg>
+        </div>
+        <strong>Scale</strong>
+        <span>Grow fast</span>
+    </div>
+    <div class="card">
+        <div ot="morph" ot-trigger="hover" ot-duration="400">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,0 L190,70 L165,185 L35,185 L10,70 Z" fill="var(--ot-orange)" />
+                <path d="M10,10 L190,10 L190,190 L10,190 Z" fill="var(--ot-orange)" />
+            </svg>
+        </div>
+        <strong>Launch</strong>
+        <span>Ship today</span>
+    </div>
+</div>$$,
+        $$// Click
+<style>
+    .click { display: flex; flex-direction: column; align-items: center; gap: var(--ot-spacing-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .click .row { display: flex; gap: var(--ot-spacing-l); align-items: center; }
+    .click .icon { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-m); cursor: pointer; transition: background 0.2s; }
+    .click .icon:hover { background: var(--ot-bg-2-hover); }
+    .click svg { width: 28px; height: 28px; }
+    .click .hint { color: var(--ot-text-2); font-size: var(--ot-size-s); }
+</style>
+
+<div class="click">
+    <div class="row">
+        <div class="icon">
+            <div ot="morph" ot-trigger="click" ot-duration="500">
+                <svg viewBox="0 0 24 24">
+                    <path d="M8,5 L8,19 L19,12 Z" fill="var(--ot-brand)" />
+                    <path d="M6,5 L10,5 L10,19 L6,19 Z M14,5 L18,5 L18,19 L14,19 Z" fill="var(--ot-brand)" />
+                </svg>
+            </div>
+        </div>
+        <div class="icon">
+            <div ot="morph" ot-trigger="click" ot-duration="500">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,2 L15.09,8.26 L22,9.27 L17,14.14 L18.18,21.02 L12,17.77 L5.82,21.02 L7,14.14 L2,9.27 L8.91,8.26 Z" fill="var(--ot-orange)" />
+                    <path d="M12,21.35 L10.55,20.03 C5.4,15.36 2,12.28 2,8.5 C2,5.42 4.42,3 7.5,3 C9.24,3 10.91,3.81 12,5.09 C13.09,3.81 14.76,3 16.5,3 C19.58,3 22,5.42 22,8.5 C22,12.28 18.6,15.36 13.45,20.04 Z" fill="var(--ot-orange)" />
+                </svg>
+            </div>
+        </div>
+        <div class="icon">
+            <div ot="morph" ot-trigger="click" ot-duration="500">
+                <svg viewBox="0 0 24 24">
+                    <path d="M3,18 L21,18 L21,16 L3,16 Z M3,13 L21,13 L21,11 L3,11 Z M3,6 L3,8 L21,8 L21,6 Z" fill="var(--ot-blue)" />
+                    <path d="M19,6.41 L17.59,5 L12,10.59 L6.41,5 L5,6.41 L10.59,12 L5,17.59 L6.41,19 L12,13.41 L17.59,19 L19,17.59 L13.41,12 Z" fill="var(--ot-blue)" />
+                </svg>
+            </div>
+        </div>
+        <div class="icon">
+            <div ot="morph" ot-trigger="click" ot-duration="500">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2 Z M10,17 L5,12 L6.41,10.59 L10,14.17 L17.59,6.59 L19,8 Z" fill="var(--ot-green)" />
+                    <path d="M12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2 Z M13,17 L11,17 L11,11 L13,11 Z M13,9 L11,9 L11,7 L13,7 Z" fill="var(--ot-green)" />
+                </svg>
+            </div>
+        </div>
+    </div>
+    <span class="hint">Click each icon to morph</span>
+</div>$$,
+        $$// Stroke
+<style>
+    .stroke { display: flex; justify-content: center; gap: 48px; padding: var(--ot-spacing-l) var(--ot-spacing-m); align-items: center; }
+    .stroke .column { display: flex; flex-direction: column; align-items: center; gap: var(--ot-spacing-s); }
+    .stroke svg { width: 120px; height: 120px; }
+    .stroke .label { color: var(--ot-text-2); font-size: var(--ot-size-s); letter-spacing: 1px; text-transform: uppercase; }
+</style>
+
+<div class="stroke">
+    <div class="column">
+        <div ot="morph" ot-duration="1000" ot-pause="600" ot-stroke="var(--ot-brand)" ot-stroke-width="2" ot-fill="none">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,10 L130,90 L200,90 L145,130 L165,200 L100,160 L35,200 L55,130 L0,90 L70,90 Z" />
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" />
+                <path d="M100,0 L200,200 L0,200 Z" />
+            </svg>
+        </div>
+        <span class="label">Brand</span>
+    </div>
+    <div class="column">
+        <div ot="morph" ot-duration="1000" ot-pause="600" ot-stroke="var(--ot-blue)" ot-stroke-width="2" ot-fill="rgba(56, 189, 248, 0.08)">
+            <svg viewBox="0 0 200 200">
+                <path d="M10,10 L190,10 L190,190 L10,190 Z" />
+                <path d="M50,0 L150,0 L200,100 L150,200 L50,200 L0,100 Z" />
+                <path d="M100,0 L190,70 L165,185 L35,185 L10,70 Z" />
+            </svg>
+        </div>
+        <span class="label">Blue</span>
+    </div>
+    <div class="column">
+        <div ot="morph" ot-duration="1000" ot-pause="600" ot-stroke="var(--ot-green)" ot-stroke-width="2" ot-fill="rgba(52, 211, 153, 0.08)">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" />
+                <path d="M10,10 L190,10 L190,190 L10,190 Z" />
+            </svg>
+        </div>
+        <span class="label">Green</span>
+    </div>
+    <div class="column">
+        <div ot="morph" ot-duration="1000" ot-pause="600" ot-stroke="var(--ot-orange)" ot-stroke-width="2" ot-fill="none">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,0 L200,200 L0,200 Z" />
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" />
+                <path d="M100,10 L130,90 L200,90 L145,130 L165,200 L100,160 L35,200 L55,130 L0,90 L70,90 Z" />
+            </svg>
+        </div>
+        <span class="label">Orange</span>
+    </div>
+</div>$$
+    ]
+);

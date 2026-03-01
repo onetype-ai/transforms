@@ -1,0 +1,28 @@
+<style>
+    .cards { padding: var(--ot-spacing-l) var(--ot-spacing-m); min-height: 300px; }
+    .cards .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-m); }
+    .cards .card { padding: var(--ot-spacing-l) var(--ot-spacing-m); background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); text-align: center; }
+    .cards .card i { font-size: 28px; color: var(--ot-text-2); margin-bottom: var(--ot-spacing-s); }
+    .cards .card strong { display: block; font-size: 15px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .cards .card span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div ot="cursor" ot-color="var(--ot-brand)" ot-hover-targets=".card" ot-hover-scale="2" class="cards">
+    <div class="grid">
+        <div class="card" data-cursor>
+            <i>bolt</i>
+            <strong>Fast</strong>
+            <span>60fps animations</span>
+        </div>
+        <div class="card" data-cursor>
+            <i>palette</i>
+            <strong>Custom</strong>
+            <span>Any color or size</span>
+        </div>
+        <div class="card" data-cursor>
+            <i>code</i>
+            <strong>Simple</strong>
+            <span>One attribute</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+<style>
+    .stroke { display: flex; justify-content: center; gap: 48px; padding: var(--ot-spacing-l) var(--ot-spacing-m); align-items: center; }
+    .stroke .column { display: flex; flex-direction: column; align-items: center; gap: var(--ot-spacing-s); }
+    .stroke svg { width: 120px; height: 120px; }
+    .stroke .label { color: var(--ot-text-2); font-size: var(--ot-size-s); letter-spacing: 1px; text-transform: uppercase; }
+</style>
+
+<div class="stroke">
+    <div class="column">
+        <div ot="morph" ot-duration="1000" ot-pause="600" ot-stroke="var(--ot-brand)" ot-stroke-width="2" ot-fill="none">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,10 L130,90 L200,90 L145,130 L165,200 L100,160 L35,200 L55,130 L0,90 L70,90 Z" />
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" />
+                <path d="M100,0 L200,200 L0,200 Z" />
+            </svg>
+        </div>
+        <span class="label">Brand</span>
+    </div>
+    <div class="column">
+        <div ot="morph" ot-duration="1000" ot-pause="600" ot-stroke="var(--ot-blue)" ot-stroke-width="2" ot-fill="rgba(56, 189, 248, 0.08)">
+            <svg viewBox="0 0 200 200">
+                <path d="M10,10 L190,10 L190,190 L10,190 Z" />
+                <path d="M50,0 L150,0 L200,100 L150,200 L50,200 L0,100 Z" />
+                <path d="M100,0 L190,70 L165,185 L35,185 L10,70 Z" />
+            </svg>
+        </div>
+        <span class="label">Blue</span>
+    </div>
+    <div class="column">
+        <div ot="morph" ot-duration="1000" ot-pause="600" ot-stroke="var(--ot-green)" ot-stroke-width="2" ot-fill="rgba(52, 211, 153, 0.08)">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" />
+                <path d="M10,10 L190,10 L190,190 L10,190 Z" />
+            </svg>
+        </div>
+        <span class="label">Green</span>
+    </div>
+    <div class="column">
+        <div ot="morph" ot-duration="1000" ot-pause="600" ot-stroke="var(--ot-orange)" ot-stroke-width="2" ot-fill="none">
+            <svg viewBox="0 0 200 200">
+                <path d="M100,0 L200,200 L0,200 Z" />
+                <path d="M100,0 A100,100 0 1,1 99.99,0 Z" />
+                <path d="M100,10 L130,90 L200,90 L145,130 L165,200 L100,160 L35,200 L55,130 L0,90 L70,90 Z" />
+            </svg>
+        </div>
+        <span class="label">Orange</span>
+    </div>
+</div>

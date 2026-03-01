@@ -1,0 +1,67 @@
+/* Area */
+.ot-cursor-area {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Wrapper */
+.ot-cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ot-cursor-visible {
+    opacity: 1;
+}
+
+/* Dot */
+.ot-cursor-dot {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--ot-text-1);
+    will-change: transform;
+}
+
+/* Ring */
+.ot-cursor-ring {
+    position: absolute;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: var(--ot-text-1);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    will-change: left, top;
+}
+
+/* Hover state */
+.ot-cursor-hover .ot-cursor-ring {
+    transform: scale(var(--hover-scale, 1.5));
+}
+
+.ot-cursor-hover .ot-cursor-dot {
+    opacity: 0.5;
+}
+
+/* Blend mode */
+.ot-cursor-blend .ot-cursor-dot {
+    background: white;
+    mix-blend-mode: difference;
+}
+
+.ot-cursor-blend .ot-cursor-ring {
+    border-color: white;
+    mix-blend-mode: difference;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .ot-cursor-ring {
+        transition: none;
+    }
+}

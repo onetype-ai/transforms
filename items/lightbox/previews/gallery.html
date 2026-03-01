@@ -1,0 +1,16 @@
+<style>
+    .gallery .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-s); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .gallery .grid img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--ot-radius-m); cursor: pointer; transition: opacity 0.2s ease; }
+    .gallery .grid img:hover { opacity: 0.85; }
+</style>
+
+<div ot="lightbox" class="gallery">
+    <div class="grid">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400" data-full="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1600" alt="Mountain landscape at golden hour" />
+        <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400" data-full="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1600" alt="Valley with morning sunlight" />
+        <img src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400" data-full="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=1600" alt="Path through a dense forest" />
+        <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400" data-full="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600" alt="Foggy green valley" />
+        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400" data-full="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1600" alt="Sunlight filtering through trees" />
+        <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400" data-full="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1600" alt="Rolling green hills at sunset" />
+    </div>
+</div>

@@ -1,0 +1,787 @@
+INSERT INTO transforms (category_id, slug, name, description, icon, tier, overview, tag)
+VALUES (
+    5,
+    'lightbox',
+    'Lightbox',
+    'Fullscreen image gallery with zoom, swipe, and keyboard navigation.',
+    'fullscreen',
+    'Free',
+    $$A fullscreen image lightbox with gallery navigation, zoom, and touch support. Click any image to open it in a cinematic overlay with smooth animations.
+
+### Gallery navigation
+
+When multiple images are inside the container, the lightbox becomes a gallery. Navigate with arrow buttons, keyboard arrows, or swipe on touch devices. A counter shows your position in the set. Enable loop mode to cycle endlessly through the gallery.
+
+### Zoom and pan
+
+Scroll to zoom into an image at your cursor position. On mobile, pinch to zoom. Once zoomed, drag to pan around the image. Zoom resets when navigating to another image. The zoom level is capped at 10x to keep things usable.
+
+### Touch gestures
+
+Full mobile support with horizontal swipe to navigate between images, pinch-to-zoom for detail viewing, and drag-to-pan when zoomed in. Swipe detection uses a distance threshold to avoid accidental triggers.
+
+### Keyboard accessible
+
+Full keyboard navigation - left and right arrows to move between images, Escape to close. The dialog element provides native focus trapping so tab stays within the lightbox while it's open.
+
+### High-resolution support
+
+Use the `data-full` attribute on thumbnails to load a higher resolution version in the lightbox. The thumbnail grid stays fast while the lightbox delivers full quality. Adjacent images are preloaded in the background for instant navigation.
+
+### Animated transitions
+
+Opens with a smooth fade animation and closes the same way. The closing animation plays fully before removing the overlay, so there's no abrupt disappearance.$$,
+    NULL
+)
+RETURNING id;
+
+-- Use the returned id as {transform_id} below:
+
+INSERT INTO versions (transform_id, version, code, style, js, css, config, usage, previews)
+VALUES (
+    {transform_id},
+    '1.0.0',
+    $$const prefix = 'ot-lightbox';
+
+this.index = 0;
+this.images = [];
+this.scale = 1;
+this.point = { x: 0, y: 0 };
+this.drag = { active: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+this.swipeStart = { x: 0, y: 0, time: 0 };
+this.zoomed = false;
+
+this.svg = (path) =>
+{
+    return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + path + '"/></svg>';
+};
+
+this.element = (tag, className, parent) =>
+{
+    const el = document.createElement(tag);
+    el.className = className;
+    parent.appendChild(el);
+    return el;
+};
+
+this.collect = () =>
+{
+    const elements = node.querySelectorAll('img');
+    const items = [];
+
+    for(let i = 0; i < elements.length; i++)
+    {
+        const img = elements[i];
+        items.push({
+            src: img.getAttribute('data-full') || img.src,
+            caption: img.getAttribute('alt') || ''
+        });
+    }
+
+    return items;
+};
+
+this.preload = (index) =>
+{
+    const img = new Image();
+    img.src = this.images[index].src;
+};
+
+this.adjacent = () =>
+{
+    const count = this.images.length;
+
+    if(count < 2)
+    {
+        return;
+    }
+
+    const next = (this.index + 1) % count;
+    const prev = (this.index - 1 + count) % count;
+
+    this.preload(next);
+    this.preload(prev);
+};
+
+this.create = () =>
+{
+    this.dialog = document.createElement('dialog');
+    this.dialog.className = prefix + '-dialog';
+
+    this.viewport = this.element('div', prefix + '-viewport', this.dialog);
+
+    this.img = this.element('img', prefix + '-image ' + prefix + '-loading', this.viewport);
+    this.img.setAttribute('draggable', 'false');
+
+    this.close = this.element('button', prefix + '-close', this.dialog);
+    this.close.innerHTML = this.svg('M18 6L6 18M6 6l12 12');
+    this.close.setAttribute('aria-label', 'Close');
+
+    this.prev = this.element('button', prefix + '-prev', this.dialog);
+    this.prev.innerHTML = this.svg('M15 18l-6-6 6-6');
+    this.prev.setAttribute('aria-label', 'Previous');
+
+    this.next = this.element('button', prefix + '-next', this.dialog);
+    this.next.innerHTML = this.svg('M9 18l6-6-6-6');
+    this.next.setAttribute('aria-label', 'Next');
+
+    if(data['counter'])
+    {
+        this.counter = this.element('span', prefix + '-counter', this.dialog);
+    }
+
+    this.caption = this.element('div', prefix + '-caption', this.dialog);
+
+    document.body.appendChild(this.dialog);
+};
+
+this.show = (index) =>
+{
+    this.index = index;
+    this.reset();
+
+    const item = this.images[index];
+
+    this.img.classList.add(prefix + '-loading');
+    this.img.onload = () =>
+    {
+        this.img.classList.remove(prefix + '-loading');
+    };
+    this.img.src = item.src;
+
+    if(item.caption)
+    {
+        this.caption.textContent = item.caption;
+        this.caption.style.display = '';
+    }
+    else
+    {
+        this.caption.style.display = 'none';
+    }
+
+    if(data['counter'] && this.counter)
+    {
+        this.counter.textContent = (index + 1) + ' / ' + this.images.length;
+    }
+
+    if(this.images.length < 2)
+    {
+        this.dialog.classList.add(prefix + '-single');
+    }
+    else
+    {
+        this.dialog.classList.remove(prefix + '-single');
+    }
+
+    this.adjacent();
+};
+
+this.open = (index) =>
+{
+    this.show(index);
+    this.dialog.showModal();
+};
+
+this.dismiss = () =>
+{
+    this.dialog.classList.add(prefix + '-closing');
+
+    this.dialog.addEventListener('animationend', () =>
+    {
+        this.dialog.classList.remove(prefix + '-closing');
+        this.dialog.close();
+        this.reset();
+    }, { once: true });
+};
+
+this.go = (direction) =>
+{
+    if(this.zoomed)
+    {
+        return;
+    }
+
+    const count = this.images.length;
+
+    if(count < 2)
+    {
+        return;
+    }
+
+    let target = this.index + direction;
+
+    if(data['loop'])
+    {
+        target = (target + count) % count;
+    }
+    else
+    {
+        if(target < 0 || target >= count)
+        {
+            return;
+        }
+    }
+
+    this.show(target);
+};
+
+this.reset = () =>
+{
+    this.scale = 1;
+    this.point = { x: 0, y: 0 };
+    this.zoomed = false;
+    this.drag.active = false;
+    this.img.classList.remove(prefix + '-zoomed', prefix + '-dragging');
+    this.img.style.transform = '';
+    this.img.style.transformOrigin = '';
+};
+
+this.transform = () =>
+{
+    this.img.style.transform = 'translate(' + this.point.x + 'px, ' + this.point.y + 'px) scale(' + this.scale + ')';
+};
+
+this.zoomAt = (clientX, clientY, delta) =>
+{
+    const rect = this.img.getBoundingClientRect();
+    const x = (clientX - this.point.x - rect.left + (this.point.x)) / this.scale;
+    const y = (clientY - this.point.y - rect.top + (this.point.y)) / this.scale;
+
+    const prev = this.scale;
+
+    if(delta > 0)
+    {
+        this.scale = Math.min(this.scale * 1.2, 10);
+    }
+    else
+    {
+        this.scale = Math.max(this.scale / 1.2, 1);
+    }
+
+    this.point.x = clientX - x * this.scale - (rect.left - this.point.x);
+    this.point.y = clientY - y * this.scale - (rect.top - this.point.y);
+
+    if(this.scale <= 1)
+    {
+        this.point.x = 0;
+        this.point.y = 0;
+        this.scale = 1;
+        this.zoomed = false;
+        this.img.classList.remove(prefix + '-zoomed');
+    }
+    else
+    {
+        this.zoomed = true;
+        this.img.classList.add(prefix + '-zoomed');
+    }
+
+    this.transform();
+};
+
+this.wheel = (e) =>
+{
+    if(!data['zoom'])
+    {
+        return;
+    }
+
+    e.preventDefault();
+    this.zoomAt(e.clientX, e.clientY, e.deltaY < 0 ? 1 : -1);
+};
+
+this.dragStart = (e) =>
+{
+    if(!this.zoomed)
+    {
+        return;
+    }
+
+    e.preventDefault();
+    this.drag.active = true;
+    this.drag.startX = e.clientX;
+    this.drag.startY = e.clientY;
+    this.drag.originX = this.point.x;
+    this.drag.originY = this.point.y;
+    this.img.classList.add(prefix + '-dragging');
+};
+
+this.dragMove = (e) =>
+{
+    if(!this.drag.active)
+    {
+        return;
+    }
+
+    this.point.x = this.drag.originX + (e.clientX - this.drag.startX);
+    this.point.y = this.drag.originY + (e.clientY - this.drag.startY);
+    this.transform();
+};
+
+this.dragEnd = () =>
+{
+    this.drag.active = false;
+    this.img.classList.remove(prefix + '-dragging');
+};
+
+this.touchStart = (e) =>
+{
+    if(e.touches.length === 1 && !this.zoomed)
+    {
+        this.swipeStart.x = e.touches[0].clientX;
+        this.swipeStart.y = e.touches[0].clientY;
+        this.swipeStart.time = Date.now();
+    }
+    else if(e.touches.length === 1 && this.zoomed)
+    {
+        this.drag.active = true;
+        this.drag.startX = e.touches[0].clientX;
+        this.drag.startY = e.touches[0].clientY;
+        this.drag.originX = this.point.x;
+        this.drag.originY = this.point.y;
+    }
+    else if(e.touches.length === 2 && data['zoom'])
+    {
+        e.preventDefault();
+        this.pinch = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        this.pinchScale = this.scale;
+    }
+};
+
+this.touchMove = (e) =>
+{
+    if(e.touches.length === 2 && this.pinch > 0)
+    {
+        e.preventDefault();
+        const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        const ratio = dist / this.pinch;
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+        this.scale = Math.max(1, Math.min(this.pinchScale * ratio, 10));
+
+        if(this.scale > 1)
+        {
+            this.zoomed = true;
+            this.img.classList.add(prefix + '-zoomed');
+        }
+
+        this.transform();
+    }
+    else if(e.touches.length === 1 && this.drag.active)
+    {
+        this.point.x = this.drag.originX + (e.touches[0].clientX - this.drag.startX);
+        this.point.y = this.drag.originY + (e.touches[0].clientY - this.drag.startY);
+        this.transform();
+    }
+};
+
+this.touchEnd = (e) =>
+{
+    if(this.pinch > 0)
+    {
+        this.pinch = 0;
+
+        if(this.scale <= 1)
+        {
+            this.reset();
+        }
+
+        return;
+    }
+
+    if(this.drag.active)
+    {
+        this.drag.active = false;
+        return;
+    }
+
+    if(!data['swipe'] || e.changedTouches.length === 0)
+    {
+        return;
+    }
+
+    const dx = e.changedTouches[0].clientX - this.swipeStart.x;
+    const dy = e.changedTouches[0].clientY - this.swipeStart.y;
+    const elapsed = Date.now() - this.swipeStart.time;
+
+    if(elapsed > 500)
+    {
+        return;
+    }
+
+    if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy))
+    {
+        this.go(dx > 0 ? -1 : 1);
+    }
+};
+
+this.keyboard = (e) =>
+{
+    if(e.key === 'ArrowRight')
+    {
+        e.preventDefault();
+        this.go(1);
+    }
+    else if(e.key === 'ArrowLeft')
+    {
+        e.preventDefault();
+        this.go(-1);
+    }
+    else if(e.key === 'Escape')
+    {
+        e.preventDefault();
+        this.dismiss();
+    }
+};
+
+this.events = () =>
+{
+    const imgs = node.querySelectorAll('img');
+
+    for(let i = 0; i < imgs.length; i++)
+    {
+        imgs[i].addEventListener('click', () => this.open(i));
+    }
+
+    this.close.addEventListener('click', () => this.dismiss());
+    this.prev.addEventListener('click', () => this.go(-1));
+    this.next.addEventListener('click', () => this.go(1));
+
+    this.dialog.addEventListener('keydown', (e) => this.keyboard(e));
+    this.dialog.addEventListener('cancel', (e) =>
+    {
+        e.preventDefault();
+        this.dismiss();
+    });
+
+    this.viewport.addEventListener('click', (e) =>
+    {
+        if(e.target === this.viewport && !this.zoomed)
+        {
+            this.dismiss();
+        }
+    });
+
+    this.viewport.addEventListener('wheel', (e) => this.wheel(e), { passive: false });
+
+    this.img.addEventListener('mousedown', (e) => this.dragStart(e));
+    window.addEventListener('mousemove', (e) => this.dragMove(e));
+    window.addEventListener('mouseup', () => this.dragEnd());
+
+    this.viewport.addEventListener('touchstart', (e) => this.touchStart(e), { passive: false });
+    this.viewport.addEventListener('touchmove', (e) => this.touchMove(e), { passive: false });
+    this.viewport.addEventListener('touchend', (e) => this.touchEnd(e));
+};
+
+this.build = () =>
+{
+    this.images = this.collect();
+
+    if(this.images.length === 0)
+    {
+        return;
+    }
+
+    node.classList.add(prefix);
+    this.create();
+    this.events();
+};
+
+this.build();$$,
+    $$/* Base */
+.ot-lightbox img {
+    cursor: pointer;
+}
+
+/* Dialog */
+.ot-lightbox-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 9999;
+    outline: none;
+    overflow: hidden;
+}
+
+.ot-lightbox-dialog::backdrop {
+    background: transparent;
+}
+
+.ot-lightbox-dialog[open] {
+    animation: ot-lightbox-open 0.3s ease forwards;
+}
+
+.ot-lightbox-dialog.ot-lightbox-closing {
+    animation: ot-lightbox-close 0.25s ease forwards;
+}
+
+@keyframes ot-lightbox-open {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes ot-lightbox-close {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Viewport */
+.ot-lightbox-viewport {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+/* Image */
+.ot-lightbox-image {
+    max-width: 90%;
+    max-height: 85%;
+    object-fit: contain;
+    transform-origin: 0 0;
+    transition: opacity 0.2s ease;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.ot-lightbox-image.ot-lightbox-zoomed {
+    max-width: none;
+    max-height: none;
+    cursor: grab;
+}
+
+.ot-lightbox-image.ot-lightbox-zoomed.ot-lightbox-dragging {
+    cursor: grabbing;
+}
+
+.ot-lightbox-image.ot-lightbox-loading {
+    opacity: 0;
+}
+
+/* Close */
+.ot-lightbox-close {
+    position: absolute;
+    top: var(--ot-spacing-m);
+    right: var(--ot-spacing-m);
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: color 0.2s ease, background 0.2s ease;
+    padding: 0;
+}
+
+.ot-lightbox-close:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Navigation */
+.ot-lightbox-prev,
+.ot-lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: color 0.2s ease, background 0.2s ease;
+    padding: 0;
+}
+
+.ot-lightbox-prev { left: var(--ot-spacing-m); }
+.ot-lightbox-next { right: var(--ot-spacing-m); }
+
+.ot-lightbox-prev:hover,
+.ot-lightbox-next:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.ot-lightbox-single .ot-lightbox-prev,
+.ot-lightbox-single .ot-lightbox-next,
+.ot-lightbox-single .ot-lightbox-counter {
+    display: none;
+}
+
+/* Counter */
+.ot-lightbox-counter {
+    position: absolute;
+    top: var(--ot-spacing-m);
+    left: var(--ot-spacing-m);
+    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--ot-font-primary), sans-serif;
+    font-size: var(--ot-size-m);
+    z-index: 3;
+    line-height: 40px;
+    user-select: none;
+}
+
+/* Caption */
+.ot-lightbox-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--ot-spacing-m) var(--ot-spacing-l);
+    color: rgba(255, 255, 255, 0.8);
+    font-family: var(--ot-font-primary), sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+    z-index: 3;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .ot-lightbox-dialog[open],
+    .ot-lightbox-dialog.ot-lightbox-closing {
+        animation: none;
+    }
+
+    .ot-lightbox-image {
+        transition: none;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .ot-lightbox-image {
+        max-width: 96%;
+        max-height: 80%;
+    }
+
+    .ot-lightbox-prev,
+    .ot-lightbox-next {
+        width: 36px;
+        height: 36px;
+    }
+
+    .ot-lightbox-prev { left: var(--ot-spacing-s); }
+    .ot-lightbox-next { right: var(--ot-spacing-s); }
+}$$,
+    NULL,
+    NULL,
+    '{"zoom": {"type": "boolean", "value": true, "description": "Enable scroll and pinch zoom"}, "swipe": {"type": "boolean", "value": true, "description": "Enable swipe navigation on touch"}, "counter": {"type": "boolean", "value": true, "description": "Show image counter"}, "loop": {"type": "boolean", "value": true, "description": "Loop gallery navigation"}}'::jsonb,
+    $$<div ot="lightbox">
+    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=300&h=200&fit=crop" alt="Mountain landscape" />
+    <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&h=200&fit=crop" alt="Valley sunrise" />
+    <img src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=300&h=200&fit=crop" alt="Forest path" />
+</div>$$,
+    ARRAY[
+        $$// Gallery
+<style>
+    .gallery .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-s); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .gallery .grid img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--ot-radius-m); cursor: pointer; transition: opacity 0.2s ease; }
+    .gallery .grid img:hover { opacity: 0.85; }
+</style>
+
+<div ot="lightbox" class="gallery">
+    <div class="grid">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400" data-full="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1600" alt="Mountain landscape at golden hour" />
+        <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400" data-full="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1600" alt="Valley with morning sunlight" />
+        <img src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400" data-full="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=1600" alt="Path through a dense forest" />
+        <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400" data-full="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600" alt="Foggy green valley" />
+        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400" data-full="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1600" alt="Sunlight filtering through trees" />
+        <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400" data-full="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1600" alt="Rolling green hills at sunset" />
+    </div>
+</div>$$,
+        $$// Captions
+<style>
+    .captions .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ot-spacing-m); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .captions .card { border-radius: var(--ot-radius-l); overflow: hidden; background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); }
+    .captions .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; cursor: pointer; transition: opacity 0.2s ease; display: block; }
+    .captions .card img:hover { opacity: 0.85; }
+    .captions .card .info { padding: var(--ot-spacing-s) var(--ot-spacing-m); }
+    .captions .card .info strong { font-size: 14px; color: var(--ot-text-1); }
+    .captions .card .info span { font-size: var(--ot-size-s); color: var(--ot-text-2); display: block; margin-top: 2px; }
+</style>
+
+<div ot="lightbox" class="captions">
+    <div class="grid">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=500" data-full="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600" alt="Starry night above snowy mountains" />
+            <div class="info">
+                <strong>Starry Peaks</strong>
+                <span>Swiss Alps, 3200m elevation</span>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?w=500" data-full="https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?w=1600" alt="Autumn forest reflected in still lake" />
+            <div class="info">
+                <strong>Mirror Lake</strong>
+                <span>Vermont, New England</span>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500" data-full="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600" alt="Tropical beach with turquoise water" />
+            <div class="info">
+                <strong>Crystal Shore</strong>
+                <span>Maldives, Indian Ocean</span>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=500" data-full="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600" alt="Aerial view of winding river through mountains" />
+            <div class="info">
+                <strong>River Canyon</strong>
+                <span>Patagonia, Argentina</span>
+            </div>
+        </div>
+    </div>
+</div>$$,
+        $$// Single
+<style>
+    .single { display: flex; justify-content: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .single .frame { border-radius: var(--ot-radius-l); overflow: hidden; max-width: 500px; position: relative; }
+    .single .frame img { width: 100%; display: block; cursor: pointer; transition: opacity 0.2s ease; }
+    .single .frame img:hover { opacity: 0.9; }
+    .single .frame .badge { position: absolute; bottom: var(--ot-spacing-s); right: var(--ot-spacing-s); background: rgba(0, 0, 0, 0.6); color: rgba(255, 255, 255, 0.8); font-size: var(--ot-size-s); padding: 4px 10px; border-radius: var(--ot-radius-s); display: flex; align-items: center; gap: 4px; pointer-events: none; }
+    .single .frame .badge i { font-size: 14px; }
+</style>
+
+<div ot="lightbox" ot-counter="false" class="single">
+    <div class="frame">
+        <img src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=500" data-full="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=1920" alt="Dramatic coastal cliffs at sunset" />
+        <div class="badge"><i>zoom_in</i> Click to expand</div>
+    </div>
+</div>$$
+    ]
+);

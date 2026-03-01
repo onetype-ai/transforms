@@ -1,0 +1,15 @@
+<style>
+    .single { display: flex; justify-content: center; padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .single .frame { border-radius: var(--ot-radius-l); overflow: hidden; max-width: 500px; position: relative; }
+    .single .frame img { width: 100%; display: block; cursor: pointer; transition: opacity 0.2s ease; }
+    .single .frame img:hover { opacity: 0.9; }
+    .single .frame .badge { position: absolute; bottom: var(--ot-spacing-s); right: var(--ot-spacing-s); background: rgba(0, 0, 0, 0.6); color: rgba(255, 255, 255, 0.8); font-size: var(--ot-size-s); padding: 4px 10px; border-radius: var(--ot-radius-s); display: flex; align-items: center; gap: 4px; pointer-events: none; }
+    .single .frame .badge i { font-size: 14px; }
+</style>
+
+<div ot="lightbox" ot-counter="false" class="single">
+    <div class="frame">
+        <img src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=500" data-full="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=1920" alt="Dramatic coastal cliffs at sunset" />
+        <div class="badge"><i>zoom_in</i> Click to expand</div>
+    </div>
+</div>
