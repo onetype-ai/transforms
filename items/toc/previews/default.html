@@ -1,0 +1,40 @@
+<style>
+    .default { display: grid; grid-template-columns: 200px 1fr; gap: var(--ot-spacing-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .default .content { display: flex; flex-direction: column; gap: var(--ot-spacing-l); }
+    .default .content h2 { font-size: 18px; font-weight: 600; color: var(--ot-text-1); margin: 0; }
+    .default .content h3 { font-size: 15px; font-weight: 500; color: var(--ot-text-1); margin: 0; }
+    .default .content p { font-size: var(--ot-size-m); color: var(--ot-text-2); line-height: 1.6; margin: 0; }
+    .default .block { display: flex; flex-direction: column; gap: var(--ot-spacing-s); }
+</style>
+
+<div class="default">
+    <div>
+        <div ot="toc"></div>
+    </div>
+    <div class="content">
+        <div class="block">
+            <h2>Getting Started</h2>
+            <p>Add a single script tag to your page. Each transform activates with an HTML attribute - no frameworks, no build tools, no complexity.</p>
+        </div>
+        <div class="block">
+            <h3>Installation</h3>
+            <p>Copy the CDN link into your page head. All transforms load on demand when the page renders.</p>
+        </div>
+        <div class="block">
+            <h2>Configuration</h2>
+            <p>Every transform is configured through ot-prefixed attributes directly in your markup. Set speed, color, direction, and more without writing JavaScript.</p>
+        </div>
+        <div class="block">
+            <h3>Attributes</h3>
+            <p>Use ot-speed, ot-color, ot-direction and other attributes to control behavior. Values are parsed automatically.</p>
+        </div>
+        <div class="block">
+            <h2>Styling</h2>
+            <p>Transforms use CSS variables for all visual properties. Override them to match your design system.</p>
+        </div>
+        <div class="block">
+            <h2>Deployment</h2>
+            <p>Works on any platform - Webflow, WordPress, Squarespace, or custom HTML. No server required.</p>
+        </div>
+    </div>
+</div>

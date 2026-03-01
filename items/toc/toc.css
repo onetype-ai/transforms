@@ -1,0 +1,76 @@
+/* Base */
+.ot-toc {
+    position: relative;
+}
+
+/* Nav */
+.ot-toc-nav {
+    position: relative;
+}
+
+/* List */
+.ot-toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Link */
+.ot-toc-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* Marker */
+.ot-toc-marker {
+    position: absolute;
+    left: 0;
+    width: 2px;
+    opacity: 0;
+    transition: top 0.25s ease, height 0.25s ease, opacity 0.25s ease;
+    pointer-events: none;
+}
+
+/* Styled */
+.ot-toc-styled .ot-toc-nav {
+}
+
+.ot-toc-styled .ot-toc-list {
+    gap: 2px;
+    border-left: 1px solid var(--ot-bg-2-border);
+}
+
+.ot-toc-styled .ot-toc-link {
+    padding: var(--ot-spacing-s) var(--ot-spacing-m);
+    padding-left: calc(var(--ot-spacing-m) + var(--depth, 0) * var(--ot-spacing-m));
+    font-family: var(--ot-font-primary), sans-serif;
+    font-size: var(--ot-size-m);
+    color: var(--ot-text-2);
+    border-radius: 0 var(--ot-radius-s) var(--ot-radius-s) 0;
+    transition: color 0.2s ease, background 0.15s ease;
+}
+
+.ot-toc-styled .ot-toc-link:hover {
+    color: var(--ot-text-1);
+    background: var(--ot-bg-2-opacity);
+}
+
+.ot-toc-styled .ot-toc-link.ot-toc-active {
+    color: var(--ot-text-1);
+}
+
+.ot-toc-styled .ot-toc-marker {
+    background: var(--ot-brand);
+    border-radius: 1px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .ot-toc-marker {
+        transition: none;
+    }
+}

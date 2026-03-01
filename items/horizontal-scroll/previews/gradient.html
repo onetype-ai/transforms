@@ -1,0 +1,36 @@
+<style>
+    .gradient .ot-horizontal-scroll-panel { display: flex; align-items: center; justify-content: center; }
+    .gradient .panel-inner { display: flex; flex-direction: column; align-items: center; gap: var(--ot-spacing-x); text-align: center; }
+    .gradient .panel-inner h2 { font-size: 48px; font-weight: 900; letter-spacing: -2px; }
+    .gradient .panel-inner span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+    .gradient .panel-1 { background: linear-gradient(135deg, rgba(226, 112, 85, 0.15), var(--ot-bg-1)); }
+    .gradient .panel-1 h2 { color: var(--ot-brand); }
+    .gradient .panel-2 { background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), var(--ot-bg-1)); }
+    .gradient .panel-2 h2 { color: var(--ot-blue); }
+    .gradient .panel-3 { background: linear-gradient(135deg, rgba(52, 211, 153, 0.15), var(--ot-bg-1)); }
+    .gradient .panel-3 h2 { color: var(--ot-green); }
+    .gradient .ot-horizontal-scroll-viewport { height: 260px; }
+</style>
+
+<div class="gradient">
+    <div ot="horizontal-scroll" ot-speed="1.5">
+        <div class="panel-1">
+            <div class="panel-inner">
+                <h2>01</h2>
+                <span>Explore</span>
+            </div>
+        </div>
+        <div class="panel-2">
+            <div class="panel-inner">
+                <h2>02</h2>
+                <span>Create</span>
+            </div>
+        </div>
+        <div class="panel-3">
+            <div class="panel-inner">
+                <h2>03</h2>
+                <span>Launch</span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+<style>
+    .unstyled { display: grid; grid-template-columns: 180px 1fr; gap: var(--ot-spacing-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .unstyled .toc-links a { display: block; padding: 4px 0; font-size: var(--ot-size-m); color: var(--ot-text-2); text-decoration: none; }
+    .unstyled .toc-links a.ot-toc-active { color: var(--ot-text-1); }
+    .unstyled .content { display: flex; flex-direction: column; gap: var(--ot-spacing-l); }
+    .unstyled .content h2 { font-size: 18px; font-weight: 600; color: var(--ot-text-1); margin: 0; }
+    .unstyled .content p { font-size: var(--ot-size-m); color: var(--ot-text-2); line-height: 1.6; margin: 0; }
+    .unstyled .block { display: flex; flex-direction: column; gap: var(--ot-spacing-s); }
+</style>
+
+<div class="unstyled">
+    <div class="toc-links">
+        <div ot="toc" ot-styled="false" ot-marker="false" ot-selector="h2"></div>
+    </div>
+    <div class="content">
+        <div class="block">
+            <h2>Overview</h2>
+            <p>A high-level look at the platform, what it does, and who it is built for.</p>
+        </div>
+        <div class="block">
+            <h2>Features</h2>
+            <p>Core capabilities that ship out of the box - no plugins, no extras needed.</p>
+        </div>
+        <div class="block">
+            <h2>Pricing</h2>
+            <p>Simple plans designed around how you build. Free for personal projects, Pro for production.</p>
+        </div>
+        <div class="block">
+            <h2>Support</h2>
+            <p>Documentation, community, and direct support channels for every plan.</p>
+        </div>
+    </div>
+</div>

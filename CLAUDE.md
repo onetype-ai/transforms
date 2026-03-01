@@ -16,17 +16,20 @@ server/             # Dev server
 publish.md          # Publishing workflow for database inserts
 ```
 
-## Published transforms (17)
+## Published transforms (20)
 
 | Transform | Category | Tier | External deps |
 |-----------|----------|------|---------------|
+| accordion | navigation | Free | - |
 | anime | animation | Pro | anime.js |
 | before-after | interaction | Free | - |
 | count-up | animation | Pro | countup.js |
+| cursor | interaction | Pro | - |
 | lottie | media | Pro | lottie-web |
 | magnetic | interaction | Free | - |
 | leaflet | data | Pro | leaflet |
 | marquee | animation | Free | - |
+| morph | animation | Free | flubber |
 | orbit | animation | Free | - |
 | particles | animation | Pro | particles.js |
 | ripple | interaction | Free | - |
@@ -77,8 +80,10 @@ Reads `usage.html` and all files from `previews/`, renders them as labeled secti
 
 ## Tier
 
-- **Free** - simple transforms, no external libraries (tilt, ripple, magnetic, scramble, etc.)
-- **Pro** - advanced transforms, external libraries, complex functionality (anime, swiper, leaflet, lottie, etc.)
+Tier is based on **value to the user**, not complexity or whether it uses external libraries.
+
+- **Free** - basic utility, commonly available elsewhere (accordion, morph, tilt, ripple, magnetic, scramble, etc.)
+- **Pro** - high value, premium feel, significant impact on the site (cursor, anime, swiper, leaflet, lottie, etc.)
 
 ---
 

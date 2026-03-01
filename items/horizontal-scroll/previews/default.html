@@ -1,0 +1,33 @@
+<style>
+    .default .ot-horizontal-scroll-panel { display: flex; align-items: center; justify-content: center; }
+    .default .panel-inner { display: flex; flex-direction: column; align-items: center; gap: var(--ot-spacing-s); text-align: center; }
+    .default .panel-inner h2 { font-size: 36px; font-weight: 800; color: var(--ot-text-1); letter-spacing: -1px; }
+    .default .panel-inner p { font-size: var(--ot-size-m); color: var(--ot-text-2); max-width: 300px; line-height: 1.5; }
+    .default .panel-1 { background: var(--ot-bg-1); }
+    .default .panel-2 { background: var(--ot-bg-2); }
+    .default .panel-3 { background: var(--ot-bg-3); }
+    .default .ot-horizontal-scroll-viewport { height: 280px; }
+</style>
+
+<div class="default">
+    <div ot="horizontal-scroll">
+        <div class="panel-1">
+            <div class="panel-inner">
+                <h2>Design</h2>
+                <p>Create beautiful interfaces with precision</p>
+            </div>
+        </div>
+        <div class="panel-2">
+            <div class="panel-inner">
+                <h2>Build</h2>
+                <p>Turn concepts into production-ready code</p>
+            </div>
+        </div>
+        <div class="panel-3">
+            <div class="panel-inner">
+                <h2>Ship</h2>
+                <p>Deploy with confidence and iterate fast</p>
+            </div>
+        </div>
+    </div>
+</div>
