@@ -1,0 +1,28 @@
+<style>
+    .cards .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-m); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .cards .card { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); text-align: center; }
+    .cards .card i { font-size: 32px; color: var(--ot-brand); margin-bottom: var(--ot-spacing-s); display: block; }
+    .cards .card strong { display: block; font-size: 16px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .cards .card span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div class="cards">
+    <div class="grid">
+        <div ot="parallax" ot-speed="-2" class="card">
+            <i>speed</i>
+            <strong>Performance</strong>
+            <span>GPU-accelerated transforms</span>
+        </div>
+        <div ot="parallax" ot-speed="-4" class="card">
+            <i>visibility</i>
+            <strong>Smart</strong>
+            <span>Only animates in viewport</span>
+        </div>
+        <div ot="parallax" ot-speed="-6" class="card">
+            <i>accessibility_new</i>
+            <strong>Accessible</strong>
+            <span>Respects reduced motion</span>
+        </div>
+    </div>
+    <div style="height: 800px;"></div>
+</div>

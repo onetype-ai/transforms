@@ -1,0 +1,53 @@
+.ot-shimmer {
+    display: inline-block;
+}
+
+/* Loop - continuous animation */
+.ot-shimmer-loop {
+    animation-name: ot-shimmer-sweep;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes ot-shimmer-sweep {
+    0% {
+        background-position: 100% center;
+    }
+    100% {
+        background-position: -100% center;
+    }
+}
+
+/* Hover - animate on hover */
+.ot-shimmer-hover {
+    background-position: 100% center;
+    transition: none;
+}
+
+.ot-shimmer-hover:hover {
+    animation-name: ot-shimmer-sweep;
+    animation-timing-function: linear;
+    animation-duration: var(--shimmer-duration, 2s);
+    animation-iteration-count: 1;
+}
+
+/* Scroll - animate once on viewport entry */
+.ot-shimmer-scroll {
+    background-position: 100% center;
+}
+
+.ot-shimmer-scroll.ot-shimmer-active {
+    animation-name: ot-shimmer-sweep;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ot-shimmer-loop,
+    .ot-shimmer-hover:hover,
+    .ot-shimmer-scroll.ot-shimmer-active {
+        animation: none !important;
+        background-position: 0% center !important;
+    }
+}

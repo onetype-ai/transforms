@@ -6,7 +6,7 @@ const root = resolve(server, '..');
 const item = process.argv[2];
 
 assets.Fn('import', ['framework', 'styles']);
-assets.Fn('import', ['transforms']);
+assets.Fn('import', ['transforms', 'transforms/items']);
 
 assets.Item({ type: 'js', order: 10, path: resolve(server, 'front') });
 assets.Item({ type: 'css', order: 10, content: '[ot] { opacity: 0 }'});

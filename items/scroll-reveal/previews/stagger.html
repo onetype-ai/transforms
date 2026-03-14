@@ -1,0 +1,27 @@
+<style>
+    .stagger .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-m); }
+    .stagger .card { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); text-align: center; }
+    .stagger .card i { font-size: 32px; color: var(--ot-brand); margin-bottom: var(--ot-spacing-s); display: block; }
+    .stagger .card strong { display: block; font-size: 16px; color: var(--ot-text-1); margin-bottom: var(--ot-spacing-x); }
+    .stagger .card span { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div ot="scroll-reveal" ot-stagger="100" class="stagger">
+    <div class="cards">
+        <div class="card">
+            <i>rocket_launch</i>
+            <strong>Lightning Fast</strong>
+            <span>Zero dependencies</span>
+        </div>
+        <div class="card">
+            <i>code</i>
+            <strong>One Attribute</strong>
+            <span>No config needed</span>
+        </div>
+        <div class="card">
+            <i>devices</i>
+            <strong>Responsive</strong>
+            <span>Works everywhere</span>
+        </div>
+    </div>
+</div>

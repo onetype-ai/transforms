@@ -1,0 +1,103 @@
+.ot-glitch {
+    position: relative;
+    display: inline-block;
+}
+
+.ot-glitch::before,
+.ot-glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.ot-glitch::before {
+    text-shadow: calc(-1 * var(--glitch-intensity)) 0 var(--glitch-color-1);
+    z-index: -1;
+}
+
+.ot-glitch::after {
+    text-shadow: var(--glitch-intensity) 0 var(--glitch-color-2);
+    z-index: -2;
+}
+
+/* Constant */
+.ot-glitch-active {
+    animation: ot-glitch-shake var(--glitch-duration) infinite linear;
+}
+
+.ot-glitch-active::before {
+    animation: ot-glitch-clip-1 var(--glitch-duration) infinite linear alternate-reverse;
+}
+
+.ot-glitch-active::after {
+    animation: ot-glitch-clip-2 var(--glitch-duration) infinite linear alternate-reverse;
+}
+
+/* Hover */
+.ot-glitch-hover:hover {
+    animation: ot-glitch-shake var(--glitch-duration) infinite linear;
+}
+
+.ot-glitch-hover:hover::before {
+    animation: ot-glitch-clip-1 var(--glitch-duration) infinite linear alternate-reverse;
+}
+
+.ot-glitch-hover:hover::after {
+    animation: ot-glitch-clip-2 var(--glitch-duration) infinite linear alternate-reverse;
+}
+
+/* Shake */
+@keyframes ot-glitch-shake {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(calc(-1 * var(--glitch-intensity)), var(--glitch-intensity)); }
+    40% { transform: translate(calc(-1 * var(--glitch-intensity)), calc(-1 * var(--glitch-intensity))); }
+    60% { transform: translate(var(--glitch-intensity), var(--glitch-intensity)); }
+    80% { transform: translate(var(--glitch-intensity), calc(-1 * var(--glitch-intensity))); }
+}
+
+/* Clip before */
+@keyframes ot-glitch-clip-1 {
+    0% { clip-path: inset(40% 0 61% 0); }
+    10% { clip-path: inset(92% 0 1% 0); }
+    20% { clip-path: inset(43% 0 1% 0); }
+    30% { clip-path: inset(25% 0 58% 0); }
+    40% { clip-path: inset(54% 0 7% 0); }
+    50% { clip-path: inset(8% 0 72% 0); }
+    60% { clip-path: inset(67% 0 12% 0); }
+    70% { clip-path: inset(15% 0 48% 0); }
+    80% { clip-path: inset(81% 0 3% 0); }
+    90% { clip-path: inset(36% 0 29% 0); }
+    100% { clip-path: inset(58% 0 43% 0); }
+}
+
+/* Clip after */
+@keyframes ot-glitch-clip-2 {
+    0% { clip-path: inset(24% 0 36% 0); }
+    10% { clip-path: inset(5% 0 78% 0); }
+    20% { clip-path: inset(61% 0 18% 0); }
+    30% { clip-path: inset(89% 0 2% 0); }
+    40% { clip-path: inset(17% 0 63% 0); }
+    50% { clip-path: inset(42% 0 31% 0); }
+    60% { clip-path: inset(3% 0 85% 0); }
+    70% { clip-path: inset(73% 0 9% 0); }
+    80% { clip-path: inset(28% 0 52% 0); }
+    90% { clip-path: inset(66% 0 14% 0); }
+    100% { clip-path: inset(11% 0 69% 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ot-glitch-active,
+    .ot-glitch-active::before,
+    .ot-glitch-active::after,
+    .ot-glitch-hover:hover,
+    .ot-glitch-hover:hover::before,
+    .ot-glitch-hover:hover::after {
+        animation: none !important;
+    }
+}

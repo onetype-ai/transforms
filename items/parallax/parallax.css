@@ -1,0 +1,10 @@
+.ot-parallax {
+    will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ot-parallax {
+        transform: none !important;
+        will-change: auto;
+    }
+}

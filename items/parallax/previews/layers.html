@@ -1,0 +1,21 @@
+<style>
+    .layers .scene { position: relative; height: 500px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+    .layers .back { position: absolute; width: 200px; height: 200px; border-radius: 50%; background: var(--ot-brand-opacity); filter: blur(60px); }
+    .layers .back-1 { top: 20%; left: 15%; }
+    .layers .back-2 { bottom: 15%; right: 20%; background: var(--ot-blue-opacity); }
+    .layers .content { text-align: center; z-index: 1; }
+    .layers .content h1 { font-size: 56px; font-weight: 900; color: var(--ot-text-1); letter-spacing: -2px; line-height: 1; margin: 0 0 var(--ot-spacing-m); }
+    .layers .content p { font-size: 17px; color: var(--ot-text-2); max-width: 380px; margin: 0 auto; line-height: 1.6; }
+</style>
+
+<div class="layers">
+    <div class="scene">
+        <div ot="parallax" ot-speed="-6" class="back back-1"></div>
+        <div ot="parallax" ot-speed="-4" class="back back-2"></div>
+        <div ot="parallax" ot-speed="-1" class="content">
+            <h1>Depth in motion</h1>
+            <p>Multiple layers scrolling at different speeds create a natural sense of depth.</p>
+        </div>
+    </div>
+    <div style="height: 800px;"></div>
+</div>

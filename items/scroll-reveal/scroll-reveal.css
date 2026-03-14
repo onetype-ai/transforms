@@ -1,0 +1,12 @@
+.ot-scroll-reveal-item {
+    transition-property: opacity, transform;
+    will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ot-scroll-reveal-item {
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}

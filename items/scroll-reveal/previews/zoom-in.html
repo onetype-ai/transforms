@@ -1,0 +1,32 @@
+<style>
+    .zoom-in .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ot-spacing-m); }
+    .zoom-in .item { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l); }
+    .zoom-in .item .number { font-size: 48px; font-weight: 800; color: var(--ot-brand); line-height: 1; margin-bottom: var(--ot-spacing-s); }
+    .zoom-in .item .label { font-size: 15px; color: var(--ot-text-1); font-weight: 600; margin-bottom: var(--ot-spacing-x); }
+    .zoom-in .item .detail { font-size: var(--ot-size-m); color: var(--ot-text-2); }
+</style>
+
+<div ot="scroll-reveal" ot-effect="zoom-in" ot-stagger="80" class="zoom-in">
+    <div class="grid">
+        <div class="item">
+            <div class="number">4.9</div>
+            <div class="label">Customer Rating</div>
+            <div class="detail">Based on 2,400 reviews</div>
+        </div>
+        <div class="item">
+            <div class="number">99%</div>
+            <div class="label">Uptime</div>
+            <div class="detail">Enterprise reliability</div>
+        </div>
+        <div class="item">
+            <div class="number">50ms</div>
+            <div class="label">Response Time</div>
+            <div class="detail">Globally distributed</div>
+        </div>
+        <div class="item">
+            <div class="number">24/7</div>
+            <div class="label">Support</div>
+            <div class="detail">Real humans, always</div>
+        </div>
+    </div>
+</div>

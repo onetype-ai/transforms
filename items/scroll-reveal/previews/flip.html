@@ -1,0 +1,27 @@
+<style>
+    .flip .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ot-spacing-m); }
+    .flip .testimonial { background: var(--ot-bg-2); border: 1px solid var(--ot-bg-2-border); border-radius: var(--ot-radius-l); padding: var(--ot-spacing-l) var(--ot-spacing-m); }
+    .flip .testimonial .quote { font-size: 15px; color: var(--ot-text-2); line-height: 1.6; margin-bottom: var(--ot-spacing-m); font-style: italic; }
+    .flip .testimonial .author { font-size: 14px; color: var(--ot-text-1); font-weight: 600; }
+    .flip .testimonial .role { font-size: var(--ot-size-s); color: var(--ot-text-2); }
+</style>
+
+<div ot="scroll-reveal" ot-effect="flip-up" ot-stagger="120" class="flip">
+    <div class="testimonials">
+        <div class="testimonial">
+            <div class="quote">"Replaced our entire animation library with a single script tag. The stagger effect alone saved us hours."</div>
+            <div class="author">Sarah Chen</div>
+            <div class="role">Lead Developer, Arclight</div>
+        </div>
+        <div class="testimonial">
+            <div class="quote">"Finally, scroll animations that just work. No config files, no build steps, no headaches."</div>
+            <div class="author">Marcus Rivera</div>
+            <div class="role">CTO, Basecamp</div>
+        </div>
+        <div class="testimonial">
+            <div class="quote">"Our landing page conversion went up 23% after adding scroll reveals to the feature section."</div>
+            <div class="author">Anya Petrov</div>
+            <div class="role">Growth Lead, Vercel</div>
+        </div>
+    </div>
+</div>
